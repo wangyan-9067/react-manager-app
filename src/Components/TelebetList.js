@@ -1,10 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import GridListBase from './GridListBase';
-import SingleGridListBase from './SingleLineGridListBase';
+import TableUser from './TableUser';
 import TelebetTile from './TelebetTile';
+import WaitingUser from './WaitingUser';
 
 const styles = theme => ({
   root: {
@@ -13,8 +13,9 @@ const styles = theme => ({
     justifyContent: 'space-around',
     overflow: 'hidden',
     padding: '5px',
-    backgroundColor: '#E8E8E8',
-  }
+		backgroundColor: '#FFFFFF',
+		borderRadius: '10px'
+	}
 });
 
 const TelebetList = props => {
@@ -26,13 +27,11 @@ const TelebetList = props => {
 				<TelebetTile />
 			</GridListBase>
 			<br /><br />
-			<SingleGridListBase />
+			<TableUser />
+			<br /><br />
+			<WaitingUser />
 		</div>
 	);
 }
-
-TelebetList.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(TelebetList);

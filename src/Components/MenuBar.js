@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
+import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
 import DateTimeBadge from './DateTimeBadge';
@@ -48,9 +48,7 @@ const styles = theme => ({
 
 const TabContainer = props => {
   return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
+    <div>{props.children}</div>
   );
 };
 
@@ -84,9 +82,16 @@ class MenuBar extends React.Component {
             </Tabs>
           </Toolbar>
         </AppBar>
-        {value === 0 && <TabContainer>Item One</TabContainer>}
-        {value === 1 && <TabContainer><TelebetList /></TabContainer>}
-        {value === 2 && <TabContainer><TableList /></TabContainer>}
+
+        <Grid container>
+          <Grid item xs={9}>
+            {value === 0 && <TabContainer>Item One</TabContainer>}
+            {value === 1 && <TabContainer><TelebetList /></TabContainer>}
+            {value === 2 && <TabContainer><TableList /></TabContainer>} 
+          </Grid>
+          <Grid item xs={3}>
+          </Grid>
+        </Grid>
       </div>
     );
   }

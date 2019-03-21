@@ -12,7 +12,8 @@ const styles = {
 	card: {
 		borderRadius: '16px',
 		border: '3px solid #FD0100',
-		padding: '30px'
+		padding: '30px',
+		backgroundColor: '#F5F5F5'
 	},
 	cardContent: {
 		color: '#818181'

@@ -21,7 +21,7 @@ function TableList(props) {
 
   return (
     <div className={classes.root}>
-      <GridListBase>
+      <GridListBase bgColor="#E8E8E8">
 				<TableTile />
       </GridListBase>
     </div>

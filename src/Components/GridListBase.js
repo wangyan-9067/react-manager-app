@@ -13,8 +13,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    padding: '5px',
-    backgroundColor: '#E8E8E8',
+    padding: '5px'
   }
 });
 
@@ -52,7 +51,7 @@ const tileData = [
 ];
 
 function GridListBase(props) {
-	const { classes, children, width } = props;
+	const { classes, children, width, bgColor, customCols } = props;
 	let cols;
 	
 	switch(width) {
@@ -75,7 +74,7 @@ function GridListBase(props) {
 
   return (
     <div className={classes.root}>
-      <GridList cellHeight="auto" className={classes.GridListBase} cols={cols} spacing={16}>
+      <GridList cellHeight="auto" className={classes.GridListBase} cols={customCols || cols} spacing={16} style={{ bgColor }}>
         {tileData.map(tile => (
           <GridListTile key={tile.img} cols={tile.cols || 1}>
             { children }
