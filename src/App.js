@@ -26,16 +26,15 @@ import { VALUE_LENGTH } from './constants';
 import './App.css';
 
 const MANAGER_USERNAME = 'alice';
-const MANAGER_PASSWORD = 'alice';
+const MANAGER_PASSWORD = 'aliceTest';
 const voiceSocket = new VoiceSocket();
 
 class App extends React.Component {
   async componentDidMount() {
     voiceSocket.addEventListener(Socket.EVENT_OPEN, evt => {
       voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
-        bytes.writeUTFBytes(MANAGER_USERNAME);
-        bytes.position = VALUE_LENGTH.LOGIN_NAME;
-        bytes.writeUTFBytes(MANAGER_PASSWORD);
+        bytes.writeBytes(Socket.stringToBytes(MANAGER_USERNAME, VALUE_LENGTH.LOGIN_NAME));
+        bytes.writeBytes(Socket.stringToBytes(MANAGER_PASSWORD, VALUE_LENGTH.PASSWORD));
       }));
     });
     
