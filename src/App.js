@@ -5,15 +5,15 @@ import * as RTC from 'cube-rtc';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import VoiceSocket from './services/Voice/VoiceSocket';
+import VoiceSocket from './services/voice/VoiceSocket';
 import { MenuBar } from './components';
-import { 
+import {
   setVoiceAppId,
   setChannelList,
   setCurrentChannelId,
   setChannelJoinStatus
 } from './actions/voice';
-import { 
+import {
   MANAGER_LOGIN,
   MANAGER_LOGIN_R,
   CHANNEL_LIST_R,
@@ -37,7 +37,7 @@ class App extends React.Component {
         bytes.writeBytes(Socket.stringToBytes(MANAGER_PASSWORD, VALUE_LENGTH.PASSWORD));
       }));
     });
-    
+
     voiceSocket.addEventListener(Socket.EVENT_PACKET, evt => {
       if (evt.$type === Socket.EVENT_PACKET) {
         console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
@@ -49,7 +49,7 @@ class App extends React.Component {
             setVoiceAppId(evt.data.voiceAppId);
             RTC.init(evt.data.voiceAppId);
           break;
-          
+
           case CHANNEL_LIST_R:
             setChannelList(evt.data.channelList);
           break;
