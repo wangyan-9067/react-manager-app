@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
-import SingleGridListBase from './SingleLineGridListBase';
+import GridListBase from './GridListBase';
 import TableUserTile from './TableUserTile';
 
 const styles = theme => ({
@@ -22,9 +22,9 @@ const TableUser = props => {
 			<Typography color="inherit" align="left" className={classes.title}>
 				等候中玩家
 			</Typography>
-			<SingleGridListBase>
+			<GridListBase customCols={6}>
 				<TableUserTile />
-			</SingleGridListBase>
+			</GridListBase>
 		</div>
 	);
 };

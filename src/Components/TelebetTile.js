@@ -78,9 +78,9 @@ const EmptyCard = ({classes}) => {
 	);
 };
 
-const DisabledCard = ({classes, item, role}) => {
+const DisabledCard = ({classes, item, role, voiceAppId, leaveChannel}) => {
 	const { disabledCard, cardContent, cardContentText, client, cardActionButton } = classes;
-	const { clientName, clientBalance } = item;
+	const { clientName, clientBalance, channelId } = item;
 
 	return (
     <Card className={disabledCard}>
@@ -90,6 +90,9 @@ const DisabledCard = ({classes, item, role}) => {
       </CardContent>
       <CardActions>
         <Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled>接聽</Button>
+      </CardActions>
+      <CardActions>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, voiceAppId, leaveChannel) }}>離開</Button>
       </CardActions>
     </Card>
 	);
@@ -119,10 +122,10 @@ const TelebetTile = props => {
 	const { classes, voiceAppId, item, joinChannel, leaveChannel } = props;
 	const { anchorName, clientName, managerName, anchorState } = item;
 
-	const clientDealIn = clientName && !anchorName;
-	const anchorDealIn = clientName && anchorName && anchorState === USER_STATE.WAITING_MANAGER;
-	const nobodyDealIn = !clientName && !anchorName && !managerName;
-	const fullDesk = clientName && (anchorName || managerName);
+	let clientDealIn = clientName && !anchorName;
+	let anchorDealIn = clientName && anchorName && anchorState === USER_STATE.WAITING_MANAGER;
+	let nobodyDealIn = !clientName && !anchorName && !managerName;
+	let fullDesk = clientName && (anchorName || managerName);
 
 	let role;
 	let roleClass;
@@ -138,11 +141,16 @@ const TelebetTile = props => {
 		role = '主播';
 	}
 
+	clientDealIn = true;
+	anchorDealIn = false;
+	nobodyDealIn = false;
+	fullDesk = false;
+
 	if (nobodyDealIn || fullDesk) {
 		panel = <EmptyCard classes={classes} />; // Empty card
 	} else if (clientDealIn || anchorDealIn) {
 		if (managerName) {
-			panel = <DisabledCard classes={classes} item={item} role={role} />; // Disabled info card
+			panel = <DisabledCard classes={classes} item={item} role={role} voiceAppId={voiceAppId} leaveChannel={leaveChannel}/>; // Disabled info card
 		} else {
 			panel = <CallInfoCard classes={classes} item={item} role={role} roleClass={roleClass} voiceAppId={voiceAppId} joinChannel={joinChannel} leaveChannel={leaveChannel} /> // Call info card
 		}

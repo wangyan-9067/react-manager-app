@@ -5,12 +5,14 @@ import ManagerLoginResp from './responses/ManagerLoginResp';
 import ChannelListResp from './responses/ChannelListResp';
 import ChannelJoinResp from './responses/ChannelJoinResp';
 import ManagerActionResp from './responses/ManagerActionResp';
+import AnchorsOnDutyResp from './responses/AnchorsOnDutyResp';
 
 import { 
 	MANAGER_LOGIN_R, 
 	CHANNEL_LIST_R, 
 	CHANNEL_JOIN_R, 
-	MANAGER_ACTION_R 
+	MANAGER_ACTION_R,
+	ANCHORS_ON_DUTY_R
 } from '../../protocols';
 
 export default class VoiceSocket extends Socket.WebSocketBase {
@@ -31,5 +33,6 @@ export default class VoiceSocket extends Socket.WebSocketBase {
 		this.respClazzMap.set(CHANNEL_LIST_R, ChannelListResp);
 		this.respClazzMap.set(CHANNEL_JOIN_R, ChannelJoinResp);
 		this.respClazzMap.set(MANAGER_ACTION_R, ManagerActionResp);
+		this.respClazzMap.set(ANCHORS_ON_DUTY_R, AnchorsOnDutyResp);
 	}
 }
