@@ -1,0 +1,2 @@
+export const SET_VOICE_APP_ID = 'SET_VOICE_APP_ID';
+export const SET_CHANNEL_LIST = 'SET_CHANNEL_LIST';

@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 
 import GridListBase from './GridListBase';
@@ -19,12 +20,12 @@ const styles = theme => ({
 });
 
 const TelebetList = props => {
-	const { classes } = props;
+	const { classes, channelList, assignAnchor } = props;
 
 	return (
 		<div className={classes.root}>
-			<GridListBase>
-				<TelebetTile />
+			<GridListBase list={channelList}>
+				<TelebetTile sendAssignAnchorCMD={assignAnchor} />
 			</GridListBase>
 			<br /><br />
 			<TableUser />
@@ -34,4 +35,15 @@ const TelebetList = props => {
 	);
 }
 
-export default withStyles(styles)(TelebetList);
+const StyledTelebetList = withStyles(styles)(TelebetList);
+
+const mapStateToProps = state => {
+	const { voiceAppId, channelList } = state.voice;
+	
+  return ({
+		voiceAppId: voiceAppId,
+    channelList: channelList
+  });
+};
+
+export default connect(mapStateToProps, null)(StyledTelebetList);

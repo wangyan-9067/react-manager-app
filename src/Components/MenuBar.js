@@ -66,7 +66,7 @@ class MenuBar extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, assignAnchor } = this.props;
     const { value } = this.state;
 
     return (
@@ -86,11 +86,10 @@ class MenuBar extends React.Component {
         <Grid container>
           <Grid item xs={9}>
             {value === 0 && <TabContainer>Item One</TabContainer>}
-            {value === 1 && <TabContainer><TelebetList /></TabContainer>}
+            {value === 1 && <TabContainer><TelebetList assignAnchor={assignAnchor} /></TabContainer>}
             {value === 2 && <TabContainer><TableList /></TabContainer>} 
           </Grid>
-          <Grid item xs={3}>
-          </Grid>
+          <Grid item xs={3}></Grid>
         </Grid>
       </div>
     );

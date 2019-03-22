@@ -8,13 +8,29 @@ import GridListTile from '@material-ui/core/GridListTile';
 import image from '../sample-5.jpg';
 
 const styles = theme => ({
+	gridListRoot: {
+    display: 'flex',
+    padding: 0,
+    flexWrap: 'wrap',
+    overflowY: 'auto',
+		listStyle: 'none',
+		width: '100%'
+	},
   root: {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    padding: '5px'
-  }
+		padding: '5px',
+		width: '100%'
+	},
+	tile: {
+		top: 0,
+		left: 0,
+		width: '100%',
+		height: '100%',
+		backgroundColor: '#F5F5F5'
+	}
 });
 
 const tileData = [
@@ -51,7 +67,8 @@ const tileData = [
 ];
 
 function GridListBase(props) {
-	const { classes, children, width, bgColor, customCols } = props;
+	const { classes, children, width, bgColor, customCols, list } = props;
+	const data = list || tileData;
 	let cols;
 	
 	switch(width) {
@@ -74,10 +91,11 @@ function GridListBase(props) {
 
   return (
     <div className={classes.root}>
-      <GridList cellHeight="auto" className={classes.GridListBase} cols={customCols || cols} spacing={16} style={{ bgColor }}>
-        {tileData.map(tile => (
-          <GridListTile key={tile.img} cols={tile.cols || 1}>
-            { children }
+      <GridList cellHeight="auto" classes={{ root: classes.gridListRoot }} className={classes.GridListBase} cols={customCols || cols} spacing={16} style={{ bgColor }}>
+        {data.map(item => (
+          <GridListTile classes={{ tile: classes.tile }} key={item.img || ''} cols={item.cols || 1}>
+						{/* { children } */}
+						{ React.cloneElement(children, { item }) }
           </GridListTile>
         ))}
       </GridList>

@@ -55,14 +55,15 @@ const tileData = [
 ];
 
 const SingleLineGridListBase = props => {
-  const { classes } = props;
+  const { classes, children } = props;
 
   return (
     <div className={classes.root}>
-      <GridList className={classes.gridList} cols={2.5}>
+      <GridList cellHeight="auto" className={classes.gridList} cols={6} spacing={8}>
         {tileData.map(tile => (
           <GridListTile key={tile.img}>
-            {<img src={tile.img} alt={tile.title} />}
+            {/* {<img src={tile.img} alt={tile.title} />} */}
+            {children}
           </GridListTile>
         ))}
       </GridList>

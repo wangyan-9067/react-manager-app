@@ -9,11 +9,12 @@ const styles = {
 	card: {
 		borderRadius: '4px',
 		border: '1px solid #000000',
-		backgroundColor: '#F5F5F5'
+		backgroundColor: '#F5F5F5',
+		padding: '0 60px 0 0'
 	},
 	cardContent: {
 		color: '#818181',
-		padding: '5px',
+		textAlign: 'left'
 	},
 	cardContentText: {
 		fontSize: '16px'
