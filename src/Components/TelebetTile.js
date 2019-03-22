@@ -122,10 +122,10 @@ const TelebetTile = props => {
 	const { classes, voiceAppId, item, joinChannel, leaveChannel } = props;
 	const { anchorName, clientName, managerName, anchorState } = item;
 
-	let clientDealIn = clientName && !anchorName;
-	let anchorDealIn = clientName && anchorName && anchorState === USER_STATE.WAITING_MANAGER;
-	let nobodyDealIn = !clientName && !anchorName && !managerName;
-	let fullDesk = clientName && (anchorName || managerName);
+	const clientDealIn = clientName && !anchorName;
+	const anchorDealIn = clientName && anchorName && anchorState === USER_STATE.WAITING_MANAGER;
+	const nobodyDealIn = !clientName && !anchorName && !managerName;
+	const fullDesk = clientName && (anchorName || managerName);
 
 	let role;
 	let roleClass;
@@ -140,11 +140,6 @@ const TelebetTile = props => {
 		roleClass = 'anchor';
 		role = '主播';
 	}
-
-	clientDealIn = true;
-	anchorDealIn = false;
-	nobodyDealIn = false;
-	fullDesk = false;
 
 	if (nobodyDealIn || fullDesk) {
 		panel = <EmptyCard classes={classes} />; // Empty card
