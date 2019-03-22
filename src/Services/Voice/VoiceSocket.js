@@ -4,8 +4,14 @@ import * as Socket from 'cube-socket/live';
 import ManagerLoginResp from './responses/ManagerLoginResp';
 import ChannelListResp from './responses/ChannelListResp';
 import ChannelJoinResp from './responses/ChannelJoinResp';
+import ManagerActionResp from './responses/ManagerActionResp';
 
-import { MANAGER_LOGIN_R, CHANNEL_LIST_R, CHANNEL_JOIN_R } from '../../protocols';
+import { 
+	MANAGER_LOGIN_R, 
+	CHANNEL_LIST_R, 
+	CHANNEL_JOIN_R, 
+	MANAGER_ACTION_R 
+} from '../../protocols';
 
 export default class VoiceSocket extends Socket.WebSocketBase {
 	constructor() {
@@ -24,5 +30,6 @@ export default class VoiceSocket extends Socket.WebSocketBase {
 		this.respClazzMap.set(MANAGER_LOGIN_R, ManagerLoginResp);
 		this.respClazzMap.set(CHANNEL_LIST_R, ChannelListResp);
 		this.respClazzMap.set(CHANNEL_JOIN_R, ChannelJoinResp);
+		this.respClazzMap.set(MANAGER_ACTION_R, ManagerActionResp);
 	}
 }

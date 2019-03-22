@@ -1,8 +1,15 @@
-import { SET_VOICE_APP_ID, SET_CHANNEL_LIST } from '../types'
+import {
+	SET_VOICE_APP_ID,
+	SET_CHANNEL_LIST,
+	SET_CURRENT_CHANNEL_ID,
+	SET_CHANNEL_JOIN_STATUS
+} from '../types';
   
 const initialState = {
 	voiceAppId: null,
-	channelList: []
+	channelList: [],
+	currentChannelId: null,
+	channelJoinStatus: null
 };
 
 export default function voice(state = initialState, action) {
@@ -15,6 +22,13 @@ export default function voice(state = initialState, action) {
 			const channelList = action.list;
 			return { ...state, channelList };
 
+		case SET_CURRENT_CHANNEL_ID:
+			const currentChannelId = action.id;
+			return { ...state, currentChannelId };
+
+		case SET_CHANNEL_JOIN_STATUS:
+			const channelJoinStatus = action.code;
+			return { ...state, channelJoinStatus };
     default:
     	return state;
 	}

@@ -28,4 +28,3 @@ export const ANCHOR_DELETE_REQ = 0x0bb213;
 export const ANCHOR_DELETE_R = 0x0bb213;
 export const ANCHOR_ALL_QUERY_REQ = 0x0bb214;
 export const ANCHOR_ALL_QUERY_R = 0x0bb214;
-export const MANAGER_LEAVE = 0x0bb219;

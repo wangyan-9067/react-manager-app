@@ -9,15 +9,11 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import * as RTC from 'cube-rtc';
+// import * as RTC from 'cube-rtc';
 import { USER_STATE } from '../constants';
 import { formatAmount } from '../utils';
 
 const styles = {
-	tileRoot: {
-		minHeight: '250px',
-		borderRadius: '30px'
-	},
 	emptyCard: {
 		borderRadius: '16px',
 		border: '3px solid #F5F5F5',
@@ -66,13 +62,19 @@ const styles = {
 	}
 };
 
-const joinRoom = (channelId, voiceAppId) => {
-	RTC.joinRoom(channelId.toString(), voiceAppId);
+const joinRoom = (channelId, voiceAppId, joinChannel) => {
+	// RTC.joinRoom(channelId.toString(), voiceAppId);
+	joinChannel(channelId);
+};
+
+const leaveRoom = (channelId, voiceAppId, leaveChannel) => {
+	// RTC.joinRoom(channelId.toString(), voiceAppId);
+	leaveChannel(channelId);
 };
 
 const EmptyCard = ({classes}) => {
 	return (
-    <Card className={classes.emptyCard} classes={{ root: classes.tileRoot }} />
+    <Card className={classes.emptyCard} />
 	);
 };
 
@@ -81,7 +83,7 @@ const DisabledCard = ({classes, item, role}) => {
 	const { clientName, clientBalance } = item;
 
 	return (
-    <Card className={disabledCard} classes={{ root: classes.tileRoot }}>
+    <Card className={disabledCard}>
       <CardContent className={cardContent}>
 				<Typography color="inherit" className={classNames(cardContentText)}>{role} <span className={client}>{clientName}</span> 接入中</Typography>
 				<Typography color="inherit" className={cardContentText}>${formatAmount(clientBalance)}</Typography>
@@ -93,25 +95,28 @@ const DisabledCard = ({classes, item, role}) => {
 	);
 };
 
-const CallInfoCard = ({classes, item, role, roleClass, voiceAppId, sendAssignAnchorCMD}) => {
+const CallInfoCard = ({classes, item, role, roleClass, voiceAppId, joinChannel, leaveChannel}) => {
 	const { card, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientName, clientBalance, channelId } = item;
 
 	return (
     <Card className={card}>
-      <CardContent className={cardContent} classes={{ root: classes.tileRoot }}>
+      <CardContent className={cardContent}>
 				<Typography color="inherit" className={classNames(cardContentText, roleClass)}>{role} <span className={client}>{clientName}</span> 接入中</Typography>
 				<Typography color="inherit" className={cardContentText}>${formatAmount(clientBalance)}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, voiceAppId) }}>接聽</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, voiceAppId, joinChannel) }}>接聽</Button>
+      </CardActions>
+      <CardActions>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, voiceAppId, leaveChannel) }}>離開</Button>
       </CardActions>
     </Card>
 	);
 };
 
 const TelebetTile = props => {
-	const { classes, voiceAppId, item } = props;
+	const { classes, voiceAppId, item, joinChannel, leaveChannel } = props;
 	const { anchorName, clientName, managerName, anchorState } = item;
 
 	const clientDealIn = clientName && !anchorName;
@@ -139,10 +144,10 @@ const TelebetTile = props => {
 		if (managerName) {
 			panel = <DisabledCard classes={classes} item={item} role={role} />; // Disabled info card
 		} else {
-			panel = <CallInfoCard classes={classes} item={item} role={role} roleClass={roleClass} voiceAppId={voiceAppId} /> // Call info card
+			panel = <CallInfoCard classes={classes} item={item} role={role} roleClass={roleClass} voiceAppId={voiceAppId} joinChannel={joinChannel} leaveChannel={leaveChannel} /> // Call info card
 		}
 	}
-	
+
 	return (
 		<div>{panel}</div>
 	);

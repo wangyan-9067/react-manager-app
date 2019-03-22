@@ -7,8 +7,21 @@ import { connect } from 'react-redux';
 
 import VoiceSocket from './services/Voice/VoiceSocket';
 import { MenuBar } from './components';
-import { setVoiceAppId, setChannelList } from './actions/voice';
-import { MANAGER_LOGIN, MANAGER_LOGIN_R, CHANNEL_LIST_R } from './protocols';
+import { 
+  setVoiceAppId,
+  setChannelList,
+  setCurrentChannelId,
+  setChannelJoinStatus
+} from './actions/voice';
+import { 
+  MANAGER_LOGIN,
+  MANAGER_LOGIN_R,
+  CHANNEL_LIST_R,
+  CHANNEL_JOIN,
+  CHANNEL_JOIN_R,
+  MANAGER_ACTION,
+  MANAGER_ACTION_R
+} from './protocols';
 import { VALUE_LENGTH } from './constants';
 import './App.css';
 
@@ -30,7 +43,7 @@ class App extends React.Component {
       if (evt.$type === Socket.EVENT_PACKET) {
         console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-        const { setVoiceAppId, setChannelList } = this.props;
+        const { setVoiceAppId, setChannelList, voiceAppId, currentChannelId } = this.props;
 
         switch(evt.data.respId) {
           case MANAGER_LOGIN_R:
@@ -42,6 +55,20 @@ class App extends React.Component {
             setChannelList(evt.data.channelList);
           break;
 
+          case CHANNEL_JOIN_R:
+            setChannelJoinStatus(evt.data.code);
+
+            if (evt.data.code === 0) {
+              RTC.joinRoom(currentChannelId, voiceAppId);
+            }
+          break;
+
+          case MANAGER_ACTION_R:
+            if (evt.data.code === 0) {
+              RTC.leaveRoom();
+            }
+          break;
+
           default:
           break;
         }
@@ -51,26 +78,44 @@ class App extends React.Component {
     voiceSocket.autoConnect();
   }
 
+  joinChannel = channelId => {
+    this.props.setCurrentChannelId(channelId);
+
+    voiceSocket.writeBytes(Socket.createCMD(CHANNEL_JOIN, bytes => {
+      bytes.writeUnsignedInt(channelId);
+    }));
+  }
+
+  leaveChannel = channelId => {
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_ACTION, bytes => {
+      bytes.writeUnsignedInt(1);
+      bytes.writeUnsignedInt(channelId);
+    }));
+  }
+
   render() {
     return (
       <div className="App">
-        <MenuBar />
+        <MenuBar joinChannel={this.joinChannel} leaveChannel={this.leaveChannel} />
       </div>
     );
   }
 }
 
 const mapStateToProps = state => {
-  const { voiceAppId, channelList } = state.voice;
+  const { voiceAppId, channelList, currentChannelId } = state.voice;
   return ({
-    voiceAppId: voiceAppId,
-    channelList: channelList
+    voiceAppId,
+    channelList,
+    currentChannelId
   });
 };
 
 const mapDispatchToProps = dispatch => ({
   setVoiceAppId: id => dispatch(setVoiceAppId(id)),
-  setChannelList: list => dispatch(setChannelList(list))
+  setChannelList: list => dispatch(setChannelList(list)),
+  setCurrentChannelId: id => dispatch(setCurrentChannelId(id)),
+  setChannelJoinStatus: code => dispatch(setChannelJoinStatus(code))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

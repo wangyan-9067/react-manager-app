@@ -23,17 +23,18 @@ const styles = theme => ({
 		width: '100%',
 		height: '100%',
 		backgroundColor: '#F5F5F5',
-		borderRadius: '16px'
+		borderRadius: '16px',
+		minHeight: '200px'
 	}
 });
 
 const TelebetList = props => {
-	const { classes, channelList } = props;
+	const { classes, channelList, joinChannel, leaveChannel } = props;
 
 	return (
 		<div className={classes.root}>
 			<GridListBase list={channelList} tileClass={classes.tile}>
-				<TelebetTile />
+				<TelebetTile joinChannel={joinChannel} leaveChannel={leaveChannel} />
 			</GridListBase>
 			{/* <br /><br />
 			<TableUser /> */}
