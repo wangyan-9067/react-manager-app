@@ -29,8 +29,7 @@ const styles = theme => ({
 		left: 0,
 		width: '100%',
 		height: '100%',
-		backgroundColor: '#F5F5F5',
-		borderRadius: '16px'
+		backgroundColor: '#F5F5F5'
 	}
 });
 
@@ -68,7 +67,7 @@ const tileData = [
 ];
 
 function GridListBase(props) {
-	const { classes, children, width, bgColor, customCols, list } = props;
+	const { classes, children, width, bgColor, customCols, list, tileClass } = props;
 	const data = list || tileData;
 	let cols;
 	
@@ -102,7 +101,7 @@ function GridListBase(props) {
 			>
         {data.map(item => (
 					<GridListTile 
-						classes={{ tile: classes.tile }}
+						classes={{ tile: tileClass || classes.tile }}
 						key={item.img || ''}
 						cols={item.cols || 1}
 					>

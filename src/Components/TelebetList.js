@@ -16,6 +16,14 @@ const styles = theme => ({
     padding: '5px',
 		backgroundColor: '#FFFFFF',
 		borderRadius: '10px'
+	},
+	tile: {
+		top: 0,
+		left: 0,
+		width: '100%',
+		height: '100%',
+		backgroundColor: '#F5F5F5',
+		borderRadius: '16px'
 	}
 });
 
@@ -24,7 +32,7 @@ const TelebetList = props => {
 
 	return (
 		<div className={classes.root}>
-			<GridListBase list={channelList}>
+			<GridListBase list={channelList} tileClass={classes.tile}>
 				<TelebetTile />
 			</GridListBase>
 			{/* <br /><br />
