@@ -8,20 +8,13 @@ import { connect } from 'react-redux';
 import VoiceSocket from './services/Voice/VoiceSocket';
 import { MenuBar } from './components';
 import { setVoiceAppId, setChannelList } from './actions/voice';
-import { MANAGER_LOGIN, MANAGER_LOGIN_R, CHANNEL_LIST_R, ASSIGN_ANCHOR_TO_CHANNEL } from './protocols';
+import { MANAGER_LOGIN, MANAGER_LOGIN_R, CHANNEL_LIST_R } from './protocols';
 import { VALUE_LENGTH } from './constants';
 import './App.css';
 
 const MANAGER_USERNAME = 'alice';
 const MANAGER_PASSWORD = 'alice';
 const voiceSocket = new VoiceSocket();
-
-const assignAnchor = (channelId, anchor) => {
-  voiceSocket.writeBytes(Socket.createCMD(ASSIGN_ANCHOR_TO_CHANNEL, bytes => {
-    bytes.writeUnsignedInt(channelId);
-    bytes.writeUTFBytes(anchor);
-  }));
-}
 
 class App extends React.Component {
   async componentDidMount() {
@@ -61,7 +54,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <MenuBar assignAnchor={assignAnchor}/>
+        <MenuBar />
       </div>
     );
   }

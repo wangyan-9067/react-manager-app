@@ -29,7 +29,8 @@ const styles = theme => ({
 		left: 0,
 		width: '100%',
 		height: '100%',
-		backgroundColor: '#F5F5F5'
+		backgroundColor: '#F5F5F5',
+		borderRadius: '16px'
 	}
 });
 
@@ -91,9 +92,20 @@ function GridListBase(props) {
 
   return (
     <div className={classes.root}>
-      <GridList cellHeight="auto" classes={{ root: classes.gridListRoot }} className={classes.GridListBase} cols={customCols || cols} spacing={16} style={{ bgColor }}>
+			<GridList 
+				cellHeight="auto"
+				classes={{ root: classes.gridListRoot }}
+				className={classes.GridListBase}
+				cols={customCols || cols}
+				spacing={16}
+				style={{ bgColor }}
+			>
         {data.map(item => (
-          <GridListTile classes={{ tile: classes.tile }} key={item.img || ''} cols={item.cols || 1}>
+					<GridListTile 
+						classes={{ tile: classes.tile }}
+						key={item.img || ''}
+						cols={item.cols || 1}
+					>
 						{/* { children } */}
 						{ React.cloneElement(children, { item }) }
           </GridListTile>

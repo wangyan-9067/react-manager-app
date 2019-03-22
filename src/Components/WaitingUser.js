@@ -18,7 +18,7 @@ const TableUser = props => {
 	const { classes } = props;
 
 	return (
-		<div>
+		<div style={{ width: '100%' }}>
 			<Typography color="inherit" align="left" className={classes.title}>
 				等候中玩家
 			</Typography>

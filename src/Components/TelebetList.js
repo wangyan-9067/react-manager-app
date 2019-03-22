@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 
 import GridListBase from './GridListBase';
-import TableUser from './TableUser';
+// import TableUser from './TableUser';
 import TelebetTile from './TelebetTile';
 import WaitingUser from './WaitingUser';
 
@@ -20,15 +20,15 @@ const styles = theme => ({
 });
 
 const TelebetList = props => {
-	const { classes, channelList, assignAnchor } = props;
+	const { classes, channelList } = props;
 
 	return (
 		<div className={classes.root}>
 			<GridListBase list={channelList}>
-				<TelebetTile sendAssignAnchorCMD={assignAnchor} />
+				<TelebetTile />
 			</GridListBase>
-			<br /><br />
-			<TableUser />
+			{/* <br /><br />
+			<TableUser /> */}
 			<br /><br />
 			<WaitingUser />
 		</div>
