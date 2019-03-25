@@ -43,12 +43,17 @@ const styles = theme => ({
   },
   grow: {
     flexGrow: 0.3,
+  },
+  tabContainer: {
+    margin: '10px'
   }
 });
 
 const TabContainer = props => {
+  const { classes } = props;
+
   return (
-    <div>{props.children}</div>
+    <div className={classes.tabContainer}>{props.children}</div>
   );
 };
 
@@ -66,7 +71,7 @@ class MenuBar extends React.Component {
   };
 
   render() {
-    const { classes, joinChannel, leaveChannel } = this.props;
+    const { classes, joinChannel, leaveChannel, assignTableToChannel, toggleMuteChannel } = this.props;
     const { value } = this.state;
 
     return (
@@ -85,9 +90,18 @@ class MenuBar extends React.Component {
 
         <Grid container>
           <Grid item xs={9}>
-            {value === 0 && <TabContainer>Item One</TabContainer>}
-            {value === 1 && <TabContainer><TelebetList joinChannel={joinChannel} leaveChannel={leaveChannel} /></TabContainer>}
-            {value === 2 && <TabContainer><TableList /></TabContainer>} 
+            {value === 0 && <TabContainer classes={classes}>Item One</TabContainer>}
+            {value === 1 && (
+              <TabContainer classes={classes}>
+                <TelebetList 
+                  joinChannel={joinChannel} 
+                  leaveChannel={leaveChannel} 
+                  assignTableToChannel={assignTableToChannel} 
+                  toggleMuteChannel={toggleMuteChannel} 
+                />
+              </TabContainer>
+            )}
+            {value === 2 && <TabContainer classes={classes}><TableList /></TabContainer>} 
           </Grid>
           <Grid item xs={3}></Grid>
         </Grid>

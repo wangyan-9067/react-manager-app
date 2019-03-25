@@ -11,7 +11,8 @@ import {
   setVoiceAppId,
   setChannelList,
   setCurrentChannelId,
-  setChannelJoinStatus
+  setChannelJoinStatus,
+  setIsAnswerCall
 } from './actions/voice';
 import {
   MANAGER_LOGIN,
@@ -20,14 +21,22 @@ import {
   CHANNEL_JOIN,
   CHANNEL_JOIN_R,
   MANAGER_ACTION,
-  MANAGER_ACTION_R
+  MANAGER_ACTION_R,
+  ASSIGN_TABLE_TO_CHANNEL
 } from './protocols';
-import { VALUE_LENGTH } from './constants';
+import { VALUE_LENGTH, MANAGER_ACTIONS, MUTE_STATE } from './constants';
 import './App.css';
 
 const MANAGER_USERNAME = 'alice';
 const MANAGER_PASSWORD = 'aliceTest';
 const voiceSocket = new VoiceSocket();
+
+const sendManagerAction = (action, channelId) => {
+  voiceSocket.writeBytes(Socket.createCMD(MANAGER_ACTION, bytes => {
+    bytes.writeUnsignedInt(action);
+    bytes.writeUnsignedInt(channelId);
+  }));
+};
 
 class App extends React.Component {
   async componentDidMount() {
@@ -38,11 +47,11 @@ class App extends React.Component {
       }));
     });
 
-    voiceSocket.addEventListener(Socket.EVENT_PACKET, evt => {
+    voiceSocket.addEventListener(Socket.EVENT_PACKET, async (evt) => {
       if (evt.$type === Socket.EVENT_PACKET) {
         console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-        const { setVoiceAppId, setChannelList, voiceAppId, currentChannelId } = this.props;
+        const { setVoiceAppId, setChannelList, voiceAppId, currentChannelId, setChannelJoinStatus, setIsAnswerCall } = this.props;
 
         switch(evt.data.respId) {
           case MANAGER_LOGIN_R:
@@ -55,16 +64,30 @@ class App extends React.Component {
           break;
 
           case CHANNEL_JOIN_R:
-            setChannelJoinStatus(evt.data.code);
+            const { code: joinStatus } = evt.data;
 
-            if (evt.data.code === 0) {
-              RTC.joinRoom(currentChannelId, voiceAppId);
+            setChannelJoinStatus(joinStatus);
+            setIsAnswerCall(joinStatus === 0 ? true : false);
+
+            if (joinStatus === 0) {
+              await RTC.joinRoom(currentChannelId, voiceAppId);
+              sendManagerAction(MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
             }
           break;
 
           case MANAGER_ACTION_R:
-            if (evt.data.code === 0) {
-              RTC.leaveRoom();
+            const { code: actionStatus, action } = evt.data;
+
+            if (actionStatus === 0) {
+              switch(action) {
+                case MANAGER_ACTIONS.LEAVE_CHANNEL:
+                  RTC.leaveRoom();
+                  setIsAnswerCall(false);
+                break;
+
+                default:
+                break;
+              }
             }
           break;
 
@@ -72,6 +95,14 @@ class App extends React.Component {
           break;
         }
       }
+    });
+
+    voiceSocket.addEventListener(Socket.EVENT_CLOSE, () => {
+      RTC.leaveRoom();
+    });
+
+    voiceSocket.addEventListener(Socket.EVENT_DIE, () => {
+      RTC.leaveRoom();
     });
 
     voiceSocket.autoConnect();
@@ -86,16 +117,39 @@ class App extends React.Component {
   }
 
   leaveChannel = channelId => {
-    voiceSocket.writeBytes(Socket.createCMD(MANAGER_ACTION, bytes => {
-      bytes.writeUnsignedInt(1);
+    sendManagerAction(MANAGER_ACTIONS.LEAVE_CHANNEL, channelId);
+  }
+
+  assignTableToChannel = (channelId, vid) => {
+    voiceSocket.writeBytes(Socket.createCMD(ASSIGN_TABLE_TO_CHANNEL, bytes => {
       bytes.writeUnsignedInt(channelId);
+      bytes.writeBytes(Socket.stringToBytes(vid, VALUE_LENGTH.VID));
     }));
+  }
+
+  toggleMuteChannel = (channelId, isAnchor, muteState) => {
+    const { MUTE_ANCHOR, UNMUTE_ANCHOR, MUTE_CLIENT, UNMUTE_CLIENT } = MANAGER_ACTIONS;
+    const { MUTE } = MUTE_STATE;
+    let action;
+
+    if (isAnchor) {
+      action = muteState === MUTE ? MUTE_ANCHOR : UNMUTE_ANCHOR;
+    } else {
+      action = muteState === MUTE ? MUTE_CLIENT : UNMUTE_CLIENT;
+    }
+
+    sendManagerAction(action, channelId);
   }
 
   render() {
     return (
       <div className="App">
-        <MenuBar joinChannel={this.joinChannel} leaveChannel={this.leaveChannel} />
+        <MenuBar 
+          joinChannel={this.joinChannel}
+          leaveChannel={this.leaveChannel}
+          assignTableToChannel={this.assignTableToChannel}
+          toggleMuteChannel={this.toggleMuteChannel}
+        />
       </div>
     );
   }
@@ -114,7 +168,8 @@ const mapDispatchToProps = dispatch => ({
   setVoiceAppId: id => dispatch(setVoiceAppId(id)),
   setChannelList: list => dispatch(setChannelList(list)),
   setCurrentChannelId: id => dispatch(setCurrentChannelId(id)),
-  setChannelJoinStatus: code => dispatch(setChannelJoinStatus(code))
+  setChannelJoinStatus: code => dispatch(setChannelJoinStatus(code)),
+  setIsAnswerCall: answer => dispatch(setIsAnswerCall(answer))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

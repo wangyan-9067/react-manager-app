@@ -9,7 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-// import * as RTC from 'cube-rtc';
+import { setIsAnchorCall } from '../actions/voice';
 import { USER_STATE } from '../constants';
 import { formatAmount } from '../utils';
 
@@ -32,13 +32,19 @@ const styles = {
 		padding: '30px',
 		backgroundColor: '#F5F5F5'
 	},
+	anchorCard: {
+		borderRadius: '16px',
+		border: '3px solid #3970B0',
+		padding: '30px',
+		backgroundColor: '#F5F5F5'
+	},
 	cardContent: {
 		color: '#818181'
 	},
 	cardActionButton: {
 		margin: '0 auto',
 		padding: '3px 40px',
-		borderRadius: '10px',
+		borderRadius: '60px',
 		fontSize: '20px',
 		fontWeight: 'bold',
 		color: '#FFFFFF',
@@ -62,15 +68,18 @@ const styles = {
 	}
 };
 
-const joinRoom = (channelId, voiceAppId, joinChannel) => {
-	// RTC.joinRoom(channelId.toString(), voiceAppId);
+const joinRoom = (channelId, joinChannel, isAnchor) => {
+	setIsAnchorCall(isAnchor);
 	joinChannel(channelId);
 };
 
-const leaveRoom = (channelId, voiceAppId, leaveChannel) => {
-	// RTC.joinRoom(channelId.toString(), voiceAppId);
+const leaveRoom = (channelId, leaveChannel) => {
 	leaveChannel(channelId);
 };
+
+const assignTable = (channelId, assignTableToChannel) => {
+	assignTableToChannel(channelId, 'V01');
+}
 
 const EmptyCard = ({classes}) => {
 	return (
@@ -78,76 +87,116 @@ const EmptyCard = ({classes}) => {
 	);
 };
 
-const DisabledCard = ({classes, item, role, voiceAppId, leaveChannel}) => {
+const DisabledCard = ({classes, item, role, roleName, voiceAppId, leaveChannel, assignTableToChannel}) => {
 	const { disabledCard, cardContent, cardContentText, client, cardActionButton } = classes;
-	const { clientName, clientBalance, channelId } = item;
+	const { clientBalance, channelId } = item;
 
 	return (
     <Card className={disabledCard}>
       <CardContent className={cardContent}>
-				<Typography color="inherit" className={classNames(cardContentText)}>{role} <span className={client}>{clientName}</span> 接入中</Typography>
+				<Typography color="inherit" className={classNames(cardContentText)}>{role} <span className={client}>{roleName}</span> 接入中</Typography>
 				<Typography color="inherit" className={cardContentText}>${formatAmount(clientBalance)}</Typography>
       </CardContent>
       <CardActions>
         <Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled>接聽</Button>
       </CardActions>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, voiceAppId, leaveChannel) }}>離開</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, leaveChannel) }}>離開</Button>
+      </CardActions>
+      <CardActions>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { assignTable(channelId, assignTableToChannel) }}>配對</Button>
       </CardActions>
     </Card>
 	);
 };
 
-const CallInfoCard = ({classes, item, role, roleClass, voiceAppId, joinChannel, leaveChannel}) => {
-	const { card, cardContent, cardContentText, client, cardActionButton } = classes;
-	const { clientName, clientBalance, channelId } = item;
+const CallInfoCard = ({classes, item, isAnchor, role, roleName, cardClass, roleClass, joinChannel, leaveChannel, assignTableToChannel}) => {
+	const { cardContent, cardContentText, client, cardActionButton } = classes;
+	const { clientBalance, channelId } = item;
 
 	return (
-    <Card className={card}>
+    <Card className={classes[cardClass]}>
       <CardContent className={cardContent}>
-				<Typography color="inherit" className={classNames(cardContentText, roleClass)}>{role} <span className={client}>{clientName}</span> 接入中</Typography>
+				<Typography color="inherit" className={classNames(cardContentText, classes[roleClass])}>{role} <span className={client}>{roleName}</span> 接入中</Typography>
 				<Typography color="inherit" className={cardContentText}>${formatAmount(clientBalance)}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, voiceAppId, joinChannel) }}>接聽</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, isAnchor) }}>接聽</Button>
       </CardActions>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, voiceAppId, leaveChannel) }}>離開</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, leaveChannel) }}>離開</Button>
+      </CardActions>
+      <CardActions>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { assignTable(channelId, assignTableToChannel) }}>配對</Button>
       </CardActions>
     </Card>
 	);
 };
 
 const TelebetTile = props => {
-	const { classes, voiceAppId, item, joinChannel, leaveChannel } = props;
-	const { anchorName, clientName, managerName, anchorState } = item;
+	const { classes, voiceAppId, item, joinChannel, leaveChannel, assignTableToChannel } = props;
+	const { anchorName, clientName, managerName, anchorState, clientState, vid } = item;
+	const { WAITING_MANAGER, CONNECTED } = USER_STATE;
 
-	const clientDealIn = clientName && !anchorName;
-	const anchorDealIn = clientName && anchorName && anchorState === USER_STATE.WAITING_MANAGER;
+	const clientDealIn = clientName && !anchorName && clientState === CONNECTED;
+	const anchorDealIn = clientName && anchorName && anchorState === WAITING_MANAGER;
 	const nobodyDealIn = !clientName && !anchorName && !managerName;
-	const fullDesk = clientName && (anchorName || managerName);
+	// const fullDesk = clientName && (anchorName || managerName) && clientState === CONNECTED && (anchorState === CONNECTED || managerState === CONNECTED);
+
+	// TODO cases:
+	// 1) 玩家主播遊戲中
+	// 2) 經理斷線重連
 
 	let role;
 	let roleClass;
+	let roleName;
+	let cardClass;
 	let panel;
 
 	if (clientDealIn) {
+		cardClass = 'card';
 		roleClass = 'player';
 		role = '玩家';
+		roleName = clientName;
 	}
 
 	if (anchorDealIn) {
+		cardClass = 'anchorCard';
 		roleClass = 'anchor';
 		role = '主播';
+		roleName = `${anchorName} ${vid}`;
 	}
 
-	if (nobodyDealIn || fullDesk) {
-		panel = <EmptyCard classes={classes} />; // Empty card
+	if (nobodyDealIn) {
+		panel = <EmptyCard classes={classes} />;
 	} else if (clientDealIn || anchorDealIn) {
 		if (managerName) {
-			panel = <DisabledCard classes={classes} item={item} role={role} voiceAppId={voiceAppId} leaveChannel={leaveChannel}/>; // Disabled info card
+			panel = (
+				<DisabledCard
+					classes={classes}
+					item={item}
+					role={role}
+					roleName={roleName}
+					voiceAppId={voiceAppId}
+					leaveChannel={leaveChannel}
+					assignTableToChannel={assignTableToChannel}
+				/>
+			);
 		} else {
-			panel = <CallInfoCard classes={classes} item={item} role={role} roleClass={roleClass} voiceAppId={voiceAppId} joinChannel={joinChannel} leaveChannel={leaveChannel} /> // Call info card
+			panel = (
+				<CallInfoCard 
+					classes={classes}
+					item={item}
+					isAnchor={anchorDealIn}
+					role={role}
+					roleName={roleName}
+					cardClass={cardClass}
+					roleClass={roleClass}
+					joinChannel={joinChannel}
+					leaveChannel={leaveChannel}
+					assignTableToChannel={assignTableToChannel}
+				/>
+			);
 		}
 	}
 
@@ -166,9 +215,13 @@ const mapStateToProps = state => {
 	const { voiceAppId, channelList } = state.voice;
 	
   return ({
-		voiceAppId: voiceAppId,
-    channelList: channelList
+		voiceAppId,
+		channelList
   });
 };
 
-export default connect(mapStateToProps, null)(StyledTelebetTile);
+const mapDispatchToProps = dispatch => ({
+  setIsAnchorCall: isAnchor => dispatch(setIsAnchorCall(isAnchor))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(StyledTelebetTile);

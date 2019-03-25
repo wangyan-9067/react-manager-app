@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 import GridListBase from './GridListBase';
-import TableUserTile from './TableUserTile';
+import WaitingUserTile from './WaitingUserTile';
 
 const styles = theme => ({
 	title: {
@@ -23,7 +23,7 @@ const TableUser = props => {
 				等候中玩家
 			</Typography>
 			<GridListBase customCols={6}>
-				<TableUserTile />
+				<WaitingUserTile />
 			</GridListBase>
 		</div>
 	);
