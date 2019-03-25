@@ -5,7 +5,7 @@ import * as RTC from 'cube-rtc';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import VoiceSocket from './services/voice/VoiceSocket';
+import VoiceSocket from './services/Voice/VoiceSocket';
 import { MenuBar } from './components';
 import {
   setVoiceAppId,
