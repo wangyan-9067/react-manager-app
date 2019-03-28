@@ -71,7 +71,15 @@ class MenuBar extends React.Component {
   };
 
   render() {
-    const { classes, joinChannel, leaveChannel, assignTableToChannel, toggleMuteChannel } = this.props;
+    const { 
+      classes, 
+      joinChannel,
+      leaveChannel,
+      assignTableToChannel,
+      toggleMuteChannel,
+      kickoutClient,
+      blacklistClient
+    } = this.props;
     const { value } = this.state;
 
     return (
@@ -97,7 +105,9 @@ class MenuBar extends React.Component {
                   joinChannel={joinChannel} 
                   leaveChannel={leaveChannel} 
                   assignTableToChannel={assignTableToChannel} 
-                  toggleMuteChannel={toggleMuteChannel} 
+                  toggleMuteChannel={toggleMuteChannel}
+                  kickoutClient={kickoutClient}
+                  blacklistClient={blacklistClient}
                 />
               </TabContainer>
             )}

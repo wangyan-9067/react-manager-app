@@ -1,13 +1,20 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import CallEndIcon from '@material-ui/icons/CallEnd';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 import GridListBase from './GridListBase';
 // import TableUser from './TableUser';
@@ -57,6 +64,9 @@ const styles = theme => ({
 		color: '#FFFFFF',
 		padding: '30px 0'
 	},
+	answerCallPanelLeftAnchor: {
+		backgroundColor: '#1779E6'
+	},
 	answerCallPanelLeftText: {
     fontWeight: 'bold',
     fontSize: '2rem'
@@ -83,8 +93,8 @@ const styles = theme => ({
 		padding: '10px'
 	},
 	actionButton: {
-    margin: '0 10px',
-    padding: '3px 40px',
+    margin: '0 5px',
+    padding: '3px 20px',
 		borderRadius: '60px',
 		fontSize: '1.5rem',
 		fontWeight: 'bold',
@@ -95,11 +105,25 @@ const styles = theme => ({
       borderColor: '#0F58A7',
     }
 	},
+	mutingButton: {
+		backgroundColor: '#FD0100',
+    '&:hover': {
+      backgroundColor: '#FD0100',
+      borderColor: '#FD0100',
+    }
+	},
 	blacklistButton: {
 		backgroundColor: '#4A4B4F',
     '&:hover': {
       backgroundColor: '#4A4B4F',
       borderColor: '#4A4B4F',
+    }
+	},
+	cancelButton: {
+		backgroundColor: '#AAAAAA',
+    '&:hover': {
+      backgroundColor: '#AAAAAA',
+      borderColor: '#AAAAAA',
     }
 	},
 	separator: {
@@ -112,26 +136,54 @@ const styles = theme => ({
   icon: {
     marginRight: theme.spacing.unit,
     fontSize: 32
-  }
+	},
+	dialogPaper: {
+		width: '100%'
+	},
+	dialogActionButton: {
+		fontSize: '1.125rem',
+	},
+	dialogTitle: {
+		color: '#7B7B7B',
+		fontSize: '1.25rem',
+		fontWeight: 'bold'
+	},
+	dialogActionsRoot: {
+		borderTop: '1px solid #C8C8C8',
+    paddingTop: '10px',
+    justifyContent: 'center'
+	},
+	dialogActionsRootNoBorder: {
+    paddingTop: '10px',
+    justifyContent: 'center'
+	},
+	dialogContent: {
+		fontWeight: 'bold',
+		fontSize: '1.125rem',
+		textAlign: 'center',
+		color: '#7E7E7E'
+	},
+	show: {
+		display: 'inline-flex'
+	},
+	hide: {
+		display: 'none'
+	}
 });
 
-const toggleMuteRoom = (channelId, toggleMuteChannel, isAnchor, isMute) => {
-	toggleMuteChannel(channelId, isAnchor, isMute);
-}
-
-const leaveRoom = (channelId, leaveChannel) => {
-	leaveChannel(channelId);
+const changeTable = (event, table, setTableAssigned) => {
+	setTableAssigned(table);
 };
 
-const assignTable = (channelId, assignTableToChannel) => {
-	assignTableToChannel(channelId, 'V01');
-}
+const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, leaveChannel, assignTableToChannel, toggleMuteChannel, kickoutClient, blacklistClient}) => {
+	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
+	const [tableAssigned, setTableAssigned] = useState('V1');
+	const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
+	const [openBlacklistDialog, setOpenBlacklistDialog] = useState(false);
 
-const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, leaveChannel, assignTableToChannel, toggleMuteChannel}) => {
 	const { 
 		answerCallPanel, 
-		answerCallPanelLeftRoot, 
-		answerCallPanelLeft, 
+		answerCallPanelLeftRoot,
 		answerCallPanelLeftText, 
 		answerCallPanelRightRoot, 
 		answerCallPanelRight, 
@@ -139,7 +191,13 @@ const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, 
 		answerCallPanelRightTextValue,
 		actionButton,
 		blacklistButton,
-		icon
+		icon,
+		dialogPaper,
+		dialogActionButton,
+		dialogTitle,
+		dialogActionsRoot,
+		dialogActionsRootNoBorder,
+		dialogContent
 	} = classes;
 	const { MUTE, UNMUTE } = MUTE_STATE;
 	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
@@ -147,26 +205,44 @@ const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, 
 
 	let line1Text;
 	let line2Text;
-	let currentMuteStatus;
+	let clientMuteStatusTextDisplay;
+	let anchorMuteStatusTextDisplay;
 
 	if (isAnchorCall) {
-		line1Text = `與${vid}`;
-		line2Text = `玩家${clientName} 主播${anchorName}`;
-		currentMuteStatus = anchorMute;
+		line1Text = `與 ${vid}`;
+		line2Text = `玩家 ${clientName} 主播 ${anchorName}`;
 	} else {
 		line1Text = '與玩家';
 		line2Text = clientName;
-		currentMuteStatus = clientMute;
 	}
+
+	clientMuteStatusTextDisplay = clientMute === MUTE ? '(玩家靜音中)' : '';
+	anchorMuteStatusTextDisplay = anchorMute === MUTE ? '(主播靜音中)' : '';
+
+	const answerCallPanelClass = classNames.bind(classes);
+	const clientMuteButtonClass = answerCallPanelClass({
+		actionButton: true,
+		mutingButton: clientMute === MUTE
+	});
+	const anchorMuteButtonClass = answerCallPanelClass({
+		actionButton: true,
+		mutingButton: anchorMute === MUTE,
+		show: isAnchorCall,
+		hide: !isAnchorCall
+	});
+	const answerCallPanelLeftClass = answerCallPanelClass({
+		answerCallPanelLeft: true,
+		answerCallPanelLeftAnchor: isAnchorCall
+	});
 
 	return (
 		<Fragment>
 			<div className={answerCallPanel}>
 				<Card classes={{ root: answerCallPanelLeftRoot }}>
-					<CardContent className={answerCallPanelLeft}>
+					<CardContent className={answerCallPanelLeftClass}>
 						<Typography color="inherit" className={answerCallPanelLeftText}>{line1Text}</Typography>
 						<Typography color="inherit" className={answerCallPanelLeftText}>{line2Text}</Typography>
-						<Typography color="inherit" className={answerCallPanelLeftText}>通訊中...</Typography>
+						<Typography color="inherit" className={answerCallPanelLeftText}>通訊中...  {clientMuteStatusTextDisplay}{anchorMuteStatusTextDisplay}</Typography>
 					</CardContent>
 				</Card>
 				<Card classes={{ root: answerCallPanelRightRoot }}>
@@ -174,22 +250,88 @@ const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, 
 						<Typography color="inherit" className={answerCallPanelRightText}><span>玩家:</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>餘額:</span><span className={answerCallPanelRightTextValue}>{formatAmount(clientBalance)}</span></Typography>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>桌號:</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
-						<Typography color="inherit" className={answerCallPanelRightText}><span>備註:</span><span className={answerCallPanelRightTextValue}></span></Typography>
 					</CardContent>
 				</Card>
 			</div>
 			<div>
-				<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { toggleMuteRoom(currentChannelId, toggleMuteChannel, isAnchorCall, currentMuteStatus === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>玩家靜音</Button>
-				<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { leaveRoom(currentChannelId, leaveChannel) }}><CallEndIcon className={icon} />掛斷</Button>
-				<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { assignTable(currentChannelId, assignTableToChannel) }}>配對</Button>
-				<Button variant="contained" size="medium" color="inherit" className={actionButton}>備註</Button>
-				<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blacklistButton)}>列入黑名單</Button>
+				<Button variant="contained" size="medium" color="inherit" className={clientMuteButtonClass} onClick={() => { toggleMuteChannel(currentChannelId, false, clientMute === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>玩家靜音</Button>
+				<Button variant="contained" size="medium" color="inherit" className={anchorMuteButtonClass} onClick={() => { toggleMuteChannel(currentChannelId, true, anchorMute === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>主播靜音</Button>
+				<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { leaveChannel(currentChannelId) }}><CallEndIcon className={icon} />掛斷</Button>
+				<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { setOpenAssignTableDialog(true) }}>配對</Button>
+				<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { setOpenKickoutClientDialog(true) }}>踢走玩家</Button>
+				<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blacklistButton)} onClick={() => { setOpenBlacklistDialog(true) }}>列入黑名單</Button>
 			</div>
+			{ /** Assign Table Dialog*/ }
+			<Dialog
+				open={openAssignTableDialog}
+				onClose={() => { setOpenAssignTableDialog(false)}}
+				aria-labelledby="responsive-dialog-title"
+				classes={{ paper: dialogPaper }}
+			>
+				<DialogTitle id="responsive-dialog-title">
+					<Typography color="inherit" className={dialogTitle}>選擇桌台</Typography>
+				</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						<ToggleButtonGroup 
+							value={tableAssigned}
+							exclusive
+							onChange={(event, table) => {
+								if (!table) {
+									table = tableAssigned;
+								}
+								changeTable(event, table, setTableAssigned); 
+							}}
+						>
+							<ToggleButton value="V1">
+								<Typography color="inherit">V1</Typography>
+							</ToggleButton>
+							<ToggleButton value="V2">
+								<Typography color="inherit">V2</Typography>
+							</ToggleButton>
+						</ToggleButtonGroup>
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions classes={{ root: dialogActionsRoot }}>
+					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { assignTableToChannel(currentChannelId, tableAssigned); setOpenAssignTableDialog(false); }}>確定</Button>
+					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenAssignTableDialog(false) }}>取消</Button>
+				</DialogActions>
+			</Dialog>
+			{ /** Kickout Client Dialog*/ }
+			<Dialog
+				open={openKickoutClientDialog}
+				onClose={() => { setOpenKickoutClientDialog(false)}}
+				aria-labelledby="responsive-dialog-title"
+				classes={{ paper: dialogPaper }}
+			>
+				<DialogContent>
+					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}踢出桌台嗎?</Typography></DialogContentText>
+				</DialogContent>
+				<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
+					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { kickoutClient(currentChannelId); setOpenKickoutClientDialog(false); }}>確定</Button>
+					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenKickoutClientDialog(false) }}>取消</Button>
+				</DialogActions>
+			</Dialog>
+			{ /** Blacklist Dialog*/ }
+			<Dialog
+				open={openBlacklistDialog}
+				onClose={() => { setOpenBlacklistDialog(false)}}
+				aria-labelledby="responsive-dialog-title"
+				classes={{ paper: dialogPaper }}
+			>
+				<DialogContent>
+					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}列入黑名單嗎?</Typography></DialogContentText>
+				</DialogContent>
+				<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
+					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { blacklistClient(currentChannelId); setOpenBlacklistDialog(false); }}>確定</Button>
+					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenBlacklistDialog(false) }}>取消</Button>
+				</DialogActions>
+			</Dialog>
 		</Fragment>
 	);
 };
 
-const TelebetList = props => {
+const TelebetList = props => {	
 	const { 
 		classes,
 		channelList,
@@ -199,7 +341,10 @@ const TelebetList = props => {
 		isAnswerCall,
 		isAnchorCall,
 		currentChannelId,
-		toggleMuteChannel
+		toggleMuteChannel,
+		kickoutClient,
+		blacklistClient,
+		waitingList
 	} = props;
 	const { separator } = classes;
 
@@ -231,6 +376,8 @@ const TelebetList = props => {
 				leaveChannel={leaveChannel}
 				assignTableToChannel={assignTableToChannel}
 				toggleMuteChannel={toggleMuteChannel}
+				kickoutClient={kickoutClient}
+				blacklistClient={blacklistClient}
 			/>
 		);
 	} else {
@@ -245,7 +392,7 @@ const TelebetList = props => {
 		<div className={classList}>
 			{ panel }
 			<div className={separator} />
-			<WaitingUser />
+			<WaitingUser waitingList={waitingList} />
 		</div>
 	);
 }
@@ -253,14 +400,22 @@ const TelebetList = props => {
 const StyledTelebetList = withStyles(styles)(TelebetList);
 
 const mapStateToProps = state => {
-	const { voiceAppId, channelList, currentChannelId, isAnswerCall, isAnchorCall } = state.voice;
+	const { 
+		voiceAppId,
+		channelList,
+		currentChannelId,
+		isAnswerCall,
+		isAnchorCall,
+		waitingList
+	} = state.voice;
 	
   return ({
 		voiceAppId,
 		channelList,
 		currentChannelId,
 		isAnswerCall,
-		isAnchorCall
+		isAnchorCall,
+		waitingList
   });
 };
 

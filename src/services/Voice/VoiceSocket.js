@@ -14,6 +14,8 @@ import AnchorAddResp from './responses/AnchorAddResp';
 import AnchorUpdateResp from './responses/AnchorUpdateResp';
 import AnchorDeleteResp from './responses/AnchorDeleteResp';
 import AnchorAllQueryResp from './responses/AnchorAllQueryResp';
+import ManagerKickoutResp from './responses/ManagerKickoutResp';
+import WaitingListResp from './responses/WaitingListResp';
 
 import { 
 	MANAGER_LOGIN_R, 
@@ -28,7 +30,9 @@ import {
 	ANCHOR_ADD_R,
 	ANCHOR_UPDATE_R,
 	ANCHOR_DELETE_R,
-	ANCHOR_ALL_QUERY_R
+	ANCHOR_ALL_QUERY_R,
+	MANAGER_KICKOUT_R,
+	WAITING_LIST_R
 } from '../../protocols';
 
 export default class VoiceSocket extends Socket.WebSocketBase {
@@ -59,5 +63,8 @@ export default class VoiceSocket extends Socket.WebSocketBase {
 		this.respClazzMap.set(ANCHOR_UPDATE_R, AnchorUpdateResp);
 		this.respClazzMap.set(ANCHOR_DELETE_R, AnchorDeleteResp);
 		this.respClazzMap.set(ANCHOR_ALL_QUERY_R, AnchorAllQueryResp);
+
+		this.respClazzMap.set(MANAGER_KICKOUT_R, ManagerKickoutResp);
+		this.respClazzMap.set(WAITING_LIST_R, WaitingListResp);
 	}
 }

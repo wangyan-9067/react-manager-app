@@ -97,7 +97,7 @@ function GridListBase(props) {
 				className={classes.GridListBase}
 				cols={customCols || cols}
 				spacing={16}
-				style={{ bgColor }}
+				style={{ backgroundColor: bgColor }}
 			>
         {data.map(item => (
 					<GridListTile 

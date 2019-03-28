@@ -7,26 +7,26 @@ import WaitingUserTile from './WaitingUserTile';
 
 const styles = theme => ({
 	title: {
-		color: '#818181',
+		color: '#666666',
 		fontSize: '1.125rem',
 		fontWeight: 'bold',
 		marginLeft: '10px'
 	}
 });
 
-const TableUser = props => {
-	const { classes } = props;
+const WaitingUser = props => {
+	let { classes, waitingList } = props;
 
 	return (
 		<div style={{ width: '100%' }}>
 			<Typography color="inherit" align="left" className={classes.title}>
 				等候中玩家
 			</Typography>
-			<GridListBase customCols={6}>
+			<GridListBase list={waitingList} bgColor="#F5F5F5" customCols={6}>
 				<WaitingUserTile />
 			</GridListBase>
 		</div>
 	);
 };
 
-export default withStyles(styles)(TableUser);
+export default withStyles(styles)(WaitingUser);

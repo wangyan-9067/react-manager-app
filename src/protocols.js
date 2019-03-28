@@ -6,7 +6,6 @@ export const CHANNEL_JOIN = 0x0bb204;
 export const CHANNEL_JOIN_R = 0x0bb205;
 export const MANAGER_ACTION = 0x0bb206;
 export const ASSIGN_TABLE_TO_CHANNEL = 0x0bb208;
-
 export const MANAGER_ACTION_R = 0x0bb209;
 export const MANAGER_LOGOUT = 0x0bb20a;
 export const ANCHORS_ON_DUTY_UPDATE = 0x0bb20b;
@@ -28,3 +27,9 @@ export const ANCHOR_DELETE_REQ = 0x0bb213;
 export const ANCHOR_DELETE_R = 0x0bb213;
 export const ANCHOR_ALL_QUERY_REQ = 0x0bb214;
 export const ANCHOR_ALL_QUERY_R = 0x0bb214;
+export const MANAGER_KICKOUT_R = 0x0bb215;
+export const WAITING_LIST_R = 0x0bb216;
+
+//Data server
+export const CDS_OPERATOR_LOGIN = 0x090038;
+export const CDS_OPERATOR_LOGIN_R = 0x090039;

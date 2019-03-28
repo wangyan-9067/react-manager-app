@@ -29,13 +29,13 @@ const styles = {
 	card: {
 		borderRadius: '16px',
 		border: '3px solid #FD0100',
-		padding: '30px',
+		padding: '30px 10px',
 		backgroundColor: '#F5F5F5'
 	},
 	anchorCard: {
 		borderRadius: '16px',
 		border: '3px solid #3970B0',
-		padding: '30px',
+		padding: '30px 10px',
 		backgroundColor: '#F5F5F5'
 	},
 	cardContent: {
@@ -68,7 +68,7 @@ const styles = {
 	}
 };
 
-const joinRoom = (channelId, joinChannel, isAnchor) => {
+const joinRoom = (channelId, joinChannel, isAnchor, setIsAnchorCall) => {
 	setIsAnchorCall(isAnchor);
 	joinChannel(channelId);
 };
@@ -110,7 +110,7 @@ const DisabledCard = ({classes, item, role, roleName, voiceAppId, leaveChannel, 
 	);
 };
 
-const CallInfoCard = ({classes, item, isAnchor, role, roleName, cardClass, roleClass, joinChannel, leaveChannel, assignTableToChannel}) => {
+const CallInfoCard = ({classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, leaveChannel, assignTableToChannel}) => {
 	const { cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientBalance, channelId } = item;
 
@@ -121,7 +121,7 @@ const CallInfoCard = ({classes, item, isAnchor, role, roleName, cardClass, roleC
 				<Typography color="inherit" className={cardContentText}>${formatAmount(clientBalance)}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, isAnchor) }}>接聽</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, isAnchor, setIsAnchorCall) }}>接聽</Button>
       </CardActions>
       <CardActions>
         <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, leaveChannel) }}>離開</Button>
@@ -134,7 +134,7 @@ const CallInfoCard = ({classes, item, isAnchor, role, roleName, cardClass, roleC
 };
 
 const TelebetTile = props => {
-	const { classes, voiceAppId, item, joinChannel, leaveChannel, assignTableToChannel } = props;
+	const { classes, voiceAppId, setIsAnchorCall, item, joinChannel, leaveChannel, assignTableToChannel } = props;
 	const { anchorName, clientName, managerName, anchorState, clientState, vid } = item;
 	const { WAITING_MANAGER, CONNECTED } = USER_STATE;
 
@@ -187,6 +187,7 @@ const TelebetTile = props => {
 				<CallInfoCard 
 					classes={classes}
 					item={item}
+					setIsAnchorCall={setIsAnchorCall}
 					isAnchor={anchorDealIn}
 					role={role}
 					roleName={roleName}
@@ -212,11 +213,10 @@ TelebetTile.propTypes = {
 const StyledTelebetTile = withStyles(styles)(TelebetTile);
 
 const mapStateToProps = state => {
-	const { voiceAppId, channelList } = state.voice;
+	const { voiceAppId } = state.voice;
 	
   return ({
-		voiceAppId,
-		channelList
+		voiceAppId
   });
 };
 
