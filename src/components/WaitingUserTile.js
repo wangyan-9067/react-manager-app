@@ -55,6 +55,7 @@ const WaitingUserTitle = props => {
 
 WaitingUserTitle.propTypes = {
   classes: PropTypes.object.isRequired,
+  item: PropTypes.object
 };
 
 export default withStyles(styles)(WaitingUserTitle);

@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -17,7 +18,6 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 import GridListBase from './GridListBase';
-// import TableUser from './TableUser';
 import TelebetTile from './TelebetTile';
 import WaitingUser from './WaitingUser';
 import { MUTE_STATE } from '../constants';
@@ -331,6 +331,18 @@ const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, 
 	);
 };
 
+AnswerCallPanel.prototype = {
+	classes: PropTypes.object.isRequired,
+	currentChannelId: PropTypes.number,
+	channelList: PropTypes.array, 
+	isAnchorCall: PropTypes.bool, 
+	leaveChannel: PropTypes.func, 
+	assignTableToChannel: PropTypes.func, 
+	toggleMuteChannel: PropTypes.func, 
+	kickoutClient: PropTypes.func, 
+	blacklistClient: PropTypes.func
+};
+
 const TelebetList = props => {	
 	const { 
 		classes,
@@ -354,15 +366,15 @@ const TelebetList = props => {
 		pageBorder: isAnswerCall
 	});
 
-	// channelList[0].clientName = 'hk345';
-	// channelList[0].clientState = 2;
-	// channelList[1].clientName = 'hk789';
-	// channelList[1].anchorName = 'joyce';
-	// channelList[1].anchorState = 3;
-	// channelList[1].vid = 'V02';
-	// channelList[2].clientName = 'hk111';
-	// channelList[2].managerName = 'alice';
-	// channelList[2].clientState = 2;
+	channelList[0].clientName = 'hk345';
+	channelList[0].clientState = 2;
+	channelList[1].clientName = 'hk789';
+	channelList[1].anchorName = 'joyce';
+	channelList[1].anchorState = 3;
+	channelList[1].vid = 'V02';
+	channelList[2].clientName = 'hk111';
+	channelList[2].managerName = 'alice';
+	channelList[2].clientState = 2;
 
 	let panel;
 
@@ -395,6 +407,21 @@ const TelebetList = props => {
 			<WaitingUser waitingList={waitingList} />
 		</div>
 	);
+}
+
+TelebetList.prototype = {
+	classes: PropTypes.object.isRequired,
+	channelList: PropTypes.array,
+	joinChannel: PropTypes.func,
+	leaveChannel: PropTypes.func,
+	assignTableToChannel: PropTypes.func,
+	isAnswerCall: PropTypes.bool,
+	isAnchorCall: PropTypes.bool,
+	currentChannelId: PropTypes.number,
+	toggleMuteChannel: PropTypes.func,
+	kickoutClient: PropTypes.func,
+	blacklistClient: PropTypes.func,
+	waitingList: PropTypes.func
 }
 
 const StyledTelebetList = withStyles(styles)(TelebetList);

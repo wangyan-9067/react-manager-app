@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
@@ -27,6 +28,11 @@ const WaitingUser = props => {
 			</GridListBase>
 		</div>
 	);
+};
+
+WaitingUser.propTypes = {
+	classes: PropTypes.object.isRequired,
+	waitingList: PropTypes.array
 };
 
 export default withStyles(styles)(WaitingUser);

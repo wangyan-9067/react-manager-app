@@ -140,7 +140,7 @@ class App extends React.Component {
     });
 
     voiceSocket.autoConnect();
-    // dataSocket.autoConnect();
+    dataSocket.autoConnect();
   }
 
   joinChannel = channelId => {

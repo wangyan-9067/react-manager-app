@@ -5,8 +5,6 @@ import withWidth from '@material-ui/core/withWidth';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 
-import image from '../sample-5.jpg';
-
 const styles = theme => ({
 	gridListRoot: {
     display: 'flex',
@@ -33,42 +31,9 @@ const styles = theme => ({
 	}
 });
 
-const tileData = [
-	{
-			img: image,
-			title: 'Image',
-			author: 'author',
-			cols: 1
-	},
-	{
-			img: image,
-			title: 'Image',
-			author: 'author',
-			cols: 1
-	},
-	{
-			img: image,
-			title: 'Image',
-			author: 'author',
-			cols: 1
-	},
-	{
-			img: image,
-			title: 'Image5',
-			author: 'author',
-			cols: 1
-	},
-	{
-			img: image,
-			title: 'Image',
-			author: 'author',
-			cols: 1
-	}
-];
-
-function GridListBase(props) {
+const GridListBase = props => {
 	const { classes, children, width, bgColor, customCols, list, tileClass } = props;
-	const data = list || tileData;
+	const data = list;
 	let cols;
 	
 	switch(width) {
@@ -99,13 +64,12 @@ function GridListBase(props) {
 				spacing={16}
 				style={{ backgroundColor: bgColor }}
 			>
-        {data.map(item => (
+        {data.map((item, index) => (
 					<GridListTile 
 						classes={{ tile: tileClass || classes.tile }}
-						key={item.img || ''}
+						key={index || ''}
 						cols={item.cols || 1}
 					>
-						{/* { children } */}
 						{ React.cloneElement(children, { item }) }
           </GridListTile>
         ))}
@@ -115,7 +79,13 @@ function GridListBase(props) {
 }
 
 GridListBase.propTypes = {
-  classes: PropTypes.object.isRequired,
+	classes: PropTypes.object.isRequired,
+	children: PropTypes.object.isRequired,
+	width: PropTypes.number,
+	bgColor: PropTypes.string,
+	customCols: PropTypes.number,
+	list: PropTypes.array, 
+	tileClass: PropTypes.string
 };
 
 const StyledGridListBase = withStyles(styles)(GridListBase);

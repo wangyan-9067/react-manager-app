@@ -17,7 +17,7 @@ export default class DataSocket extends Socket.WebSocketBase {
 	}
 
 	getUrlList() {
-		return ['ws://172.20.2.38:5214'];
+		return ['wss://172.20.2.101:5224'];
 	}
 
 	setupRespClazzMap() {

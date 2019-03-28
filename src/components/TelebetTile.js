@@ -87,6 +87,10 @@ const EmptyCard = ({classes}) => {
 	);
 };
 
+EmptyCard.propTypes = {
+	classes: PropTypes.object.isRequired
+};
+
 const DisabledCard = ({classes, item, role, roleName, voiceAppId, leaveChannel, assignTableToChannel}) => {
 	const { disabledCard, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientBalance, channelId } = item;
@@ -108,6 +112,16 @@ const DisabledCard = ({classes, item, role, roleName, voiceAppId, leaveChannel, 
       </CardActions>
     </Card>
 	);
+};
+
+DisabledCard.propTypes = {
+	classes: PropTypes.object.isRequired,
+	item: PropTypes.object,
+	role: PropTypes.string,
+	roleName: PropTypes.string,
+	voiceAppId: PropTypes.string,
+	leaveChannel: PropTypes.func,
+	assignTableToChannel: PropTypes.func
 };
 
 const CallInfoCard = ({classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, leaveChannel, assignTableToChannel}) => {
@@ -132,6 +146,21 @@ const CallInfoCard = ({classes, item, setIsAnchorCall, isAnchor, role, roleName,
     </Card>
 	);
 };
+
+CallInfoCard.propTypes = {
+	classes: PropTypes.object.isRequired,
+	item: PropTypes.object,
+	setIsAnchorCall: PropTypes.func,
+	isAnchor: PropTypes.bool,
+	role: PropTypes.string,
+	roleName: PropTypes.string,
+	cardClass: PropTypes.string,
+	roleClass: PropTypes.string,
+	joinChannel: PropTypes.func,
+	leaveChannel: PropTypes.func,
+	assignTableToChannel: PropTypes.func
+};
+
 
 const TelebetTile = props => {
 	const { classes, voiceAppId, setIsAnchorCall, item, joinChannel, leaveChannel, assignTableToChannel } = props;
@@ -207,7 +236,13 @@ const TelebetTile = props => {
 }
 
 TelebetTile.propTypes = {
-  classes: PropTypes.object.isRequired,
+	classes: PropTypes.object.isRequired,
+	voiceAppId: PropTypes.string, 
+	setIsAnchorCall: PropTypes.func, 
+	item: PropTypes.object, 
+	joinChannel: PropTypes.func, 
+	leaveChannel: PropTypes.func, 
+	assignTableToChannel: PropTypes.func
 };
 
 const StyledTelebetTile = withStyles(styles)(TelebetTile);

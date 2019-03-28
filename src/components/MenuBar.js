@@ -122,6 +122,12 @@ class MenuBar extends React.Component {
 
 MenuBar.propTypes = {
   classes: PropTypes.object.isRequired,
+  joinChannel: PropTypes.func,
+  leaveChannel: PropTypes.func,
+  assignTableToChannel: PropTypes.func,
+  toggleMuteChannel: PropTypes.func,
+  kickoutClient: PropTypes.func,
+  blacklistClient: PropTypes.func
 };
 
 export default withStyles(styles)(MenuBar);
