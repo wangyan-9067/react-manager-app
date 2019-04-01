@@ -11,7 +11,7 @@ export default class WaitingListResp extends Socket.ResponseBase {
 			this.clientList.push({
 				clientName: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),
 				nickName: bytes.readUTFBytes(VALUE_LENGTH.NICK_NAME),
-        validBet: bytes.readUnsignedInt(),
+        validBet: bytes.readDouble(),
         waitingStartTime: bytes.readUnsignedInt()
 			});
 		}

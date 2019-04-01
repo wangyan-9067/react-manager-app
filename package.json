@@ -9,8 +9,9 @@
     "@material-ui/lab": "^3.0.0-alpha.30",
     "classnames": "^2.2.6",
     "cube-egret-polyfill": "^1.0.2",
-    "cube-rtc": "^1.0.2",
-    "cube-socket": "^1.4.22",
+    "cube-rtc": "^1.0.4",
+    "cube-socket": "^1.4.23",
+    "cube-timer": "^1.1.2",
     "env-cmd": "^8.0.2",
     "moment": "^2.24.0",
     "react": "^16.8.4",
@@ -19,7 +20,8 @@
     "react-redux": "^6.0.1",
     "react-scripts": "2.1.8",
     "redux": "^4.0.1",
-    "typeface-roboto": "0.0.54"
+    "typeface-roboto": "0.0.54",
+    "validator": "^10.11.0"
   },
   "scripts": {
     "start": "react-scripts start",

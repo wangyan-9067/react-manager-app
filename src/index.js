@@ -15,7 +15,7 @@ const store = createStore(
 	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 const theme = createMuiTheme({
-  shadows: new Array(25)
+	shadows: new Array(25)
 });
 
 const Application = () => {

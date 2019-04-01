@@ -5,7 +5,8 @@ import {
 	SET_CHANNEL_JOIN_STATUS,
 	SET_IS_ANSWER_CALL,
 	SET_IS_ANCHOR_CALL,
-	SET_WAITING_LIST
+	SET_WAITING_LIST,
+	SET_ANCHOR_LIST
 } from '../types';
   
 const initialState = {
@@ -15,7 +16,8 @@ const initialState = {
 	channelJoinStatus: null,
 	isAnswerCall: false,
 	isAnchorCall: null,
-	waitingList: []
+	waitingList: [],
+	anchorList: []
 };
 
 export default function voice(state = initialState, action) {
@@ -47,6 +49,10 @@ export default function voice(state = initialState, action) {
 		case SET_WAITING_LIST:
 			const waitingList = action.list;
 			return { ...state, waitingList };
+
+		case SET_ANCHOR_LIST:
+			const anchorList = action.list;
+			return { ...state, anchorList };
 
     default:
     	return state;

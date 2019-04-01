@@ -11,7 +11,10 @@ export default class DataSocket extends Socket.WebSocketBase {
 	constructor() {
 		const config = {
 			tag: '[DataSocket]',
-			ucHeartBeatPeriod: 15000
+			ucHeartBeatPeriod: 15000,
+			lineSelect: {
+				respId: 0x860003
+			}
 		};
 		super(config);
 	}

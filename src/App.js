@@ -14,7 +14,8 @@ import {
   setCurrentChannelId,
   setChannelJoinStatus,
   setIsAnswerCall,
-  setWaitingList
+  setWaitingList,
+  setAnchorList
 } from './actions/voice';
 import {
   MANAGER_LOGIN,
@@ -26,12 +27,16 @@ import {
   MANAGER_ACTION_R,
   ASSIGN_TABLE_TO_CHANNEL,
   WAITING_LIST_R,
+  ANCHOR_ALL_QUERY_REQ,
+  ANCHOR_ALL_QUERY_R,
+  ANCHOR_ADD_REQ,
+  ANCHOR_ADD_R,
   CDS_OPERATOR_LOGIN
 } from './protocols';
 import { VALUE_LENGTH, MANAGER_ACTIONS, MUTE_STATE, DATA_SERVER_VALUE_LENGTH } from './constants';
 import './App.css';
 
-const MANAGER_USERNAME = 'alice';
+const MANAGER_USERNAME = 'alicehui';
 const MANAGER_PASSWORD = 'aliceTest';
 const voiceSocket = new VoiceSocket();
 const dataSocket = new DataSocket();
@@ -42,6 +47,19 @@ const sendManagerAction = (action, channelId) => {
     bytes.writeUnsignedInt(channelId);
   }));
 };
+
+const getAnchorList = () => {
+  voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ALL_QUERY_REQ));
+}
+
+const addAnchor = (loginName, password, nickName, url) => {
+  voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ADD_REQ), bytes => {
+    bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+    bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
+    bytes.writeBytes(Socket.stringToBytes(nickName, VALUE_LENGTH.PASSWORD));
+    bytes.writeUnsignedInt(url.length);
+  });
+}
 
 class App extends React.Component {
   async componentDidMount() {
@@ -63,13 +81,15 @@ class App extends React.Component {
           currentChannelId,
           setChannelJoinStatus,
           setIsAnswerCall,
-          setWaitingList
+          setWaitingList,
+          setAnchorList
         } = this.props;
 
         switch(evt.data.respId) {
           case MANAGER_LOGIN_R:
             setVoiceAppId(evt.data.voiceAppId);
             RTC.init(evt.data.voiceAppId);
+            getAnchorList();
           break;
 
           case CHANNEL_LIST_R:
@@ -111,6 +131,14 @@ class App extends React.Component {
             setWaitingList(evt.data.clientList);
           break;
 
+          case ANCHOR_ALL_QUERY_R:
+            setAnchorList(evt.data.allAnchorsList);
+          break;
+
+          case ANCHOR_ADD_R:
+            //TODO: display error popup if code != 0
+          break;
+
           default:
           break;
         }
@@ -128,15 +156,20 @@ class App extends React.Component {
     dataSocket.addEventListener(Socket.EVENT_OPEN, evt => {
       const { VL_VIDEO_ID, VL_USER_NAME, VL_PSW } = DATA_SERVER_VALUE_LENGTH;
 
-      voiceSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
+      dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
         bytes.writeUnsignedShort();
         bytes.writeUnsignedShort();
-        bytes.writeBytes(Socket.stringToBytes('V010', VL_VIDEO_ID));
+        bytes.writeBytes(Socket.stringToBytes('', VL_VIDEO_ID));
         bytes.writeBytes(Socket.stringToBytes(MANAGER_USERNAME, VL_USER_NAME));
         bytes.writeBytes(Socket.stringToBytes(MANAGER_PASSWORD, VL_PSW));
+        bytes.writeUnsignedInt();
       }));
     });
-    dataSocket.addEventListener(Socket.EVENT_PACKET, async (evt) => {
+    
+    dataSocket.addEventListener(Socket.EVENT_PACKET, evt => {
+      if (evt.$type === Socket.EVENT_PACKET) {
+        console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
+      }
     });
 
     voiceSocket.autoConnect();
@@ -194,6 +227,8 @@ class App extends React.Component {
           toggleMuteChannel={this.toggleMuteChannel}
           kickoutClient={this.kickoutClient}
           blacklistClient={this.blacklistClient}
+          getAnchorList={getAnchorList}
+          addAnchor={addAnchor}
         />
       </div>
     );
@@ -215,7 +250,8 @@ const mapDispatchToProps = dispatch => ({
   setCurrentChannelId: id => dispatch(setCurrentChannelId(id)),
   setChannelJoinStatus: code => dispatch(setChannelJoinStatus(code)),
   setIsAnswerCall: answer => dispatch(setIsAnswerCall(answer)),
-  setWaitingList: list => dispatch(setWaitingList(list))
+  setWaitingList: list => dispatch(setWaitingList(list)),
+  setAnchorList: list => dispatch(setAnchorList(list))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

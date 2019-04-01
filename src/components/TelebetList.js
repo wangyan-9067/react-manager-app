@@ -358,7 +358,7 @@ const TelebetList = props => {
 		blacklistClient,
 		waitingList
 	} = props;
-	const { separator } = classes;
+	const { separator, tile } = classes;
 
 	const telebetListClasses = classNames.bind(classes);
 	const classList = telebetListClasses({
@@ -394,7 +394,7 @@ const TelebetList = props => {
 		);
 	} else {
 		panel = (
-			<GridListBase list={channelList} tileClass={classes.tile}>
+			<GridListBase list={channelList} tileClass={tile}>
 				<TelebetTile joinChannel={joinChannel} leaveChannel={leaveChannel} assignTableToChannel={assignTableToChannel} />
 			</GridListBase>
 		);

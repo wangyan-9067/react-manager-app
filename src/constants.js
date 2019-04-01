@@ -39,5 +39,10 @@ export const MUTE_STATE = {
 export const DATA_SERVER_VALUE_LENGTH = {
 	VL_VIDEO_ID: 4,
 	VL_USER_NAME: 30,
-	VL_PSW: 30
+	VL_PSW: 16
+};
+
+export const ROLE = {
+	NORMAL: 0,
+	ADMIN: 1
 };

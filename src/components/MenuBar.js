@@ -8,8 +8,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 
 import DateTimeBadge from './DateTimeBadge';
+import AnchorList from './AnchorList';
 import TelebetList from './TelebetList';
-import TableList from './TableList';
 
 const styles = theme => ({
   appBar: {
@@ -78,7 +78,9 @@ class MenuBar extends React.Component {
       assignTableToChannel,
       toggleMuteChannel,
       kickoutClient,
-      blacklistClient
+      blacklistClient,
+      getAnchorList,
+      addAnchor
     } = this.props;
     const { value } = this.state;
 
@@ -91,14 +93,13 @@ class MenuBar extends React.Component {
             <Tabs value={value} onChange={this.handleChange} classes={{ root: classes.tabsRoot, indicator: classes.tabsIndicator }}>
               <Tab label="主播排班" classes={{ root: classes.tabRoot, selected: classes.tabSelected }} />
               <Tab label="經理操作" classes={{ root: classes.tabRoot, selected: classes.tabSelected }} />
-              <Tab label="桌台狀態" classes={{ root: classes.tabRoot, selected: classes.tabSelected }} />
             </Tabs>
           </Toolbar>
         </AppBar>
 
         <Grid container>
           <Grid item xs={9}>
-            {value === 0 && <TabContainer classes={classes}>Item One</TabContainer>}
+            {value === 0 && <TabContainer classes={classes}><AnchorList getAnchorList={getAnchorList} addAnchor={addAnchor} /></TabContainer>}
             {value === 1 && (
               <TabContainer classes={classes}>
                 <TelebetList 
@@ -111,7 +112,6 @@ class MenuBar extends React.Component {
                 />
               </TabContainer>
             )}
-            {value === 2 && <TabContainer classes={classes}><TableList /></TabContainer>} 
           </Grid>
           <Grid item xs={3}></Grid>
         </Grid>
