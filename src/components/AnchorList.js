@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 
 import AnchorForm from './AnchorForm';
 import ToggleButtonGridList from './ToggleButtonGridList';
+import { toggleDialog } from '../actions/app';
 
 const styles = theme => ({
   root: {
@@ -34,12 +35,34 @@ const styles = theme => ({
     marginTop: '0.3rem'
   },
   operationButton: {
+    width: '120px',
     margin: '0 5px',
     padding: '3px 20px',
 		fontSize: '1.125rem',
 		fontWeight: 'bold',
 		color: '#FFFFFF',
 		backgroundColor: '#1F5FA6',
+    '&:hover': {
+      backgroundColor: '#1F5FA6',
+      borderColor: '#1F5FA6',
+    }
+  },
+  dutyButton: {
+    width: '120px',
+    margin: '0 20px',
+    padding: '2px 20px',
+		fontSize: '1.125rem',
+		fontWeight: 'bold',
+    color: '#FFFFFF',
+    borderRadius: '16px',
+		backgroundColor: '#1F5FA6',
+    '&:hover': {
+      backgroundColor: '#1F5FA6',
+      borderColor: '#1F5FA6',
+    }
+  },
+  cancelButton: {
+    backgroundColor: '#AAAAAA',
     '&:hover': {
       backgroundColor: '#1F5FA6',
       borderColor: '#1F5FA6',
@@ -72,372 +95,49 @@ const styles = theme => ({
 
 const AnchorList = props => {
   const [openAddManagerDialog, setOpenAddManagerDialog] = useState(false);
-  let { classes, anchorList, getAnchorList, addAnchor } = props;
+  const [selected, setSelected] = useState();
+  const [isEdit, setIsEdit] = useState(false);
+  const { 
+    classes,
+    anchorList,
+    addAnchor,
+    deleteAnchor,
+    setAnchorsDuty,
+    getAnchorsDutyList,
+    openDialog,
+    toggleDialog
+  } = props;
   const {
     root,
     grow,
     headerText,
     operationButton,
+    dutyButton,
+    cancelButton,
     emptyAnchorCardRoot,
     emptyText,
     dialogPaper,
     dialogTitle,
     tileClass
   } = classes;
-  
+
+  const onClickHandler = () => {
+    if (isEdit) {
+      setOpenAddManagerDialog(true);
+    }
+  };
+
+  anchorList.map(anchor => {
+    anchor.value = anchor.loginname;
+    return anchor;
+  });
+
   let panel;
-  anchorList = [
-    {
-      loginname: 'aliceTest',
-      password: '1234',
-      nickname: 'aliceTest',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-    {
-      loginname: 'aliceTest2',
-      password: '1234',
-      nickname: 'aliceTest2',
-      url: 'http://www.colegioexpressao.com/assets/images/avatar-2.png',
-      value: 'aliceTest2'
-    },
-  ];
+  let selectedAnchor;
+
+  if (selected && !Array.isArray(selected)) {
+    selectedAnchor = anchorList.find(anchor => anchor.value === selected);
+  }
 
   if (Array.isArray(anchorList) && anchorList.length === 0) {
     panel = (
@@ -448,12 +148,21 @@ const AnchorList = props => {
       </Card>
     );
   }
+
 	return (
 		<div className={root}>
       <Typography color="inherit" align="left" className={headerText}>請選取值班主播</Typography>
       <div className={grow} />
-      <Button variant="contained" size="medium" color="inherit" className={operationButton} onClick={() => { setOpenAddManagerDialog(true); }}>新增主播</Button>
-      <Button variant="contained" size="medium" color="inherit" className={operationButton}>編輯</Button>
+      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddManagerDialog(true); }}>新增主播</Button>
+      <Button 
+        variant="contained"
+        size="medium"
+        color="inherit"
+        className={operationButton}
+        onClick={() => {
+          setSelected();
+          setIsEdit(!isEdit);
+        }}>編輯</Button>
       {panel}
 			<Dialog
 				open={openAddManagerDialog}
@@ -463,22 +172,38 @@ const AnchorList = props => {
         disableBackdropClick
 			>
 				<DialogTitle id="responsive-dialog-title">
-					<Typography color="inherit" className={dialogTitle} align="center">新增主播資料</Typography>
+					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}主播資料</Typography>
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-            <AnchorForm 
-              getAnchorList={getAnchorList}
+            <AnchorForm
+              selectedAnchor={selectedAnchor}
               addAnchor={addAnchor}
+              deleteAnchor={deleteAnchor}
               setOpenAddManagerDialog={setOpenAddManagerDialog}
+              anchorList={anchorList}
+              isEdit={isEdit}
+              openDialog={openDialog}
+              toggleDialog={toggleDialog}
             />
           </DialogContentText>
 				</DialogContent>
 			</Dialog>
-      <ToggleButtonGridList list={anchorList} tileClass={tileClass} customCols={6} />
+      <ToggleButtonGridList 
+        list={anchorList}
+        tileClass={tileClass}
+        customCols={6}
+        isEdit={isEdit}
+        selectedValue={selected}
+        onChangeHandler={value => {
+          console.log("onChangeHandler value", value);
+          setSelected(value);
+        }}
+        onClickHandler={onClickHandler}
+      />
       <div>
-        <Button variant="contained" size="medium" color="inherit" className={operationButton}>確定</Button>
-        <Button variant="contained" size="medium" color="inherit" className={operationButton}>取消選取</Button>
+        <Button variant="contained" size="medium" color="inherit" className={dutyButton} disabled={isEdit} onClick={() => { setAnchorsDuty(selected); getAnchorsDutyList(); }}>確定</Button>
+        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} disabled={isEdit} onClick={() => { setSelected(); }}>取消選取</Button>
       </div>
 		</div>
 	);
@@ -488,13 +213,16 @@ const StyledAnchorList = withStyles(styles)(AnchorList);
 
 const mapStateToProps = state => {
   const { anchorList } = state.voice;
+  const { openDialog } = state.app;
+
   return ({
-    anchorList
+    anchorList,
+    openDialog
   });
 };
 
 const mapDispatchToProps = dispatch => ({
-  // setVoiceAppId: id => dispatch(setVoiceAppId(id))
+	toggleDialog: toggle => dispatch(toggleDialog(toggle))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledAnchorList);

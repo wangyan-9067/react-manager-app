@@ -7,6 +7,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 
+import DialogWrapper from './DialogWrapper';
+
 const styles = theme => ({
   managerActionDialog: {
     display: 'flex',
@@ -78,9 +80,25 @@ class AnchorForm extends React.Component {
     anchorIconUrl: { value: '', isValid: true, message: '' }
   }
 
-  state = {
-    ...this.formDefaults
-  };
+  constructor(props) {
+    super(props);
+
+    const { selectedAnchor } = this.props;
+
+    if (selectedAnchor) {
+      const { loginname, nickname, password, url } = selectedAnchor;
+      
+      this.formDefaults.anchorLoginname.value = loginname;
+      this.formDefaults.anchorNickname.value = nickname;
+      this.formDefaults.anchorPassword.value = password;
+      this.formDefaults.anchorPasswordConfirm.value = password;
+      this.formDefaults.anchorIconUrl.value = url;
+    }
+
+    this.state = {
+      ...this.formDefaults
+    };
+  }
 
   onChange = (e) => {
     const state = {
@@ -100,9 +118,8 @@ class AnchorForm extends React.Component {
     
     if (this.formIsValid()) {
       const { anchorLoginname, anchorNickname, anchorPassword, anchorIconUrl } = this.state;
-      const { getAnchorList, addAnchor, setOpenAddManagerDialog } = this.props;
-      addAnchor(anchorLoginname, anchorPassword, anchorNickname, anchorIconUrl);
-      getAnchorList();
+      const { addAnchor, setOpenAddManagerDialog } = this.props;
+      addAnchor(anchorLoginname.value, anchorPassword.value, anchorNickname.value, anchorIconUrl.value);
       setOpenAddManagerDialog(false);
     }
   }
@@ -113,11 +130,25 @@ class AnchorForm extends React.Component {
     const anchorPassword = { ...this.state.anchorPassword };
     const anchorPasswordConfirm = { ...this.state.anchorPasswordConfirm };
     const anchorIconUrl = { ...this.state.anchorIconUrl };
+    const { isEdit, anchorList } = this.props;
+
     let isGood = true;
 
     if (validator.isEmpty(anchorLoginname.value)) {
       anchorLoginname.isValid = false;
       anchorLoginname.message = 'Anchor Loginname is required';
+      isGood = false;
+    }
+
+    if (!validator.isAlphanumeric(anchorLoginname.value)) {
+      anchorLoginname.isValid = false;
+      anchorLoginname.message = 'Anchor Loginname must be alphanumeric';
+      isGood = false;
+    }
+
+    if (!isEdit && anchorList.find(anchor => anchor.loginname === anchorLoginname.value)) {
+      anchorLoginname.isValid = false;
+      anchorLoginname.message = 'Anchor loginname is already registered';
       isGood = false;
     }
 
@@ -191,7 +222,7 @@ class AnchorForm extends React.Component {
 
   render() {
     const { anchorLoginname, anchorNickname, anchorPassword, anchorPasswordConfirm, anchorIconUrl } = this.state;
-    const { classes, setOpenAddManagerDialog } = this.props;
+    const { classes, setOpenAddManagerDialog, isEdit, deleteAnchor, openDialog, toggleDialog } = this.props;
     const {
       managerActionDialog,
       managerActionFormLabel,
@@ -225,6 +256,7 @@ class AnchorForm extends React.Component {
                   placeholder=""
                   value={anchorLoginname.value}
                   onChange={this.onChange}
+                  disabled={isEdit}
                 />
                 <FormHelperText id="component-error-text">{anchorLoginname.message}</FormHelperText>
               </FormControl>
@@ -295,11 +327,22 @@ class AnchorForm extends React.Component {
             </div>
             <div className={managerActionDialogSectionRight}>
               <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)}>確定</Button>
-              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogCancelButton)} onClick={() => { setOpenAddManagerDialog(false) }}>取消</Button>
-              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogDeleteButton)} disabled>刪除</Button>
+              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogCancelButton)} onClick={() => { setOpenAddManagerDialog(false); }}>取消</Button>
+              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogDeleteButton)} disabled={!isEdit} onClick={() => { toggleDialog(true); }}>刪除</Button>
             </div>
           </div>
         </form>
+        <DialogWrapper
+          isOpen={openDialog}
+          onCloseHandler={() => {
+            toggleDialog(false);
+          }}
+          actionHandler={() => {
+            deleteAnchor(anchorLoginname.value);
+            setOpenAddManagerDialog(false);
+          }}
+          content="確定要刪除主播嗎?"
+        />
       </div>
     );
   }

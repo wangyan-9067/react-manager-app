@@ -15,7 +15,25 @@ const store = createStore(
 	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 const theme = createMuiTheme({
-	shadows: new Array(25)
+	shadows: new Array(25),
+	overrides: {
+		MuiToggleButton: {
+			root: {
+        '&$selected': {
+					backgroundColor: '#FFDDDC',
+					border: '1px solid #DF6C68',
+					'&:hover': {
+						backgroundColor: '#FFDDDC',
+						border: '1px solid #DF6C68'
+					}
+				},
+				'&:hover': {
+					backgroundColor: '#FFDDDC',
+					border: '1px solid #DF6C68'
+				}
+			}
+		}
+	}
 });
 
 const Application = () => {

@@ -75,12 +75,17 @@ class MenuBar extends React.Component {
       classes, 
       joinChannel,
       leaveChannel,
+      assignTable,
       assignTableToChannel,
       toggleMuteChannel,
+      kickoutClientFromDataServer,
       kickoutClient,
       blacklistClient,
       getAnchorList,
-      addAnchor
+      addAnchor,
+      deleteAnchor,
+      setAnchorsDuty,
+      getAnchorsDutyList
     } = this.props;
     const { value } = this.state;
 
@@ -99,14 +104,26 @@ class MenuBar extends React.Component {
 
         <Grid container>
           <Grid item xs={9}>
-            {value === 0 && <TabContainer classes={classes}><AnchorList getAnchorList={getAnchorList} addAnchor={addAnchor} /></TabContainer>}
+            {value === 0 && (
+              <TabContainer classes={classes}>
+                <AnchorList
+                  getAnchorList={getAnchorList}
+                  addAnchor={addAnchor}
+                  deleteAnchor={deleteAnchor}
+                  setAnchorsDuty={setAnchorsDuty}
+                  getAnchorsDutyList={getAnchorsDutyList}
+                />
+              </TabContainer>
+            )}
             {value === 1 && (
               <TabContainer classes={classes}>
                 <TelebetList 
-                  joinChannel={joinChannel} 
-                  leaveChannel={leaveChannel} 
-                  assignTableToChannel={assignTableToChannel} 
+                  joinChannel={joinChannel}
+                  leaveChannel={leaveChannel}
+                  assignTable={assignTable}
+                  assignTableToChannel={assignTableToChannel}
                   toggleMuteChannel={toggleMuteChannel}
+                  kickoutClientFromDataServer={kickoutClientFromDataServer}
                   kickoutClient={kickoutClient}
                   blacklistClient={blacklistClient}
                 />

@@ -11,7 +11,7 @@ import ManagerUpdateResp from './responses/ManagerUpdateResp';
 import ManagerDeleteResp from './responses/ManagerDeleteResp';
 import ManagerAllQueryResp from './responses/ManagerAllQueryResp';
 import AnchorAddResp from './responses/AnchorAddResp';
-import AnchorUpdateResp from './responses/AnchorUpdateResp';
+// import AnchorUpdateResp from './responses/AnchorUpdateResp';
 import AnchorDeleteResp from './responses/AnchorDeleteResp';
 import AnchorAllQueryResp from './responses/AnchorAllQueryResp';
 import ManagerKickoutResp from './responses/ManagerKickoutResp';
@@ -28,7 +28,7 @@ import {
 	MANAGER_DELETE_R,
 	MANAGER_ALL_QUERY_R,
 	ANCHOR_ADD_R,
-	ANCHOR_UPDATE_R,
+	// ANCHOR_UPDATE_R,
 	ANCHOR_DELETE_R,
 	ANCHOR_ALL_QUERY_R,
 	MANAGER_KICKOUT_R,
@@ -60,7 +60,7 @@ export default class VoiceSocket extends Socket.WebSocketBase {
 		this.respClazzMap.set(MANAGER_DELETE_R, ManagerDeleteResp);
 		this.respClazzMap.set(MANAGER_ALL_QUERY_R, ManagerAllQueryResp);
 		this.respClazzMap.set(ANCHOR_ADD_R, AnchorAddResp);
-		this.respClazzMap.set(ANCHOR_UPDATE_R, AnchorUpdateResp);
+		// this.respClazzMap.set(ANCHOR_UPDATE_R, AnchorUpdateResp);
 		this.respClazzMap.set(ANCHOR_DELETE_R, AnchorDeleteResp);
 		this.respClazzMap.set(ANCHOR_ALL_QUERY_R, AnchorAllQueryResp);
 

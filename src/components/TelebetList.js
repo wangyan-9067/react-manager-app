@@ -17,10 +17,11 @@ import CallEndIcon from '@material-ui/icons/CallEnd';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
+import { setManagerAction } from '../actions/voice';
 import GridListBase from './GridListBase';
 import TelebetTile from './TelebetTile';
 import WaitingUser from './WaitingUser';
-import { MUTE_STATE } from '../constants';
+import { MUTE_STATE, MANAGER_ACTION_TYPE } from '../constants';
 import { formatAmount } from '../utils';
 
 const styles = theme => ({
@@ -175,13 +176,22 @@ const changeTable = (event, table, setTableAssigned) => {
 	setTableAssigned(table);
 };
 
-const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, leaveChannel, assignTableToChannel, toggleMuteChannel, kickoutClient, blacklistClient}) => {
-	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
-	const [tableAssigned, setTableAssigned] = useState('V1');
-	const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
-	const [openBlacklistDialog, setOpenBlacklistDialog] = useState(false);
-
-	const { 
+const AnswerCallPanel = ({
+	classes,
+	currentChannelId,
+	channelList,
+	isAnchorCall,
+	leaveChannel,
+	assignTable,
+	assignTableToChannel,
+	toggleMuteChannel,
+	kickoutClientFromDataServer,
+	kickoutClient,
+	blacklistClient,
+	tableList,
+	setManagerAction
+}) => {
+	const {
 		answerCallPanel, 
 		answerCallPanelLeftRoot,
 		answerCallPanelLeftText, 
@@ -202,6 +212,11 @@ const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, 
 	const { MUTE, UNMUTE } = MUTE_STATE;
 	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
 	const { vid, clientName, anchorName, clientBalance, clientMute, anchorMute } = currentChannel;
+
+	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
+	const [tableAssigned, setTableAssigned] = useState(vid);
+	const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
+	const [openBlacklistDialog, setOpenBlacklistDialog] = useState(false);
 
 	let line1Text;
 	let line2Text;
@@ -283,17 +298,16 @@ const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, 
 								changeTable(event, table, setTableAssigned); 
 							}}
 						>
-							<ToggleButton value="V1">
-								<Typography color="inherit">V1</Typography>
+						{tableList.map((table, index) =>
+							<ToggleButton value={table.vid}>
+								<Typography color="inherit">{table.vid}</Typography>
 							</ToggleButton>
-							<ToggleButton value="V2">
-								<Typography color="inherit">V2</Typography>
-							</ToggleButton>
+        		)}
 						</ToggleButtonGroup>
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions classes={{ root: dialogActionsRoot }}>
-					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { assignTableToChannel(currentChannelId, tableAssigned); setOpenAssignTableDialog(false); }}>確定</Button>
+					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { assignTable(tableAssigned, clientName); setOpenAssignTableDialog(false); }}>確定</Button>
 					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenAssignTableDialog(false) }}>取消</Button>
 				</DialogActions>
 			</Dialog>
@@ -308,7 +322,19 @@ const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, 
 					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}踢出桌台嗎?</Typography></DialogContentText>
 				</DialogContent>
 				<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { kickoutClient(currentChannelId); setOpenKickoutClientDialog(false); }}>確定</Button>
+					<Button 
+						variant="contained"
+						size="medium"
+						color="inherit"
+						className={classNames(actionButton, dialogActionButton)}
+						onClick={() => {
+							setManagerAction(MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
+							kickoutClientFromDataServer(tableAssigned, clientName);
+							setOpenKickoutClientDialog(false);
+						}}
+					>
+						確定
+					</Button>
 					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenKickoutClientDialog(false) }}>取消</Button>
 				</DialogActions>
 			</Dialog>
@@ -323,7 +349,18 @@ const AnswerCallPanel = ({classes, currentChannelId, channelList, isAnchorCall, 
 					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}列入黑名單嗎?</Typography></DialogContentText>
 				</DialogContent>
 				<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { blacklistClient(currentChannelId); setOpenBlacklistDialog(false); }}>確定</Button>
+					<Button 
+						variant="contained"
+						size="medium"
+						color="inherit"
+						className={classNames(actionButton, dialogActionButton)}
+						onClick={() => {
+							setManagerAction(MANAGER_ACTION_TYPE.BLACKLIST_CLIENT);
+							kickoutClientFromDataServer(tableAssigned, clientName);
+							setOpenBlacklistDialog(false);
+						}}>
+							確定
+						</Button>
 					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenBlacklistDialog(false) }}>取消</Button>
 				</DialogActions>
 			</Dialog>
@@ -349,14 +386,18 @@ const TelebetList = props => {
 		channelList,
 		joinChannel,
 		leaveChannel,
+		assignTable,
 		assignTableToChannel,
 		isAnswerCall,
 		isAnchorCall,
 		currentChannelId,
 		toggleMuteChannel,
+		kickoutClientFromDataServer,
 		kickoutClient,
 		blacklistClient,
-		waitingList
+		waitingList,
+		tableList,
+		setManagerAction
 	} = props;
 	const { separator, tile } = classes;
 
@@ -366,15 +407,19 @@ const TelebetList = props => {
 		pageBorder: isAnswerCall
 	});
 
-	channelList[0].clientName = 'hk345';
-	channelList[0].clientState = 2;
-	channelList[1].clientName = 'hk789';
-	channelList[1].anchorName = 'joyce';
-	channelList[1].anchorState = 3;
-	channelList[1].vid = 'V02';
-	channelList[2].clientName = 'hk111';
-	channelList[2].managerName = 'alice';
-	channelList[2].clientState = 2;
+	// channelList[3].clientName = 'TSThk345';
+	// channelList[3].clientState = 2;
+	// channelList[4].clientName = 'TSThk456';
+	// channelList[4].clientState = 2;
+	// channelList[4].anchorName = 'alice';
+	// channelList[4].anchorState = 2;
+	// channelList[1].clientName = 'hk789';
+	// channelList[1].anchorName = 'joyce';
+	// channelList[1].anchorState = 3;
+	// channelList[1].vid = 'V02';
+	// channelList[2].clientName = 'hk111';
+	// channelList[2].managerName = 'alice';
+	// channelList[2].clientState = 2;
 
 	let panel;
 
@@ -386,10 +431,14 @@ const TelebetList = props => {
 				channelList={channelList}
 				isAnchorCall={isAnchorCall}
 				leaveChannel={leaveChannel}
+				assignTable={assignTable}
 				assignTableToChannel={assignTableToChannel}
 				toggleMuteChannel={toggleMuteChannel}
+				kickoutClientFromDataServer={kickoutClientFromDataServer}
 				kickoutClient={kickoutClient}
 				blacklistClient={blacklistClient}
+				tableList={tableList}
+				setManagerAction={setManagerAction}
 			/>
 		);
 	} else {
@@ -435,6 +484,10 @@ const mapStateToProps = state => {
 		isAnchorCall,
 		waitingList
 	} = state.voice;
+
+	const { 
+		tableList
+	} = state.data;
 	
   return ({
 		voiceAppId,
@@ -442,8 +495,13 @@ const mapStateToProps = state => {
 		currentChannelId,
 		isAnswerCall,
 		isAnchorCall,
-		waitingList
+		waitingList,
+		tableList
   });
 };
 
-export default connect(mapStateToProps, null)(StyledTelebetList);
+const mapDispatchToProps = dispatch => ({
+	setManagerAction: action => dispatch(setManagerAction(action))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(StyledTelebetList);

@@ -81,7 +81,7 @@ const GridListBase = props => {
 GridListBase.propTypes = {
 	classes: PropTypes.object.isRequired,
 	children: PropTypes.object.isRequired,
-	width: PropTypes.number,
+	width: PropTypes.string,
 	bgColor: PropTypes.string,
 	customCols: PropTypes.number,
 	list: PropTypes.array, 

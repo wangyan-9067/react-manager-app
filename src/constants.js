@@ -39,10 +39,30 @@ export const MUTE_STATE = {
 export const DATA_SERVER_VALUE_LENGTH = {
 	VL_VIDEO_ID: 4,
 	VL_USER_NAME: 30,
-	VL_PSW: 16
+	VL_PSW: 16,
+	VL_NICK_NAME: 16,
+	VL_CURRENCY: 6,
+	VL_DEALER_CODE: 8,
+	VL_GAME_CODE: 14,
+	VL_GM_TYPE: 4,
+	VL_TIMESTAMP: 19,
+	VL_BILL_NO: 16,
+	VL_TBL_CODE: 4,
+	VL_BANKER: 3,
+	VL_PLAYER: 3
 };
 
 export const ROLE = {
 	NORMAL: 0,
 	ADMIN: 1
 };
+
+export const CONTRACT_MODE = {
+	OWNER: 0,
+	SHARE: 1
+};
+
+export const MANAGER_ACTION_TYPE = {
+	KICKOUT_CLIENT: 'kickout',
+	BLACKLIST_CLIENT: 'blacklist'
+}

@@ -6,7 +6,9 @@ import {
 	SET_IS_ANSWER_CALL,
 	SET_IS_ANCHOR_CALL,
 	SET_WAITING_LIST,
-	SET_ANCHOR_LIST
+	SET_ANCHOR_LIST,
+	SET_MANAGER_ACTION,
+	SET_ANCHORS_ON_DUTY_LIST
 } from '../types';
   
 const initialState = {
@@ -17,7 +19,10 @@ const initialState = {
 	isAnswerCall: false,
 	isAnchorCall: null,
 	waitingList: [],
-	anchorList: []
+	anchorList: [],
+	tableList: [],
+	managerAction: '',
+	anchorsOnDutyList: []
 };
 
 export default function voice(state = initialState, action) {
@@ -53,6 +58,14 @@ export default function voice(state = initialState, action) {
 		case SET_ANCHOR_LIST:
 			const anchorList = action.list;
 			return { ...state, anchorList };
+
+		case SET_MANAGER_ACTION:
+			const managerAction = action.action;
+			return { ...state, managerAction };
+
+		case SET_ANCHORS_ON_DUTY_LIST:
+			const anchorsOnDutyList = action.list;
+			return { ...state, anchorsOnDutyList };
 
     default:
     	return state;

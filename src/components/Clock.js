@@ -3,7 +3,7 @@ import Moment from 'react-moment';
 
 class Clock extends React.Component {
 	state = {
-			time: new Date()
+		time: new Date()
 	};
 
 	componentDidMount() {
@@ -16,15 +16,15 @@ class Clock extends React.Component {
 
 	tick() {
 		this.setState({
-				time: new Date()
+			time: new Date()
 		});
 	}
 
 	render() {
 		return (
-				<Moment format="HH:mm:ss">
-						{this.state.time}
-				</Moment>
+			<Moment format="HH:mm:ss">
+				{this.state.time}
+			</Moment>
 		);
 	}
 }

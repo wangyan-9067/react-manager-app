@@ -12,7 +12,7 @@ export default class AnchorAllQueryResp extends Socket.ResponseBase {
 
 			result.loginname = bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME);
 			result.password = bytes.readUTFBytes(VALUE_LENGTH.PASSWORD);
-			result.nickName = bytes.readUTFBytes(VALUE_LENGTH.NICK_NAME);
+			result.nickname = bytes.readUTFBytes(VALUE_LENGTH.NICK_NAME);
 			
 			const urlLength = bytes.readUnsignedInt();
 			result.url = bytes.readUTFBytes(urlLength);
