@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -15,7 +15,7 @@ import AnchorForm from './AnchorForm';
 import ToggleButtonGridList from './ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -196,7 +196,6 @@ const AnchorList = props => {
         isEdit={isEdit}
         selectedValue={selected}
         onChangeHandler={value => {
-          console.log("onChangeHandler value", value);
           setSelected(value);
         }}
         onClickHandler={onClickHandler}

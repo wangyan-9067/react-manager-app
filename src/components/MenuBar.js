@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core/styles';
 import DateTimeBadge from './DateTimeBadge';
 import AnchorList from './AnchorList';
 import TelebetList from './TelebetList';
+import AnchorStatusList from './AnchorStatusList';
 
 const styles = theme => ({
   appBar: {
@@ -130,7 +131,11 @@ class MenuBar extends React.Component {
               </TabContainer>
             )}
           </Grid>
-          <Grid item xs={3}></Grid>
+          <Grid item xs={3}>
+            <TabContainer classes={classes}>
+              <AnchorStatusList />
+            </TabContainer>
+          </Grid>
         </Grid>
       </div>
     );

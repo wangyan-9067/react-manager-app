@@ -46,7 +46,6 @@ const ToggleButtonGridList = ({ classes, list, isEdit, selectedValue, onChangeHa
         classes={{ root: toggleListGroupRoot }}
         value={value}
         onChange={(event, value) => {
-          console.log("onChange value", value);
           if (onChangeHandler instanceof Function) {
             onChangeHandler(value);
           } else {

@@ -234,7 +234,7 @@ class App extends React.Component {
             setChannelJoinStatus(joinStatus);
             setIsAnswerCall(joinStatus === 0 ? true : false);
 
-            if (joinStatus === 0) {
+            if (joinStatus === RESPONSE_CODES.SUCCESS) {
               await RTC.joinRoom(currentChannelId, voiceAppId);
               sendManagerAction(MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
             }
@@ -244,7 +244,7 @@ class App extends React.Component {
             const { code: actionStatus, action } = evt.data;
             const { LEAVE_CHANNEL, KICKOUT_CLIENT, BLACKLIST_CLIENT } = MANAGER_ACTIONS;
 
-            if (actionStatus === 0) {
+            if (actionStatus === RESPONSE_CODES.SUCCESS) {
               switch(action) {
                 case LEAVE_CHANNEL:
                 case KICKOUT_CLIENT:

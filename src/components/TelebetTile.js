@@ -207,8 +207,7 @@ const TelebetTile = props => {
 	// const fullDesk = clientName && (anchorName || managerName) && clientState === CONNECTED && (anchorState === CONNECTED || managerState === CONNECTED);
 
 	// TODO cases:
-	// 1) 玩家主播遊戲中
-	// 2) 經理斷線重連
+	// 1) 經理斷線重連
 
 	let role;
 	let roleClass;
