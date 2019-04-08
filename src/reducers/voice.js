@@ -20,7 +20,6 @@ const initialState = {
 	isAnchorCall: null,
 	waitingList: [],
 	anchorList: [],
-	tableList: [],
 	managerAction: '',
 	anchorsOnDutyList: []
 };

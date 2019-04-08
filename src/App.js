@@ -55,7 +55,9 @@ import {
   CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC,
   CDS_OPERATOR_CONTROL_KICKOUT_CLIENT,
   CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R,
-  CDS_BET_HIST
+  CDS_BET_HIST,
+  CDS_CONTROL_REQ_VIDEO_RES,
+  CDS_VIDEO_STATUS
 } from './protocols';
 import {
   VALUE_LENGTH,
@@ -68,8 +70,8 @@ import {
 } from './constants';
 import './App.css';
 
-const MANAGER_USERNAME = 'alicehui2';
-const MANAGER_PASSWORD = 'aliceTest2';
+const MANAGER_USERNAME = 'alicehui3';
+const MANAGER_PASSWORD = 'aliceTest3';
 const voiceSocket = new VoiceSocket();
 const dataSocket = new DataSocket();
 
@@ -339,8 +341,39 @@ class App extends React.Component {
       } = this.props;
 
       switch(evt.data.respId) {
+        case CDS_CONTROL_REQ_VIDEO_RES:
+          const initialTableData = evt.data.videoStatusList;
+
+          if (Array.isArray(initialTableData)) {
+            initialTableData.forEach(table => {
+              let { vid, dealerName, gameCode, gmType, status } = table;
+
+              setTableList({
+                vid,
+                dealerName,
+                gameCode,
+                gmType,
+                gameStatus: status
+              });
+            });
+          }
+        break;
+
         case CDS_CLIENT_LIST:
-          setTableList(evt.data);
+          setTableList({
+            vid: evt.data.vid,
+            seatedPlayerNum: evt.data.seatedPlayerNum
+          });
+        break;
+
+        case CDS_VIDEO_STATUS:
+          setTableList({
+            vid: evt.data.vid,
+            gameStatus: evt.data.gameStatus,
+            gameCode: evt.data.gmcode,
+            tableOwner: evt.data.username,
+            status: evt.data.videoStatus
+          });
         break;
 
         case CDS_OPERATOR_LOGIN_R:
@@ -388,8 +421,6 @@ class App extends React.Component {
             toggleToast(true);
           }
         break;
-
-        // TODO need to handle CDS_VIDEO_STATUS
 
         default:
         break;

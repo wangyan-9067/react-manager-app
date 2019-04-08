@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
 import DateTimeBadge from './DateTimeBadge';
 import AnchorList from './AnchorList';
 import TelebetList from './TelebetList';
+import TableList from './TableList';
 import AnchorStatusList from './AnchorStatusList';
 
 const styles = theme => ({
@@ -28,8 +35,9 @@ const styles = theme => ({
   },
   tabRoot: {
     textTransform: 'initial',
-    fontSize: '1.125rem',
+    fontSize: '1.25rem',
     fontWeight: theme.typography.fontWeightRegular,
+    minWidth: 72,
     marginRight: theme.spacing.unit * 4,
     '&:hover': {
       color: '#40a9ff',
@@ -45,8 +53,25 @@ const styles = theme => ({
   grow: {
     flexGrow: 0.3,
   },
+  grow1: {
+    flexGrow: 0.2,
+  },
+  menuButton: {
+    margin: '0 5px',
+    padding: '3px 20px',
+		fontSize: '1rem'
+  },
   tabContainer: {
     margin: '10px'
+  },
+  secondary: {
+    color: '#3970B0'
+  },
+  bold: {
+    fontWeight: 'bold'
+  },
+  managerName: {
+    fontSize: '1rem'
   }
 });
 
@@ -89,20 +114,53 @@ class MenuBar extends React.Component {
       getAnchorsDutyList
     } = this.props;
     const { value } = this.state;
+    const {
+      root,
+      appBar,
+      grow,
+      grow1,
+      tabsRoot,
+      tabsIndicator,
+      tabRoot,
+      tabSelected,
+      menuButton,
+      secondary,
+      bold,
+      managerName
+    } = classes;
 
     return (
-      <div className={classes.root}>
-        <AppBar position="static" color="inherit" className={classes.appBar}>
+      <div className={root}>
+        <AppBar position="static" color="inherit" className={appBar}>
           <Toolbar>
             <DateTimeBadge />
-            <div className={classes.grow} />
-            <Tabs value={value} onChange={this.handleChange} classes={{ root: classes.tabsRoot, indicator: classes.tabsIndicator }}>
-              <Tab label="主播排班" classes={{ root: classes.tabRoot, selected: classes.tabSelected }} />
-              <Tab label="經理操作" classes={{ root: classes.tabRoot, selected: classes.tabSelected }} />
+            <div className={grow} />
+            <Tabs value={value} onChange={this.handleChange} classes={{ root: tabsRoot, indicator: tabsIndicator }}>
+              <Tab label="主播排班" classes={{ root: tabRoot, selected: tabSelected }} />
+              <Tab label="經理操作" classes={{ root: tabRoot, selected: tabSelected }} />
+              <Tab label="桌台狀態" classes={{ root: tabRoot, selected: tabSelected }} />
             </Tabs>
+            <div className={grow1} />
+            <Button variant="contained" size="medium" color="inherit" className={menuButton}>遊戲記錄</Button>
+            <div className={grow1} />
+            <List>
+              <ListItem alignItems="flex-start">
+                <ListItemText
+                  classes={{ secondary }}
+                  secondary={
+                    <Fragment>
+                      <Typography color="inherit">經理:</Typography>
+                      <Typography color="inherit" className={managerName}>Susan</Typography>
+                    </Fragment>
+                  }
+                />
+              </ListItem>
+            </List>
+            <div className={grow} />
+            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)}>管理經理</Button>
+            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)}>登出</Button>
           </Toolbar>
         </AppBar>
-
         <Grid container>
           <Grid item xs={9}>
             {value === 0 && (
@@ -128,6 +186,11 @@ class MenuBar extends React.Component {
                   kickoutClient={kickoutClient}
                   blacklistClient={blacklistClient}
                 />
+              </TabContainer>
+            )}
+            {value === 2 && (
+              <TabContainer classes={classes}>
+                <TableList kickoutClientFromDataServer={kickoutClientFromDataServer} />
               </TabContainer>
             )}
           </Grid>

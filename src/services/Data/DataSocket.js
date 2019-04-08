@@ -11,6 +11,7 @@ import CDSVideoStatusResp from './responses/CDSVideoStatusResp';
 import CDSClientListResp from './responses/CDSClientListResp';
 import CDSControlReqVideoResp from './responses/CDSControlReqVideoResp';
 import CDSBetHistResp from './responses/CDSBetHistResp';
+import CDSBetListResp from './responses/CDSBetListResp';
 
 import { 
 	CDS_OPERATOR_LOGIN_R,
@@ -22,7 +23,8 @@ import {
 	CDS_VIDEO_STATUS,
 	CDS_CLIENT_LIST,
 	CDS_CONTROL_REQ_VIDEO_RES,
-	CDS_BET_HIST_R
+	CDS_BET_HIST_R,
+	CDS_BET_LIST
 } from '../../protocols';
 
 export default class DataSocket extends Socket.WebSocketBase {
@@ -51,5 +53,6 @@ export default class DataSocket extends Socket.WebSocketBase {
 		this.respClazzMap.set(CDS_CLIENT_LIST, CDSClientListResp);
 		this.respClazzMap.set(CDS_CONTROL_REQ_VIDEO_RES, CDSControlReqVideoResp);
 		this.respClazzMap.set(CDS_BET_HIST_R, CDSBetHistResp);
+		this.respClazzMap.set(CDS_BET_LIST, CDSBetListResp);
 	}
 }

@@ -66,3 +66,23 @@ export const MANAGER_ACTION_TYPE = {
 	KICKOUT_CLIENT: 'kickout',
 	BLACKLIST_CLIENT: 'blacklist'
 }
+
+export const DATA_SERVER_VIDEO_STATUS = {
+	FREE: 0,	//空闲
+	CONTRACTED: 1,	//包桌
+	LOCKED: 2,	//已锁
+	OTHER_LOCKED: 3,	//已锁
+	TURN_CARD: 4,	//竞眯
+	UNKNOWN: 5
+}
+
+export const DATA_SERVER_GAME_STATUS = {
+	CLOSED: 0,	//游戏关闭
+	CAN_BET: 1,	//下注状态
+	DISPATCH_CARD: 2,	//正在发牌
+	LAST_CALL: 3,
+	TURN_CARD: 10,	//正在眯牌
+	NEW_SHOE: 11,	//洗牌
+	PAUSE_BET: 12,	//暂停下注
+	UNKNOWN: 13
+};

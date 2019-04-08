@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -7,7 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import * as RTC from 'cube-rtc';
+import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS } from '../constants';
 
 const styles = {
 	cardHeader: {
@@ -17,6 +18,9 @@ const styles = {
 		backgroundColor: '#13C636',
 		color: '#FFFFFF',
 		fontWeight: 'bold'
+	},
+	redCardHeader: {
+		backgroundColor: '#F82021',
 	},
 	cardContent: {
 		textAlign: 'left',
@@ -39,35 +43,102 @@ const styles = {
 	}
 };
 
-const joinRoom = () => {
-	console.log("RTC", RTC, RTC.joinRoom);
-	const result = RTC.joinRoom('hello', 'ce3ee69130464250abd9f756dd690b76');
-	console.log('result', result);
+const getTableStatus = status => {
+	const { FREE, CONTRACTED } = DATA_SERVER_VIDEO_STATUS;
+	
+	switch(status) {
+		case FREE:
+			return '可進桌 / 可包桌';
+
+		case CONTRACTED:
+			return '包桌中';
+		
+		default:
+		return '';
+	}
+};
+
+const getGameStatus = status => {
+	const { CLOSED, CAN_BET, DISPATCH_CARD, LAST_CALL, TURN_CARD, NEW_SHOE, PAUSE_BET } = DATA_SERVER_GAME_STATUS;
+	
+	switch(status) {
+		case CLOSED:
+			return '遊戲關閉';
+
+		case CAN_BET:
+			return '可以下注';
+
+		case DISPATCH_CARD:
+			return '正在發牌';
+
+		case LAST_CALL:
+			return 'Last Call';
+		
+		case TURN_CARD:
+			return '正在眯牌';
+
+		case NEW_SHOE:
+			return '洗牌';
+
+		case PAUSE_BET:
+			return '暫停下注';
+		
+		default:
+		return '-';
+	}
+};
+
+const getAnchorByVid = (vid, anchorsOnDutyList) => {
+	const targetAnchor = anchorsOnDutyList.find(anchor => anchor.vid === vid);
+	return targetAnchor ? targetAnchor.anchorName : '-';
 }
 
-const TableTile = props => {
-  const { classes } = props;
+const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient }) => {
+	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton } = classes;
+	let { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
+
+	// TODO: 顯示限紅
+
+	const tableTileClasses = classNames.bind(classes);
+	const tileHeaderClass = tableTileClasses({
+		cardHeader: true,
+		redCardHeader: status !== DATA_SERVER_VIDEO_STATUS.FREE
+	});
 
   return (
-    <Card>
-			<div className={classes.cardHeader}>
-				<div className={classes.tableNo}>T01</div>
-				<div className={classes.tableStatus}>可進桌 / 可包桌</div>
+		<Card>
+			<div className={tileHeaderClass}>
+				<div className={tableNo}>{vid}</div>
+				<div className={tableStatus}>{getTableStatus(status)}</div>
 			</div>
-      <CardContent className={classes.cardContent}>
-				<Typography color="inherit"><span>座位數:</span><span className={classes.tableValue}>1/7</span></Typography>
-				<Typography color="inherit"><span>局號:</span><span className={classes.tableValue}>GB0012435602350534</span></Typography>
-				<Typography color="inherit"><span>荷官:</span><span className={classes.tableValue}>Betty</span></Typography>
-				<Typography color="inherit"><span>主播:</span><span className={classes.tableValue}>冰冰</span></Typography>
-				<Typography color="inherit"><span>限紅:</span><span className={classes.tableValue}>10,000-300,000</span></Typography>
-				<Typography color="inherit"><span>桌主:</span><span className={classes.tableValue}>***168</span></Typography>
-				<Typography color="inherit"><span>牌靴:</span><span className={classes.tableValue}>n32</span></Typography>
-				<Typography color="inherit"><span>遊戲狀態:</span><span className={classes.tableValue}>派牌中</span></Typography>
-      </CardContent>
-      <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={classes.cardActionButton} onClick={joinRoom}>踢走桌主</Button>
-      </CardActions>
-    </Card>
+			<CardContent className={cardContent}>
+				<Typography color="inherit"><span>座位數:</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>
+				<Typography color="inherit"><span>局號:</span><span className={tableValue}>{gameCode || '-'}</span></Typography>
+				<Typography color="inherit"><span>荷官:</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
+				<Typography color="inherit"><span>主播:</span><span className={tableValue}>{getAnchorByVid(vid, anchorsOnDutyList)}</span></Typography>
+				<Typography color="inherit"><span>限紅:</span><span className={tableValue}>10,000-300,000</span></Typography>
+				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
+				<Typography color="inherit"><span>牌靴:</span><span className={tableValue}>n32</span></Typography>
+				<Typography color="inherit"><span>遊戲狀態:</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
+			</CardContent>
+			<CardActions>
+				<Button
+					variant="contained"
+					size="medium"
+					color="inherit"
+					className={cardActionButton}
+					onClick={() => {
+						setKickoutClient({
+							vid,
+							clientName: tableOwner
+						});
+						toggleDialog(true);
+					}}
+					disabled={!tableOwner}>
+					踢走桌主
+				</Button>
+			</CardActions>
+		</Card>
   );
 }
 

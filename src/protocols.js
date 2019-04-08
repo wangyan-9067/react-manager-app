@@ -45,3 +45,4 @@ export const CDS_CLIENT_LIST = 0x080020;
 export const CDS_CONTROL_REQ_VIDEO_RES = 0x0d0006;
 export const CDS_BET_HIST = 0x090024;
 export const CDS_BET_HIST_R = 0x090025;
+export const CDS_BET_LIST = 0x080011;

@@ -5,7 +5,7 @@ import withWidth from '@material-ui/core/withWidth';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 
-const styles = theme => ({
+const styles = () => ({
 	gridListRoot: {
     display: 'flex',
     padding: 0,
@@ -31,8 +31,8 @@ const styles = theme => ({
 	}
 });
 
-const GridListBase = props => {
-	const { classes, children, width, bgColor, customCols, list, tileClass } = props;
+const GridListBase = ({ classes, children, width, bgColor, customCols, list, tileClass }) => {
+	const { root, gridListRoot, GridListBase, tile } = classes;
 	const data = list;
 	let cols;
 	
@@ -55,18 +55,18 @@ const GridListBase = props => {
 	}
 
   return (
-    <div className={classes.root}>
+    <div className={root}>
 			<GridList 
 				cellHeight="auto"
-				classes={{ root: classes.gridListRoot }}
-				className={classes.GridListBase}
+				classes={{ root: gridListRoot }}
+				className={GridListBase}
 				cols={customCols || cols}
 				spacing={16}
 				style={{ backgroundColor: bgColor }}
 			>
         {data.map((item, index) => (
 					<GridListTile 
-						classes={{ tile: tileClass || classes.tile }}
+						classes={{ tile: tileClass || tile }}
 						key={index || ''}
 						cols={item.cols || 1}
 					>

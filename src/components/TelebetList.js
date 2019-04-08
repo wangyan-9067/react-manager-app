@@ -407,12 +407,12 @@ const TelebetList = props => {
 		pageBorder: isAnswerCall
 	});
 
-	// channelList[3].clientName = 'TSThk345';
-	// channelList[3].clientState = 2;
-	// channelList[4].clientName = 'TSThk456';
-	// channelList[4].clientState = 2;
-	// channelList[4].anchorName = 'alice';
-	// channelList[4].anchorState = 2;
+	channelList[3].clientName = 'TSThk456';
+	channelList[3].clientState = 2;
+	channelList[4].clientName = 'TSThk457';
+	channelList[4].clientState = 2;
+	channelList[4].anchorName = 'alice';
+	channelList[4].anchorState = 2;
 	// channelList[1].clientName = 'hk789';
 	// channelList[1].anchorName = 'joyce';
 	// channelList[1].anchorState = 3;
