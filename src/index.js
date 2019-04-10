@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import reducer from './reducers';
@@ -7,6 +8,10 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'typeface-roboto';
 
 import App from './App';
+import Login from './components/Login';
+import ContextRoute from './helpers/ContextRoute';
+import PrivateRoute from './helpers/PrivateRoute';
+import { ContextProvider, ContextConsumer } from './helpers/SocketContext';
 import * as serviceWorker from './serviceWorker';
 import './index.css';
 
@@ -40,7 +45,14 @@ const Application = () => {
 	return (
 		<Provider store={store}>
 			<MuiThemeProvider theme={theme}>
-				<App />
+				<Router>
+					<ContextProvider>
+						<Switch>
+							<ContextRoute exact path="/login" contextConsumer={ContextConsumer} component={Login} />
+							<PrivateRoute exact path="/" component={App} />					
+						</Switch>
+					</ContextProvider>
+				</Router>
 			</MuiThemeProvider>
 		</Provider>
 	);

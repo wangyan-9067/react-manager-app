@@ -35,7 +35,8 @@ const styles = () => ({
   },
   primary: {
     color: '#FFFFFF',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textTransform: 'capitalize'
   },
   secondary: {
     color: '#FFFFFF'

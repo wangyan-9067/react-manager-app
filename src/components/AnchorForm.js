@@ -140,7 +140,7 @@ class AnchorForm extends React.Component {
       isGood = false;
     }
 
-    if (!validator.isAlphanumeric(anchorLoginname.value)) {
+    if (anchorLoginname.isValid && !validator.isAlphanumeric(anchorLoginname.value)) {
       anchorLoginname.isValid = false;
       anchorLoginname.message = 'Anchor Loginname must be alphanumeric';
       isGood = false;

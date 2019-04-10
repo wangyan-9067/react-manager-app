@@ -22,7 +22,7 @@ import GridListBase from './GridListBase';
 import TelebetTile from './TelebetTile';
 import WaitingUser from './WaitingUser';
 import { MUTE_STATE, MANAGER_ACTION_TYPE } from '../constants';
-import { formatAmount } from '../utils';
+import { formatAmount } from '../helpers/utils';
 
 const styles = theme => ({
   root: {

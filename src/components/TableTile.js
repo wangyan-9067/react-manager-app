@@ -134,7 +134,8 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 						});
 						toggleDialog(true);
 					}}
-					disabled={!tableOwner}>
+					disabled={!tableOwner}
+				>
 					踢走桌主
 				</Button>
 			</CardActions>

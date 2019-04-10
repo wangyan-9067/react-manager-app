@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import AnchorForm from './AnchorForm';
 import ToggleButtonGridList from './ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
+import { compareArray } from '../helpers/utils';
 
 const styles = () => ({
   root: {
@@ -93,6 +94,16 @@ const styles = () => ({
   }
 });
 
+const usePrevious = value => {
+  const ref = useRef();
+
+  useEffect(() => {
+    ref.current = value;
+  });
+
+  return ref.current;
+}
+
 const AnchorList = props => {
   const [openAddManagerDialog, setOpenAddManagerDialog] = useState(false);
   const [selected, setSelected] = useState();
@@ -105,7 +116,8 @@ const AnchorList = props => {
     setAnchorsDuty,
     getAnchorsDutyList,
     openDialog,
-    toggleDialog
+    toggleDialog,
+    anchorsOnDutyList
   } = props;
   const {
     root,
@@ -120,6 +132,7 @@ const AnchorList = props => {
     dialogTitle,
     tileClass
   } = classes;
+  const prevAnchorsOnDutyList = usePrevious(anchorsOnDutyList);
 
   const onClickHandler = () => {
     if (isEdit) {
@@ -148,6 +161,17 @@ const AnchorList = props => {
       </Card>
     );
   }
+
+  useEffect(() => {
+    const flattenArrays = {
+      prev: prevAnchorsOnDutyList && prevAnchorsOnDutyList.map(anchor => anchor.anchorName),
+      current: anchorsOnDutyList && anchorsOnDutyList.map(anchor => anchor.anchorName)
+    }
+
+    if (!compareArray(flattenArrays.prev, flattenArrays.current)) {
+      setSelected(flattenArrays.current);
+    }
+  });
 
 	return (
 		<div className={root}>
@@ -211,11 +235,12 @@ const AnchorList = props => {
 const StyledAnchorList = withStyles(styles)(AnchorList);
 
 const mapStateToProps = state => {
-  const { anchorList } = state.voice;
+  const { anchorList, anchorsOnDutyList } = state.voice;
   const { openDialog } = state.app;
 
   return ({
     anchorList,
+    anchorsOnDutyList,
     openDialog
   });
 };

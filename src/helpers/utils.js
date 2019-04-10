@@ -13,3 +13,11 @@ export const formatAmount = (amount, decimalCount = 2, decimal = ".", thousands 
 		console.log(e)
 	}
 };
+
+export const compareArray = (array1, array2) => {
+	if (!array1  || !array2) {
+		return;
+	}
+	
+	return array1.length === array2.length && array1.sort().every((value, index) => value === array2.sort()[index]);
+};

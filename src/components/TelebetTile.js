@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { setIsAnchorCall } from '../actions/voice';
 import { USER_STATE } from '../constants';
-import { formatAmount } from '../utils';
+import { formatAmount } from '../helpers/utils';
 
 const styles = {
 	emptyCard: {

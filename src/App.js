@@ -5,8 +5,6 @@ import * as RTC from 'cube-rtc';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import VoiceSocket from './services/Voice/VoiceSocket';
-import DataSocket from './services/Data/DataSocket';
 import { MenuBar, MessageBar } from './components';
 import {
   setVoiceAppId,
@@ -71,122 +69,12 @@ import {
 import './App.css';
 
 const MANAGER_USERNAME = 'alicehui3';
-const MANAGER_PASSWORD = 'aliceTest3';
-const voiceSocket = new VoiceSocket();
-const dataSocket = new DataSocket();
-
-const sendManagerAction = (action, channelId) => {
-  voiceSocket.writeBytes(Socket.createCMD(MANAGER_ACTION, bytes => {
-    bytes.writeUnsignedInt(action);
-    bytes.writeUnsignedInt(channelId);
-  }));
-};
-
-const getAnchorList = () => {
-  voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ALL_QUERY_REQ));
-};
-
-const addAnchor = (loginName, password, nickName, url) => {
-  voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ADD_REQ, bytes => {
-    bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
-    bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
-    bytes.writeBytes(Socket.stringToBytes(nickName, VALUE_LENGTH.NICK_NAME));
-    bytes.writeUnsignedInt(url.length);
-    bytes.writeBytes(Socket.stringToBytes(url, url.length));
-  }));
-};
-
-const deleteAnchor = loginName => {
-  voiceSocket.writeBytes(Socket.createCMD(ANCHOR_DELETE_REQ, bytes => {
-    bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
-  }));
-};
-
-const assignTable = (vid, clientName)=> {
-  dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_CONTROL_CONTRACT_TABLE, bytes => {
-    bytes.writeUnsignedShort();
-    bytes.writeUnsignedShort();
-    bytes.writeBytes(Socket.stringToBytes(vid, DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-    bytes.writeBytes(Socket.stringToBytes(clientName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-    bytes.writeByte(CONTRACT_MODE.OWNER);
-  }));
-};
-
-const assignTableToChannel = (channelId, vid) => {
-  voiceSocket.writeBytes(Socket.createCMD(ASSIGN_TABLE_TO_CHANNEL, bytes => {
-    bytes.writeUnsignedInt(channelId);
-    bytes.writeBytes(Socket.stringToBytes(vid, VALUE_LENGTH.VID));
-  }));
-};
-
-const leaveChannel = channelId => {
-  sendManagerAction(MANAGER_ACTIONS.LEAVE_CHANNEL, channelId);
-};
-
-const toggleMuteChannel = (channelId, isAnchor, muteState) => {
-  const { MUTE_ANCHOR, UNMUTE_ANCHOR, MUTE_CLIENT, UNMUTE_CLIENT } = MANAGER_ACTIONS;
-  const { MUTE } = MUTE_STATE;
-  let action;
-
-  if (isAnchor) {
-    action = muteState === MUTE ? MUTE_ANCHOR : UNMUTE_ANCHOR;
-  } else {
-    action = muteState === MUTE ? MUTE_CLIENT : UNMUTE_CLIENT;
-  }
-
-  sendManagerAction(action, channelId);
-};
-
-const kickoutClientFromDataServer = (vid, clientName) => {
-  dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
-    bytes.writeUnsignedShort();
-    bytes.writeUnsignedShort();
-    bytes.writeBytes(Socket.stringToBytes(vid, DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-    bytes.writeBytes(Socket.stringToBytes(clientName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-    bytes.writeByte(0);
-  }));
-};
-
-const kickoutClient = channelId => {
-  sendManagerAction(MANAGER_ACTIONS.KICKOUT_CLIENT, channelId);
-};
-
-const blacklistClient = channelId => {
-  sendManagerAction(MANAGER_ACTIONS.BLACKLIST_CLIENT, channelId);
-};
-
-const getBetHistory = (gmCode = '', gmType = '', beginTime = '', endTime = '') => {
-  dataSocket.writeBytes(Socket.createCMD(CDS_BET_HIST, bytes => {
-    bytes.writeUnsignedShort();
-    bytes.writeUnsignedShort();
-    bytes.writeBytes(Socket.stringToBytes('V010', DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-    bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_TIMESTAMP));
-    bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_TIMESTAMP));
-    bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_GAME_CODE));
-    bytes.writeUnsignedShort();
-    bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_GM_TYPE));
-    bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-  }));
-};
-
-const setAnchorsDuty = (anchorList) => {
-  voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_UPDATE, bytes => {
-    if (Array.isArray(anchorList) && anchorList.length > 0) {
-      bytes.writeUnsignedInt(anchorList.length);
-
-      for(let i = 0; i < anchorList.length; i++) {
-        bytes.writeBytes(Socket.stringToBytes(anchorList[i], VALUE_LENGTH.LOGIN_NAME));
-      }
-    }
-  }));
-};
-
-const getAnchorsDutyList = () => {
-  voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_REQUEST));
-};
+const MANAGER_PASSWORD = 'aliceTest3'
 
 class App extends React.Component {
   async componentDidMount() {
+    const { voice: voiceSocket, data: dataSocket } = this.props;
+
     voiceSocket.addEventListener(Socket.EVENT_OPEN, evt => {
       voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
         bytes.writeBytes(Socket.stringToBytes(MANAGER_USERNAME, VALUE_LENGTH.LOGIN_NAME));
@@ -199,6 +87,7 @@ class App extends React.Component {
         console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
         const {
+          voiceAppId,
           setVoiceAppId,
           setChannelList,
           currentChannelId,
@@ -215,15 +104,13 @@ class App extends React.Component {
 
         switch(evt.data.respId) {
           case MANAGER_LOGIN_R:
-            const { voiceAppId } = evt.data;
-
-            if (voiceAppId) {
-              setVoiceAppId(voiceAppId);
-              RTC.init(voiceAppId);
+            if (evt.data.voiceAppId) {
+              setVoiceAppId(evt.data.voiceAppId);
+              RTC.init(evt.data.voiceAppId);
             }
 
-            getAnchorList();
-            getAnchorsDutyList();
+            this.getAnchorList();
+            this.getAnchorsDutyList();
           break;
 
           case CHANNEL_LIST_R:
@@ -238,7 +125,7 @@ class App extends React.Component {
 
             if (joinStatus === RESPONSE_CODES.SUCCESS) {
               await RTC.joinRoom(currentChannelId, voiceAppId);
-              sendManagerAction(MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
+              this.sendManagerAction(MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
             }
           break;
 
@@ -277,7 +164,7 @@ class App extends React.Component {
               setToastVariant('error');
               toggleToast(true);
             } else {
-              getAnchorList();
+              this.getAnchorList();
             }
           break;
 
@@ -291,7 +178,7 @@ class App extends React.Component {
               toggleToast(true);
             } else {
               toggleDialog(false);
-              getAnchorList();
+              this.getAnchorList();
             }
           break;
 
@@ -328,7 +215,7 @@ class App extends React.Component {
     
     dataSocket.addEventListener(Socket.EVENT_PACKET, evt => {
       if (evt.$type === Socket.EVENT_PACKET) {
-        console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
+        console.log(`app ${Socket.EVENT_PACKET} data:`, evt.data);
       }
 
       const {
@@ -380,7 +267,7 @@ class App extends React.Component {
           const { code: loginStatus } = evt.data;
 
           if (loginStatus === RESPONSE_CODES.SUCCESS) {
-            getBetHistory();
+            this.getBetHistory();
           }
         break;
 
@@ -388,7 +275,7 @@ class App extends React.Component {
           const { code: assignTableStatus, vid } = evt.data;
 
           if (assignTableStatus === RESPONSE_CODES.SUCCESS) {
-            assignTableToChannel(currentChannelId, vid);
+            this.assignTableToChannel(currentChannelId, vid);
           } else {
             setToastMessage('無法將玩家配對到桌枱!');
             setToastVariant('error');
@@ -411,9 +298,9 @@ class App extends React.Component {
 
           if (kickoutReason === RESPONSE_CODES.SUCCESS) {
             if (managerAction === MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
-              kickoutClient(currentChannelId);
+              this.kickoutClient(currentChannelId);
             } else {
-              blacklistClient(currentChannelId);
+              this.blacklistClient(currentChannelId);
             }
           } else {
             setToastMessage('無法將玩家踢出桌枱/加入黑名單!');
@@ -427,16 +314,146 @@ class App extends React.Component {
       }
     });
 
-    voiceSocket.autoConnect();
-    dataSocket.autoConnect();
+    await voiceSocket.autoConnect();
+    await dataSocket.autoConnect();
   }
 
   joinChannel = channelId => {
-    this.props.setCurrentChannelId(channelId);
+    const { setCurrentChannelId, voice: voiceSocket } = this.props;
+    setCurrentChannelId(channelId);
 
     voiceSocket.writeBytes(Socket.createCMD(CHANNEL_JOIN, bytes => {
       bytes.writeUnsignedInt(channelId);
     }));
+  }
+
+  sendManagerAction = (action, channelId) => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_ACTION, bytes => {
+      bytes.writeUnsignedInt(action);
+      bytes.writeUnsignedInt(channelId);
+    }));
+  }
+  
+  getAnchorList = () => {
+    const { voice: voiceSocket } = this.props;
+    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ALL_QUERY_REQ));
+  }
+  
+  addAnchor = (loginName, password, nickName, url) => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ADD_REQ, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
+      bytes.writeBytes(Socket.stringToBytes(nickName, VALUE_LENGTH.NICK_NAME));
+      bytes.writeUnsignedInt(url.length);
+      bytes.writeBytes(Socket.stringToBytes(url, url.length));
+    }));
+  }
+  
+  deleteAnchor = loginName => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_DELETE_REQ, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+    }));
+  }
+  
+  assignTable = (vid, clientName)=> {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_CONTROL_CONTRACT_TABLE, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes(vid, DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+      bytes.writeBytes(Socket.stringToBytes(clientName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+      bytes.writeByte(CONTRACT_MODE.OWNER);
+    }));
+  }
+  
+  assignTableToChannel = (channelId, vid) => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(ASSIGN_TABLE_TO_CHANNEL, bytes => {
+      bytes.writeUnsignedInt(channelId);
+      bytes.writeBytes(Socket.stringToBytes(vid, VALUE_LENGTH.VID));
+    }));
+  }
+  
+  leaveChannel = channelId => {
+    this.sendManagerAction(MANAGER_ACTIONS.LEAVE_CHANNEL, channelId);
+  }
+  
+  toggleMuteChannel = (channelId, isAnchor, muteState) => {
+    const { MUTE_ANCHOR, UNMUTE_ANCHOR, MUTE_CLIENT, UNMUTE_CLIENT } = MANAGER_ACTIONS;
+    const { MUTE } = MUTE_STATE;
+    let action;
+  
+    if (isAnchor) {
+      action = muteState === MUTE ? MUTE_ANCHOR : UNMUTE_ANCHOR;
+    } else {
+      action = muteState === MUTE ? MUTE_CLIENT : UNMUTE_CLIENT;
+    }
+  
+    this.sendManagerAction(action, channelId);
+  }
+  
+  kickoutClientFromDataServer = (vid, clientName) => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes(vid, DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+      bytes.writeBytes(Socket.stringToBytes(clientName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+      bytes.writeByte(0);
+    }));
+  }
+  
+  kickoutClient = channelId => {
+    this.sendManagerAction(MANAGER_ACTIONS.KICKOUT_CLIENT, channelId);
+  }
+  
+  blacklistClient = channelId => {
+    this.sendManagerAction(MANAGER_ACTIONS.BLACKLIST_CLIENT, channelId);
+  }
+  
+  getBetHistory = (gmCode = '', gmType = '', beginTime = '', endTime = '') => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_BET_HIST, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes('V010', DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_TIMESTAMP));
+      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_TIMESTAMP));
+      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_GAME_CODE));
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_GM_TYPE));
+      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+    }));
+  }
+  
+  setAnchorsDuty = (anchorList) => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_UPDATE, bytes => {
+      if (Array.isArray(anchorList) && anchorList.length > 0) {
+        bytes.writeUnsignedInt(anchorList.length);
+  
+        for(let i = 0; i < anchorList.length; i++) {
+          bytes.writeBytes(Socket.stringToBytes(anchorList[i], VALUE_LENGTH.LOGIN_NAME));
+        }
+      }
+    }));
+  }
+  
+  getAnchorsDutyList = () => {
+    const { voice: voiceSocket } = this.props;
+    
+    voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_REQUEST));
   }
 
   onClose = () => {
@@ -449,18 +466,18 @@ class App extends React.Component {
       <div className="App">
         <MenuBar 
           joinChannel={this.joinChannel}
-          leaveChannel={leaveChannel}
-          assignTable={assignTable}
-          assignTableToChannel={assignTableToChannel}
-          toggleMuteChannel={toggleMuteChannel}
-          kickoutClientFromDataServer={kickoutClientFromDataServer}
-          kickoutClient={kickoutClient}
-          blacklistClient={blacklistClient}
-          getAnchorList={getAnchorList}
-          addAnchor={addAnchor}
-          deleteAnchor={deleteAnchor}
-          setAnchorsDuty={setAnchorsDuty}
-          getAnchorsDutyList={getAnchorsDutyList}
+          leaveChannel={this.leaveChannel}
+          assignTable={this.assignTable}
+          assignTableToChannel={this.assignTableToChannel}
+          toggleMuteChannel={this.toggleMuteChannel}
+          kickoutClientFromDataServer={this.kickoutClientFromDataServer}
+          kickoutClient={this.kickoutClient}
+          blacklistClient={this.blacklistClient}
+          getAnchorList={this.getAnchorList}
+          addAnchor={this.addAnchor}
+          deleteAnchor={this.deleteAnchor}
+          setAnchorsDuty={this.setAnchorsDuty}
+          getAnchorsDutyList={this.getAnchorsDutyList}
         />
         <MessageBar
           variant={variant}
