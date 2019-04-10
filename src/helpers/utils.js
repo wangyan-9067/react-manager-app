@@ -21,3 +21,8 @@ export const compareArray = (array1, array2) => {
 	
 	return array1.length === array2.length && array1.sort().every((value, index) => value === array2.sort()[index]);
 };
+
+export const isObject = obj => {
+  const type = typeof obj;
+  return type === 'function' || type === 'object' && !!obj;
+};

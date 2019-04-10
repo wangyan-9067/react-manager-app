@@ -66,20 +66,22 @@ import {
   RESPONSE_CODES,
   MANAGER_ACTION_TYPE
 } from './constants';
+import { isObject } from './helpers/utils';
 import './App.css';
-
-const MANAGER_USERNAME = 'alicehui3';
-const MANAGER_PASSWORD = 'aliceTest3'
 
 class App extends React.Component {
   async componentDidMount() {
-    const { voice: voiceSocket, data: dataSocket } = this.props;
+    const { voice: voiceSocket, data: dataSocket, managerCredential } = this.props;
 
     voiceSocket.addEventListener(Socket.EVENT_OPEN, evt => {
-      voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
-        bytes.writeBytes(Socket.stringToBytes(MANAGER_USERNAME, VALUE_LENGTH.LOGIN_NAME));
-        bytes.writeBytes(Socket.stringToBytes(MANAGER_PASSWORD, VALUE_LENGTH.PASSWORD));
-      }));
+      if (isObject(managerCredential)) {
+        const { managerLoginname, managerPassword } = managerCredential;
+
+        voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
+          bytes.writeBytes(Socket.stringToBytes(managerLoginname, VALUE_LENGTH.LOGIN_NAME));
+          bytes.writeBytes(Socket.stringToBytes(managerPassword, VALUE_LENGTH.PASSWORD));
+        }));
+      }
     });
 
     voiceSocket.addEventListener(Socket.EVENT_PACKET, async (evt) => {
@@ -202,15 +204,19 @@ class App extends React.Component {
 
     dataSocket.addEventListener(Socket.EVENT_OPEN, evt => {
       const { VL_VIDEO_ID, VL_USER_NAME, VL_PSW } = DATA_SERVER_VALUE_LENGTH;
+      
+        if (isObject(managerCredential)) {
+          const { managerLoginname, managerPassword } = managerCredential;
 
-      dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
-        bytes.writeUnsignedShort();
-        bytes.writeUnsignedShort();
-        bytes.writeBytes(Socket.stringToBytes('', VL_VIDEO_ID));
-        bytes.writeBytes(Socket.stringToBytes(MANAGER_USERNAME, VL_USER_NAME));
-        bytes.writeBytes(Socket.stringToBytes(MANAGER_PASSWORD, VL_PSW));
-        bytes.writeUnsignedInt();
-      }));
+        dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
+          bytes.writeUnsignedShort();
+          bytes.writeUnsignedShort();
+          bytes.writeBytes(Socket.stringToBytes('', VL_VIDEO_ID));
+          bytes.writeBytes(Socket.stringToBytes(managerLoginname, VL_USER_NAME));
+          bytes.writeBytes(Socket.stringToBytes(managerPassword, VL_PSW));
+          bytes.writeUnsignedInt();
+        }));
+      }
     });
     
     dataSocket.addEventListener(Socket.EVENT_PACKET, evt => {
@@ -493,7 +499,7 @@ class App extends React.Component {
 
 const mapStateToProps = state => {
   const { voiceAppId, channelList, currentChannelId, managerAction } = state.voice;
-  const { variant, message, duration, open } = state.app;
+  const { variant, message, duration, open, managerCredential } = state.app;
   return ({
     voiceAppId,
     channelList,
@@ -502,7 +508,8 @@ const mapStateToProps = state => {
     message,
     duration,
     open,
-    managerAction
+    managerAction,
+    managerCredential
   });
 };
 

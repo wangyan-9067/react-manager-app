@@ -17,6 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import { withRouter } from "react-router";
 
 import { setVoiceAppId } from '../actions/voice';
+import { setIsUserAuthenticated, setManagerCredential } from '../actions/app';
 import { 
   MANAGER_LOGIN,
   MANAGER_LOGIN_R,
@@ -106,12 +107,11 @@ class Login extends React.Component {
       if (evt.$type === Socket.EVENT_PACKET) {
         console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-        const { setVoiceAppId } = this.props;
+        const { setVoiceAppId, setIsUserAuthenticated } = this.props;
 
         switch(evt.data.respId) {
           case MANAGER_LOGIN_R:
             const { code: loginStatus, voiceAppId } = evt.data;
-            const { managerLoginname, managerPassword } = this.state;
 
             if (loginStatus === RESPONSE_CODES.SUCCESS) {
               if (voiceAppId) {
@@ -121,16 +121,14 @@ class Login extends React.Component {
                 this.getAnchorList();
                 this.getAnchorsDutyList();
 
-                const authdata = window.btoa(managerLoginname + ':' + managerPassword);
-                sessionStorage.setItem('authToken', JSON.stringify(authdata));
-
-                const { from } = this.props.location.state || { from: { pathname: "/" } };
-                this.props.history.push(from);
+                setIsUserAuthenticated(true);
               } else {
                 // TODO: show error popup
+                setIsUserAuthenticated(false);
               }
             } else {
               // TODO: show error popup
+              setIsUserAuthenticated(false);
             }
           break;
 
@@ -145,11 +143,16 @@ class Login extends React.Component {
         console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
       }
 
+      const { setIsUserAuthenticated } = this.props;
+
       switch(evt.data.respId) {
         case CDS_OPERATOR_LOGIN_R:
           const { code: loginStatus } = evt.data;
 
-          if (!loginStatus === RESPONSE_CODES.SUCCESS) {
+          if (loginStatus === RESPONSE_CODES.SUCCESS) {
+            setIsUserAuthenticated(true);
+          } else {
+            setIsUserAuthenticated(false);
             // TODO: show error popup
           }
         break;
@@ -181,7 +184,12 @@ class Login extends React.Component {
     
     if (this.formIsValid()) {
       const { managerLoginname, managerPassword } = this.state;
-      const { voice: voiceSocket, data: dataSocket } = this.props;
+      const { voice: voiceSocket, data: dataSocket, setManagerCredential } = this.props;
+
+      setManagerCredential({
+        managerLoginname: managerLoginname.value,
+        managerPassword: managerPassword.value
+      });
 
       if (voiceSocket.readyState === Socket.ReadyState.OPEN) {
         voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
@@ -276,7 +284,6 @@ class Login extends React.Component {
 
 
   render () {
-    console.log("this.props", this.props);
     const { managerLoginname, managerPassword } = this.state;
     const { classes } = this.props;
     const {
@@ -360,7 +367,9 @@ Login.propTypes = {
 const RoutedLogin = withRouter(withStyles(styles)(Login));
 
 const mapDispatchToProps = dispatch => ({
-  setVoiceAppId: id => dispatch(setVoiceAppId(id))
+  setVoiceAppId: id => dispatch(setVoiceAppId(id)),
+  setIsUserAuthenticated: status => dispatch(setIsUserAuthenticated(status)),
+  setManagerCredential: credential => dispatch(setManagerCredential(credential))
 });
 
 export default connect(null, mapDispatchToProps)(RoutedLogin);

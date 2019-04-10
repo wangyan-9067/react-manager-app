@@ -3,7 +3,9 @@ import {
   SET_TOAST_VARIANT,
   SET_TOAST_DURATION,
   TOGGLE_TOAST,
-  TOGGLE_DIALOG
+  TOGGLE_DIALOG,
+  SET_IS_USER_AUTHENTICATED,
+  SET_MANAGER_CREDENTIAL
 } from '../types';
   
 const initialState = {
@@ -11,7 +13,9 @@ const initialState = {
   variant: '',
   duration: 5000,
   open: false,
-  openDialog: false
+  openDialog: false,
+  isUserAuthenticated: null,
+  managerCredential: null
 };
 
 export default function app(state = initialState, action) {
@@ -35,6 +39,14 @@ export default function app(state = initialState, action) {
     case TOGGLE_DIALOG:
       const openDialog = action.toggle;
       return { ...state, openDialog };
+
+    case SET_IS_USER_AUTHENTICATED:
+      const isUserAuthenticated = action.status;
+      return { ...state, isUserAuthenticated };
+
+    case SET_MANAGER_CREDENTIAL:
+      const managerCredential = action.credential;
+      return { ...state, managerCredential };
 
     default:
     	return state;
