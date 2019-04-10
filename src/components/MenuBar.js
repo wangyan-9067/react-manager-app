@@ -97,8 +97,8 @@ class MenuBar extends React.Component {
   };
 
   render() {
-    const { 
-      classes, 
+    const {
+      classes,
       joinChannel,
       leaveChannel,
       assignTable,
@@ -111,7 +111,8 @@ class MenuBar extends React.Component {
       addAnchor,
       deleteAnchor,
       setAnchorsDuty,
-      getAnchorsDutyList
+      getAnchorsDutyList,
+      logout
     } = this.props;
     const { value } = this.state;
     const {
@@ -158,7 +159,7 @@ class MenuBar extends React.Component {
             </List>
             <div className={grow} />
             <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)}>管理經理</Button>
-            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)}>登出</Button>
+            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={logout}>登出</Button>
           </Toolbar>
         </AppBar>
         <Grid container>
@@ -176,7 +177,7 @@ class MenuBar extends React.Component {
             )}
             {value === 1 && (
               <TabContainer classes={classes}>
-                <TelebetList 
+                <TelebetList
                   joinChannel={joinChannel}
                   leaveChannel={leaveChannel}
                   assignTable={assignTable}
@@ -212,7 +213,8 @@ MenuBar.propTypes = {
   assignTableToChannel: PropTypes.func,
   toggleMuteChannel: PropTypes.func,
   kickoutClient: PropTypes.func,
-  blacklistClient: PropTypes.func
+  blacklistClient: PropTypes.func,
+  logout: PropTypes.func
 };
 
 export default withStyles(styles)(MenuBar);

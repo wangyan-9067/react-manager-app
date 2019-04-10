@@ -24,7 +24,9 @@ import {
   setToastVariant,
   setToastDuration,
   toggleToast,
-  toggleDialog
+  toggleDialog,
+  setIsUserAuthenticated,
+  setManagerCredential
 } from './actions/app';
 import {
   MANAGER_LOGIN,
@@ -47,6 +49,7 @@ import {
   ANCHORS_ON_DUTY_R,
   CDS_OPERATOR_LOGIN,
   CDS_OPERATOR_LOGIN_R,
+  CDS_OPERATOR_LOGOUT,
   CDS_CLIENT_LIST,
   CDS_OPERATOR_CONTROL_CONTRACT_TABLE,
   CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R,
@@ -55,7 +58,8 @@ import {
   CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R,
   CDS_BET_HIST,
   CDS_CONTROL_REQ_VIDEO_RES,
-  CDS_VIDEO_STATUS
+  CDS_VIDEO_STATUS,
+  MANAGER_LOGOUT
 } from './protocols';
 import {
   VALUE_LENGTH,
@@ -70,258 +74,278 @@ import { isObject } from './helpers/utils';
 import './App.css';
 
 class App extends React.Component {
-  async componentDidMount() {
-    const { voice: voiceSocket, data: dataSocket, managerCredential } = this.props;
+  onVoiceSocketOpen = evt => {
+    if (isObject(this.props.managerCredential)) {
+      const { voice: voiceSocket, managerCredential: { managerLoginname, managerPassword }} = this.props;
 
-    voiceSocket.addEventListener(Socket.EVENT_OPEN, evt => {
-      if (isObject(managerCredential)) {
-        const { managerLoginname, managerPassword } = managerCredential;
+      voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
+        bytes.writeBytes(Socket.stringToBytes(managerLoginname, VALUE_LENGTH.LOGIN_NAME));
+        bytes.writeBytes(Socket.stringToBytes(managerPassword, VALUE_LENGTH.PASSWORD));
+      }));
+    }
+  }
 
-        voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
-          bytes.writeBytes(Socket.stringToBytes(managerLoginname, VALUE_LENGTH.LOGIN_NAME));
-          bytes.writeBytes(Socket.stringToBytes(managerPassword, VALUE_LENGTH.PASSWORD));
-        }));
-      }
-    });
-
-    voiceSocket.addEventListener(Socket.EVENT_PACKET, async (evt) => {
-      if (evt.$type === Socket.EVENT_PACKET) {
-        console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
-
-        const {
-          voiceAppId,
-          setVoiceAppId,
-          setChannelList,
-          currentChannelId,
-          setChannelJoinStatus,
-          setIsAnswerCall,
-          setWaitingList,
-          setAnchorList,
-          setAnchorsOnDutyList,
-          setToastMessage,
-          setToastVariant,
-          toggleToast,
-          toggleDialog
-        } = this.props;
-
-        switch(evt.data.respId) {
-          case MANAGER_LOGIN_R:
-            if (evt.data.voiceAppId) {
-              setVoiceAppId(evt.data.voiceAppId);
-              RTC.init(evt.data.voiceAppId);
-            }
-
-            this.getAnchorList();
-            this.getAnchorsDutyList();
-          break;
-
-          case CHANNEL_LIST_R:
-            setChannelList(evt.data.channelList);
-          break;
-
-          case CHANNEL_JOIN_R:
-            const { code: joinStatus } = evt.data;
-
-            setChannelJoinStatus(joinStatus);
-            setIsAnswerCall(joinStatus === 0 ? true : false);
-
-            if (joinStatus === RESPONSE_CODES.SUCCESS) {
-              await RTC.joinRoom(currentChannelId, voiceAppId);
-              this.sendManagerAction(MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
-            }
-          break;
-
-          case MANAGER_ACTION_R:
-            const { code: actionStatus, action } = evt.data;
-            const { LEAVE_CHANNEL, KICKOUT_CLIENT, BLACKLIST_CLIENT } = MANAGER_ACTIONS;
-
-            if (actionStatus === RESPONSE_CODES.SUCCESS) {
-              switch(action) {
-                case LEAVE_CHANNEL:
-                case KICKOUT_CLIENT:
-                case BLACKLIST_CLIENT:
-                  RTC.leaveRoom();
-                  setIsAnswerCall(false);
-                break;
-
-                default:
-                break;
-              }
-            }
-          break;
-
-          case WAITING_LIST_R:
-            setWaitingList(evt.data.clientList);
-          break;
-
-          case ANCHOR_ALL_QUERY_R:
-            setAnchorList(evt.data.allAnchorsList);
-          break;
-
-          case ANCHOR_ADD_R:
-            const { code: anchorAddStatus } = evt.data;
-            
-            if (anchorAddStatus !== RESPONSE_CODES.SUCCESS) {
-              setToastMessage('無法加入主播!');
-              setToastVariant('error');
-              toggleToast(true);
-            } else {
-              this.getAnchorList();
-            }
-          break;
-
-          case ANCHOR_DELETE_R:
-            const { code: anchorDeleteStatus } = evt.data;
-            
-            if (anchorDeleteStatus !== RESPONSE_CODES.SUCCESS) {
-              toggleDialog(false);
-              setToastMessage('無法刪除主播!');
-              setToastVariant('error');
-              toggleToast(true);
-            } else {
-              toggleDialog(false);
-              this.getAnchorList();
-            }
-          break;
-
-          case ANCHORS_ON_DUTY_R:
-            setAnchorsOnDutyList(evt.data.anchorsOnDutyList);
-          break;
-
-          default:
-          break;
-        }
-      }
-    });
-
-    voiceSocket.addEventListener(Socket.EVENT_CLOSE, () => {
-      RTC.leaveRoom();
-    });
-
-    voiceSocket.addEventListener(Socket.EVENT_DIE, () => {
-      RTC.leaveRoom();
-    });
-
-    dataSocket.addEventListener(Socket.EVENT_OPEN, evt => {
-      const { VL_VIDEO_ID, VL_USER_NAME, VL_PSW } = DATA_SERVER_VALUE_LENGTH;
-      
-        if (isObject(managerCredential)) {
-          const { managerLoginname, managerPassword } = managerCredential;
-
-        dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
-          bytes.writeUnsignedShort();
-          bytes.writeUnsignedShort();
-          bytes.writeBytes(Socket.stringToBytes('', VL_VIDEO_ID));
-          bytes.writeBytes(Socket.stringToBytes(managerLoginname, VL_USER_NAME));
-          bytes.writeBytes(Socket.stringToBytes(managerPassword, VL_PSW));
-          bytes.writeUnsignedInt();
-        }));
-      }
-    });
-    
-    dataSocket.addEventListener(Socket.EVENT_PACKET, evt => {
-      if (evt.$type === Socket.EVENT_PACKET) {
-        console.log(`app ${Socket.EVENT_PACKET} data:`, evt.data);
-      }
+  onVoiceSocketPacket = async (evt) => {
+    if (evt.$type === Socket.EVENT_PACKET) {
+      console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
       const {
-        setTableList,
+        voiceAppId,
+        setVoiceAppId,
+        setChannelList,
         currentChannelId,
+        setChannelJoinStatus,
+        setIsAnswerCall,
+        setWaitingList,
+        setAnchorList,
+        setAnchorsOnDutyList,
         setToastMessage,
         setToastVariant,
         toggleToast,
-        managerAction
+        toggleDialog
       } = this.props;
 
       switch(evt.data.respId) {
-        case CDS_CONTROL_REQ_VIDEO_RES:
-          const initialTableData = evt.data.videoStatusList;
+        case MANAGER_LOGIN_R:
+          if (evt.data.voiceAppId) {
+            setVoiceAppId(evt.data.voiceAppId);
+            RTC.init(evt.data.voiceAppId);
+          }
 
-          if (Array.isArray(initialTableData)) {
-            initialTableData.forEach(table => {
-              let { vid, dealerName, gameCode, gmType, status } = table;
+          this.getAnchorList();
+          this.getAnchorsDutyList();
+        break;
 
-              setTableList({
-                vid,
-                dealerName,
-                gameCode,
-                gmType,
-                gameStatus: status
-              });
-            });
+        case CHANNEL_LIST_R:
+          setChannelList(evt.data.channelList);
+        break;
+
+        case CHANNEL_JOIN_R:
+          const { code: joinStatus } = evt.data;
+
+          setChannelJoinStatus(joinStatus);
+          setIsAnswerCall(joinStatus === 0 ? true : false);
+
+          if (joinStatus === RESPONSE_CODES.SUCCESS) {
+            await RTC.joinRoom(currentChannelId, voiceAppId);
+            this.sendManagerAction(MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
           }
         break;
 
-        case CDS_CLIENT_LIST:
-          setTableList({
-            vid: evt.data.vid,
-            seatedPlayerNum: evt.data.seatedPlayerNum
-          });
-        break;
+        case MANAGER_ACTION_R:
+          const { code: actionStatus, action } = evt.data;
+          const { LEAVE_CHANNEL, KICKOUT_CLIENT, BLACKLIST_CLIENT } = MANAGER_ACTIONS;
 
-        case CDS_VIDEO_STATUS:
-          setTableList({
-            vid: evt.data.vid,
-            gameStatus: evt.data.gameStatus,
-            gameCode: evt.data.gmcode,
-            tableOwner: evt.data.username,
-            status: evt.data.videoStatus
-          });
-        break;
+          if (actionStatus === RESPONSE_CODES.SUCCESS) {
+            switch(action) {
+              case LEAVE_CHANNEL:
+              case KICKOUT_CLIENT:
+              case BLACKLIST_CLIENT:
+                RTC.leaveRoom();
+                setIsAnswerCall(false);
+              break;
 
-        case CDS_OPERATOR_LOGIN_R:
-          const { code: loginStatus } = evt.data;
-
-          if (loginStatus === RESPONSE_CODES.SUCCESS) {
-            this.getBetHistory();
-          }
-        break;
-
-        case CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R:
-          const { code: assignTableStatus, vid } = evt.data;
-
-          if (assignTableStatus === RESPONSE_CODES.SUCCESS) {
-            this.assignTableToChannel(currentChannelId, vid);
-          } else {
-            setToastMessage('無法將玩家配對到桌枱!');
-            setToastVariant('error');
-            toggleToast(true);
-          }
-        break;
-
-        case CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC:
-          // TODO: get reason table
-          const { username } = evt.data;
-
-          setToastMessage(`無法將玩家${username}配對到桌枱!`);
-          setToastVariant('error');
-          setToastDuration(null);
-          toggleToast(true);
-        break;
-
-        case CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R:
-          const { reason: kickoutReason } = evt.data;
-
-          if (kickoutReason === RESPONSE_CODES.SUCCESS) {
-            if (managerAction === MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
-              this.kickoutClient(currentChannelId);
-            } else {
-              this.blacklistClient(currentChannelId);
+              default:
+              break;
             }
-          } else {
-            setToastMessage('無法將玩家踢出桌枱/加入黑名單!');
+          }
+        break;
+
+        case WAITING_LIST_R:
+          setWaitingList(evt.data.clientList);
+        break;
+
+        case ANCHOR_ALL_QUERY_R:
+          setAnchorList(evt.data.allAnchorsList);
+        break;
+
+        case ANCHOR_ADD_R:
+          const { code: anchorAddStatus } = evt.data;
+
+          if (anchorAddStatus !== RESPONSE_CODES.SUCCESS) {
+            setToastMessage('無法加入主播!');
             setToastVariant('error');
             toggleToast(true);
+          } else {
+            this.getAnchorList();
           }
+        break;
+
+        case ANCHOR_DELETE_R:
+          const { code: anchorDeleteStatus } = evt.data;
+
+          if (anchorDeleteStatus !== RESPONSE_CODES.SUCCESS) {
+            toggleDialog(false);
+            setToastMessage('無法刪除主播!');
+            setToastVariant('error');
+            toggleToast(true);
+          } else {
+            toggleDialog(false);
+            this.getAnchorList();
+          }
+        break;
+
+        case ANCHORS_ON_DUTY_R:
+          setAnchorsOnDutyList(evt.data.anchorsOnDutyList);
         break;
 
         default:
         break;
       }
-    });
+    }
+  }
+
+  onVoiceSocketClose = () => {
+    RTC.leaveRoom();
+  }
+
+  onVoiceSocketDie = () => {
+    RTC.leaveRoom();
+  }
+
+  onDataSocketOpen = evt => {
+    const { VL_VIDEO_ID, VL_USER_NAME, VL_PSW } = DATA_SERVER_VALUE_LENGTH;
+
+    if (isObject(this.props.managerCredential)) {
+      const { data: dataSocket, managerCredential: { managerLoginname, managerPassword }} = this.props;
+
+      dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
+        bytes.writeUnsignedShort();
+        bytes.writeUnsignedShort();
+        bytes.writeBytes(Socket.stringToBytes('', VL_VIDEO_ID));
+        bytes.writeBytes(Socket.stringToBytes(managerLoginname, VL_USER_NAME));
+        bytes.writeBytes(Socket.stringToBytes(managerPassword, VL_PSW));
+        bytes.writeUnsignedInt();
+      }));
+    }
+  }
+
+  onDataSocketPacket = evt => {
+    if (evt.$type === Socket.EVENT_PACKET) {
+      console.log(`app ${Socket.EVENT_PACKET} data:`, evt.data);
+    }
+
+    const {
+      setTableList,
+      currentChannelId,
+      setToastMessage,
+      setToastVariant,
+      toggleToast,
+      managerAction
+    } = this.props;
+
+    switch(evt.data.respId) {
+      case CDS_CONTROL_REQ_VIDEO_RES:
+        const initialTableData = evt.data.videoStatusList;
+
+        if (Array.isArray(initialTableData)) {
+          initialTableData.forEach(table => {
+            let { vid, dealerName, gameCode, gmType, status } = table;
+
+            setTableList({
+              vid,
+              dealerName,
+              gameCode,
+              gmType,
+              gameStatus: status
+            });
+          });
+        }
+      break;
+
+      case CDS_CLIENT_LIST:
+        setTableList({
+          vid: evt.data.vid,
+          seatedPlayerNum: evt.data.seatedPlayerNum
+        });
+      break;
+
+      case CDS_VIDEO_STATUS:
+        setTableList({
+          vid: evt.data.vid,
+          gameStatus: evt.data.gameStatus,
+          gameCode: evt.data.gmcode,
+          tableOwner: evt.data.username,
+          status: evt.data.videoStatus
+        });
+      break;
+
+      case CDS_OPERATOR_LOGIN_R:
+        const { code: loginStatus } = evt.data;
+
+        if (loginStatus === RESPONSE_CODES.SUCCESS) {
+          this.getBetHistory();
+        }
+      break;
+
+      case CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R:
+        const { code: assignTableStatus, vid } = evt.data;
+
+        if (assignTableStatus === RESPONSE_CODES.SUCCESS) {
+          this.assignTableToChannel(currentChannelId, vid);
+        } else {
+          setToastMessage('無法將玩家配對到桌枱!');
+          setToastVariant('error');
+          toggleToast(true);
+        }
+      break;
+
+      case CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC:
+        // TODO: get reason table
+        const { username } = evt.data;
+
+        setToastMessage(`無法將玩家${username}配對到桌枱!`);
+        setToastVariant('error');
+        setToastDuration(null);
+        toggleToast(true);
+      break;
+
+      case CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R:
+        const { reason: kickoutReason } = evt.data;
+
+        if (kickoutReason === RESPONSE_CODES.SUCCESS) {
+          if (managerAction === MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
+            this.kickoutClient(currentChannelId);
+          } else {
+            this.blacklistClient(currentChannelId);
+          }
+        } else {
+          setToastMessage('無法將玩家踢出桌枱/加入黑名單!');
+          setToastVariant('error');
+          toggleToast(true);
+        }
+      break;
+
+      default:
+      break;
+    }
+  }
+
+  async componentDidMount() {
+    const { voice: voiceSocket, data: dataSocket } = this.props;
+
+    voiceSocket.addEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
+    voiceSocket.addEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
+    voiceSocket.addEventListener(Socket.EVENT_CLOSE, this.onVoiceSocketClose);
+    voiceSocket.addEventListener(Socket.EVENT_DIE, this.onVoiceSocketDie);
+
+    dataSocket.addEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
+    dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
 
     await voiceSocket.autoConnect();
     await dataSocket.autoConnect();
+  }
+
+  componentWillUnmount() {
+    const { voice: voiceSocket, data: dataSocket } = this.props;
+
+    voiceSocket.removeEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
+    voiceSocket.removeEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
+    voiceSocket.removeEventListener(Socket.EVENT_CLOSE, this.onVoiceSocketClose);
+    voiceSocket.removeEventListener(Socket.EVENT_DIE, this.onVoiceSocketDie);
+
+    dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
+    dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
   }
 
   joinChannel = channelId => {
@@ -341,12 +365,12 @@ class App extends React.Component {
       bytes.writeUnsignedInt(channelId);
     }));
   }
-  
+
   getAnchorList = () => {
     const { voice: voiceSocket } = this.props;
     voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ALL_QUERY_REQ));
   }
-  
+
   addAnchor = (loginName, password, nickName, url) => {
     const { voice: voiceSocket } = this.props;
 
@@ -358,7 +382,7 @@ class App extends React.Component {
       bytes.writeBytes(Socket.stringToBytes(url, url.length));
     }));
   }
-  
+
   deleteAnchor = loginName => {
     const { voice: voiceSocket } = this.props;
 
@@ -366,7 +390,7 @@ class App extends React.Component {
       bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
     }));
   }
-  
+
   assignTable = (vid, clientName)=> {
     const { data: dataSocket } = this.props;
 
@@ -378,7 +402,7 @@ class App extends React.Component {
       bytes.writeByte(CONTRACT_MODE.OWNER);
     }));
   }
-  
+
   assignTableToChannel = (channelId, vid) => {
     const { voice: voiceSocket } = this.props;
 
@@ -387,25 +411,25 @@ class App extends React.Component {
       bytes.writeBytes(Socket.stringToBytes(vid, VALUE_LENGTH.VID));
     }));
   }
-  
+
   leaveChannel = channelId => {
     this.sendManagerAction(MANAGER_ACTIONS.LEAVE_CHANNEL, channelId);
   }
-  
+
   toggleMuteChannel = (channelId, isAnchor, muteState) => {
     const { MUTE_ANCHOR, UNMUTE_ANCHOR, MUTE_CLIENT, UNMUTE_CLIENT } = MANAGER_ACTIONS;
     const { MUTE } = MUTE_STATE;
     let action;
-  
+
     if (isAnchor) {
       action = muteState === MUTE ? MUTE_ANCHOR : UNMUTE_ANCHOR;
     } else {
       action = muteState === MUTE ? MUTE_CLIENT : UNMUTE_CLIENT;
     }
-  
+
     this.sendManagerAction(action, channelId);
   }
-  
+
   kickoutClientFromDataServer = (vid, clientName) => {
     const { data: dataSocket } = this.props;
 
@@ -417,15 +441,15 @@ class App extends React.Component {
       bytes.writeByte(0);
     }));
   }
-  
+
   kickoutClient = channelId => {
     this.sendManagerAction(MANAGER_ACTIONS.KICKOUT_CLIENT, channelId);
   }
-  
+
   blacklistClient = channelId => {
     this.sendManagerAction(MANAGER_ACTIONS.BLACKLIST_CLIENT, channelId);
   }
-  
+
   getBetHistory = (gmCode = '', gmType = '', beginTime = '', endTime = '') => {
     const { data: dataSocket } = this.props;
 
@@ -441,24 +465,24 @@ class App extends React.Component {
       bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
     }));
   }
-  
+
   setAnchorsDuty = (anchorList) => {
     const { voice: voiceSocket } = this.props;
 
     voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_UPDATE, bytes => {
       if (Array.isArray(anchorList) && anchorList.length > 0) {
         bytes.writeUnsignedInt(anchorList.length);
-  
+
         for(let i = 0; i < anchorList.length; i++) {
           bytes.writeBytes(Socket.stringToBytes(anchorList[i], VALUE_LENGTH.LOGIN_NAME));
         }
       }
     }));
   }
-  
+
   getAnchorsDutyList = () => {
     const { voice: voiceSocket } = this.props;
-    
+
     voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_REQUEST));
   }
 
@@ -466,11 +490,25 @@ class App extends React.Component {
     this.props.toggleToast(false);
   }
 
+  logout = () => {
+    const { voice: voiceSocket, data: dataSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
+    voiceSocket.close();
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
+    dataSocket.close();
+
+    RTC.leaveRoom();
+    this.props.setManagerCredential(null);
+    this.props.setIsUserAuthenticated(false);
+  }
+
   render() {
     const { open, variant, message, duration } = this.props;
     return (
       <div className="App">
-        <MenuBar 
+        <MenuBar
           joinChannel={this.joinChannel}
           leaveChannel={this.leaveChannel}
           assignTable={this.assignTable}
@@ -484,6 +522,7 @@ class App extends React.Component {
           deleteAnchor={this.deleteAnchor}
           setAnchorsDuty={this.setAnchorsDuty}
           getAnchorsDutyList={this.getAnchorsDutyList}
+          logout={this.logout}
         />
         <MessageBar
           variant={variant}
@@ -527,7 +566,9 @@ const mapDispatchToProps = dispatch => ({
   setToastDuration: duration => dispatch(setToastDuration(duration)),
   toggleToast: toggle => dispatch(toggleToast(toggle)),
   setAnchorsOnDutyList: list => dispatch(setAnchorsOnDutyList(list)),
-  toggleDialog: toggle => dispatch(toggleDialog(toggle))
+  toggleDialog: toggle => dispatch(toggleDialog(toggle)),
+  setIsUserAuthenticated: status => dispatch(setIsUserAuthenticated(status)),
+  setManagerCredential: credential => dispatch(setManagerCredential(credential))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
