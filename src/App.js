@@ -76,7 +76,7 @@ import './App.css';
 class App extends React.Component {
   onVoiceSocketOpen = evt => {
     if (isObject(this.props.managerCredential)) {
-      const { voice: voiceSocket, managerCredential: { managerLoginname, managerPassword }} = this.props;
+      const { voice: voiceSocket, managerCredential: { managerLoginname, managerPassword } } = this.props;
 
       voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
         bytes.writeBytes(Socket.stringToBytes(managerLoginname, VALUE_LENGTH.LOGIN_NAME));
@@ -207,7 +207,7 @@ class App extends React.Component {
     const { VL_VIDEO_ID, VL_USER_NAME, VL_PSW } = DATA_SERVER_VALUE_LENGTH;
 
     if (isObject(this.props.managerCredential)) {
-      const { data: dataSocket, managerCredential: { managerLoginname, managerPassword }} = this.props;
+      const { data: dataSocket, managerCredential: { managerLoginname, managerPassword } } = this.props;
 
       dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
         bytes.writeUnsignedShort();
@@ -491,7 +491,7 @@ class App extends React.Component {
   }
 
   logout = () => {
-    const { voice: voiceSocket, data: dataSocket } = this.props;
+    const { voice: voiceSocket, data: dataSocket, setManagerCredential, setIsUserAuthenticated } = this.props;
 
     voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
     voiceSocket.close();
@@ -500,12 +500,12 @@ class App extends React.Component {
     dataSocket.close();
 
     RTC.leaveRoom();
-    this.props.setManagerCredential(null);
-    this.props.setIsUserAuthenticated(false);
+    setManagerCredential(null);
+    setIsUserAuthenticated(false);
   }
 
   render() {
-    const { open, variant, message, duration } = this.props;
+    const { open, variant, message, duration, managerCredential: { managerLoginname } } = this.props;
     return (
       <div className="App">
         <MenuBar
@@ -523,6 +523,7 @@ class App extends React.Component {
           setAnchorsDuty={this.setAnchorsDuty}
           getAnchorsDutyList={this.getAnchorsDutyList}
           logout={this.logout}
+          managerLoginname={managerLoginname}
         />
         <MessageBar
           variant={variant}

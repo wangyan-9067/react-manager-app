@@ -112,7 +112,8 @@ class MenuBar extends React.Component {
       deleteAnchor,
       setAnchorsDuty,
       getAnchorsDutyList,
-      logout
+      logout,
+      managerLoginname
     } = this.props;
     const { value } = this.state;
     const {
@@ -151,7 +152,7 @@ class MenuBar extends React.Component {
                   secondary={
                     <Fragment>
                       <Typography color="inherit">經理:</Typography>
-                      <Typography color="inherit" className={managerName}>Susan</Typography>
+                      <Typography color="inherit" className={managerName}>{managerLoginname}</Typography>
                     </Fragment>
                   }
                 />
