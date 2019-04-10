@@ -18,7 +18,7 @@ import { withRouter } from "react-router";
 
 import { setVoiceAppId } from '../actions/voice';
 import { setIsUserAuthenticated, setManagerCredential } from '../actions/app';
-import { 
+import {
   MANAGER_LOGIN,
   MANAGER_LOGIN_R,
   ANCHOR_ALL_QUERY_REQ,
@@ -100,70 +100,81 @@ class Login extends React.Component {
     ...this.formDefaults
   };
 
-  async componentDidMount() {
-    const { voice: voiceSocket, data: dataSocket } = this.props;
+  onVoiceSocketPacket = async (evt) => {
+    if (evt.$type === Socket.EVENT_PACKET) {
+      console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-    voiceSocket.addEventListener(Socket.EVENT_PACKET, async (evt) => {
-      if (evt.$type === Socket.EVENT_PACKET) {
-        console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
+      const { setVoiceAppId, setIsUserAuthenticated } = this.props;
 
-        const { setVoiceAppId, setIsUserAuthenticated } = this.props;
+      switch(evt.data.respId) {
+        case MANAGER_LOGIN_R:
+          const { code: loginStatus, voiceAppId } = evt.data;
 
-        switch(evt.data.respId) {
-          case MANAGER_LOGIN_R:
-            const { code: loginStatus, voiceAppId } = evt.data;
+          if (loginStatus === RESPONSE_CODES.SUCCESS) {
+            if (voiceAppId) {
+              setVoiceAppId(voiceAppId);
+              RTC.init(voiceAppId);
 
-            if (loginStatus === RESPONSE_CODES.SUCCESS) {
-              if (voiceAppId) {
-                setVoiceAppId(voiceAppId);
-                RTC.init(voiceAppId);
+              this.getAnchorList();
+              this.getAnchorsDutyList();
 
-                this.getAnchorList();
-                this.getAnchorsDutyList();
-
-                setIsUserAuthenticated(true);
-              } else {
-                // TODO: show error popup
-                setIsUserAuthenticated(false);
-              }
+              setIsUserAuthenticated(true);
             } else {
               // TODO: show error popup
               setIsUserAuthenticated(false);
             }
-          break;
-
-          default:
-          break;
-        }
-      }
-    });
-
-    dataSocket.addEventListener(Socket.EVENT_PACKET, async (evt) => {
-      if (evt.$type === Socket.EVENT_PACKET) {
-        console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
-      }
-
-      const { setIsUserAuthenticated } = this.props;
-
-      switch(evt.data.respId) {
-        case CDS_OPERATOR_LOGIN_R:
-          const { code: loginStatus } = evt.data;
-
-          if (loginStatus === RESPONSE_CODES.SUCCESS) {
-            setIsUserAuthenticated(true);
           } else {
-            setIsUserAuthenticated(false);
             // TODO: show error popup
+            setIsUserAuthenticated(false);
           }
         break;
 
         default:
         break;
       }
-    });
+    }
+  }
+
+  onDataSocketPacket = async (evt) => {
+    if (evt.$type === Socket.EVENT_PACKET) {
+      console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
+    }
+
+    const { setIsUserAuthenticated } = this.props;
+
+    switch(evt.data.respId) {
+      case CDS_OPERATOR_LOGIN_R:
+        const { code: loginStatus } = evt.data;
+
+        if (loginStatus === RESPONSE_CODES.SUCCESS) {
+          setIsUserAuthenticated(true);
+        } else {
+          setIsUserAuthenticated(false);
+          // TODO: show error popup
+        }
+      break;
+
+      default:
+      break;
+    }
+  }
+
+  async componentDidMount() {
+    const { voice: voiceSocket, data: dataSocket } = this.props;
+
+    voiceSocket.addEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
+
+    dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
 
     await voiceSocket.autoConnect();
     await dataSocket.autoConnect();
+  }
+
+  componentWillUnmount() {
+    const { voice: voiceSocket, data: dataSocket } = this.props;
+
+    voiceSocket.removeEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
+    dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
   }
 
   onChange = (e) => {
@@ -181,7 +192,7 @@ class Login extends React.Component {
   onSubmit = e => {
     e.preventDefault();
     this.resetValidationStates();
-    
+
     if (this.formIsValid()) {
       const { managerLoginname, managerPassword } = this.state;
       const { voice: voiceSocket, data: dataSocket, setManagerCredential } = this.props;
