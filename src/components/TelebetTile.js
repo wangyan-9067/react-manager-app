@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { setIsAnchorCall } from '../actions/voice';
 import { USER_STATE } from '../constants';
-import { formatAmount } from '../helpers/utils';
+import { formatAmount, isObject } from '../helpers/utils';
 
 const styles = {
 	emptyCard: {
@@ -97,7 +97,7 @@ EmptyCard.propTypes = {
 	classes: PropTypes.object.isRequired
 };
 
-const DisabledCard = ({classes, item, role, roleName, voiceAppId, leaveChannel, assignTableToChannel}) => {
+const DisabledCard = ({ classes, item, role, roleName, voiceAppId, leaveChannel, assignTableToChannel }) => {
 	const { disabledCard, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientBalance, channelId } = item;
 
@@ -130,14 +130,44 @@ DisabledCard.propTypes = {
 	assignTableToChannel: PropTypes.func
 };
 
-const CallInfoCard = ({classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, leaveChannel, assignTableToChannel}) => {
+const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, leaveChannel, assignTableToChannel }) => {
 	const { cardContent, cardContentText, client, cardActionButton } = classes;
-	const { clientBalance, channelId } = item;
+	const { clientBalance, channelId, anchorState } = item;
+	const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;
+	let anchorStateText = '';
+
+	switch(anchorState) {
+		case CHANGE_ANCHOR:
+			anchorStateText = '更換主播';
+		break;
+
+		case CHANGE_DEALER:
+			anchorStateText = '更換荷官';
+		break;
+
+		case CHANGE_TABLE:
+			anchorStateText = '更換桌枱';
+		break;
+
+		case ANNOYING:
+			anchorStateText = '騷擾';
+		break;
+
+		case ADVERTISEMENT:
+			anchorStateText = '賣廣告';
+		break;
+
+		default:
+		break;
+	}
 
 	return (
     <Card className={classes[cardClass]}>
       <CardContent className={cardContent}>
 				<Typography color="inherit" className={classNames(cardContentText, classes[roleClass])}>{role} <span className={client}>{roleName}</span> 接入中</Typography>
+				{ isAnchor && anchorStateText ? (
+					<Typography color="inherit" className={cardContentText}>理由: {anchorStateText}</Typography>
+				) : null }
 				<Typography color="inherit" className={cardContentText}>${formatAmount(clientBalance)}</Typography>
       </CardContent>
       <CardActions>
@@ -167,9 +197,9 @@ CallInfoCard.propTypes = {
 	assignTableToChannel: PropTypes.func
 };
 
-const FullChatroomCard = ({classes, item, setIsAnchorCall, cardClass, joinChannel, leaveChannel, assignTableToChannel}) => {
+const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, leaveChannel, assignTableToChannel, isManagerReconnect }) => {
 	const { cardContent, cardContentText, client, cardActionButton } = classes;
-	const { clientName, anchorName, clientBalance, channelId } = item;
+	const { clientName, anchorName, clientBalance, channelId, managerName } = item;
 
 	return (
     <Card className={classes[cardClass]}>
@@ -179,7 +209,7 @@ const FullChatroomCard = ({classes, item, setIsAnchorCall, cardClass, joinChanne
 				<Typography color="inherit" className={cardContentText}>${formatAmount(clientBalance)}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall) }}>接聽</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall) }} disabled={managerName && !isManagerReconnect}>接聽</Button>
       </CardActions>
       <CardActions>
         <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, leaveChannel) }}>離開</Button>
@@ -196,18 +226,20 @@ FullChatroomCard.propTypes = {
 };
 
 const TelebetTile = props => {
-	const { classes, voiceAppId, setIsAnchorCall, item, joinChannel, leaveChannel, assignTableToChannel } = props;
+	const { classes, voiceAppId, setIsAnchorCall, item, joinChannel, leaveChannel, assignTableToChannel, managerCredential } = props;
 	const { anchorName, clientName, managerName, anchorState, clientState, vid } = item;
-	const { WAITING_MANAGER, CONNECTED } = USER_STATE;
+	const { WAITING_MANAGER, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CONNECTED, CONNECTING } = USER_STATE;
+	const currentManagerName = isObject(managerCredential) ? managerCredential.managerLoginname: '';
+
+	const CALLING_MANAGER_STATES = [WAITING_MANAGER, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT];
+	const isCallingManager = CALLING_MANAGER_STATES.findIndex(state => state === anchorState) !== -1;
+	const isManagerReconnect = managerName === currentManagerName;
 
 	const clientDealIn = clientName && !anchorName && clientState === CONNECTED;
-	const anchorDealIn = clientName && anchorName && anchorState === WAITING_MANAGER;
-	const clientAnchorPlaying = clientName && clientState === CONNECTED && anchorName && anchorState === CONNECTED;
+	const anchorDealIn = clientName && anchorName && isCallingManager;
+	const clientAnchorPlaying = clientName && (clientState === CONNECTED || clientState === CONNECTING) && anchorName && (anchorState === CONNECTED || anchorState === CONNECTING);
 	const nobodyDealIn = !clientName && !anchorName && !managerName;
 	// const fullDesk = clientName && (anchorName || managerName) && clientState === CONNECTED && (anchorState === CONNECTED || managerState === CONNECTED);
-
-	// TODO cases:
-	// 1) 經理斷線重連
 
 	let role;
 	let roleClass;
@@ -238,7 +270,7 @@ const TelebetTile = props => {
 		panel = <EmptyCard classes={classes} />;
 	} else if (clientDealIn || anchorDealIn) {
 		// TODO: 需要handle經理斷線
-		if (managerName) {
+		if (managerName && !isManagerReconnect) {
 			cardClass = 'disabledCard';
 			panel = (
 				<DisabledCard
@@ -278,6 +310,7 @@ const TelebetTile = props => {
 				joinChannel={joinChannel}
 				leaveChannel={leaveChannel}
 				assignTableToChannel={assignTableToChannel}
+				isManagerReconnect={isManagerReconnect}
 			/>
 		);
 	}
@@ -301,9 +334,11 @@ const StyledTelebetTile = withStyles(styles)(TelebetTile);
 
 const mapStateToProps = state => {
 	const { voiceAppId } = state.voice;
+	const { managerCredential } = state.app;
 	
   return ({
-		voiceAppId
+		voiceAppId,
+		managerCredential
   });
 };
 
