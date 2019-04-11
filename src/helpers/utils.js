@@ -26,3 +26,19 @@ export const isObject = obj => {
   const type = typeof obj;
   return type === 'function' || type === 'object' && !!obj;
 };
+
+export const getAnonymousName = (loginname, nick, showFirstChar, showNickNameFirstChar) => {
+	if (nick && nick !== loginname.substring(3) && nick.slice(0, 16) !== loginname.substring(3).slice(0, 16)){
+		return nick;
+	} else {
+		if (showNickNameFirstChar) {
+			return nick.slice(0,1) + '***' + nick.slice(nick.length -3);
+		} else {
+			if (showFirstChar) {
+				return loginname.slice(0,1) + '***' + loginname.slice(loginname.length -3);
+			} else {
+				return '***' + loginname.slice(loginname.length -3);
+			}
+		}
+	}
+}

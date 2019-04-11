@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS } from '../constants';
+import { getAnonymousName } from '../helpers/utils';
 
 const styles = {
 	cardHeader: {
@@ -95,7 +96,8 @@ const getAnchorByVid = (vid, anchorsOnDutyList) => {
 
 const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient }) => {
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton } = classes;
-	let { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
+	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
+	const maskedTableOwner = tableOwner ? getAnonymousName(tableOwner) : '-'
 
 	// TODO: 顯示限紅及牌靴
 
@@ -117,7 +119,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 				<Typography color="inherit"><span>荷官:</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
 				<Typography color="inherit"><span>主播:</span><span className={tableValue}>{getAnchorByVid(vid, anchorsOnDutyList)}</span></Typography>
 				<Typography color="inherit"><span>限紅:</span><span className={tableValue}>10,000-300,000</span></Typography>
-				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
+				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{maskedTableOwner}</span></Typography>
 				<Typography color="inherit"><span>牌靴:</span><span className={tableValue}>-</span></Typography>
 				<Typography color="inherit"><span>遊戲狀態:</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
 			</CardContent>

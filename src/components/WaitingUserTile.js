@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import { getAnonymousName } from '../helpers/utils';
 
 const styles = {
 	card: {
@@ -35,6 +36,7 @@ const WaitingUserTitle = props => {
   const { classes, item } = props;
   const { card, cardContent, cardContentText, cardContentMainText, cardContentSubText} = classes;
   const { clientName, validBet, waitingStartTime} = item;
+  const maskedClientName = getAnonymousName(clientName);
 
   useEffect(() => {
     const updatedWaitingTime = {};
@@ -45,7 +47,7 @@ const WaitingUserTitle = props => {
   return (
     <Card className={card}>
       <CardContent className={cardContent}>
-				<Typography color="inherit" className={classNames(cardContentText, cardContentMainText)}>{clientName}</Typography>
+				<Typography color="inherit" className={classNames(cardContentText, cardContentMainText)}>{maskedClientName}</Typography>
 				<Typography color="inherit" className={classNames(cardContentText, cardContentSubText)}>{validBet}</Typography>
 				<Typography color="inherit" className={cardContentText}>{waitingTime[item.clientName]}</Typography>
       </CardContent>
