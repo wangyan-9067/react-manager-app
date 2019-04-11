@@ -16,22 +16,32 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { withRouter } from "react-router";
 
+import MessageBar from '../components/MessageBar';
 import { setVoiceAppId } from '../actions/voice';
-import { setIsUserAuthenticated, setManagerCredential } from '../actions/app';
+import {
+  setIsUserAuthenticated,
+  setManagerCredential,
+  setToastMessage,
+  setToastVariant,
+  setToastDuration,
+  toggleToast
+} from '../actions/app';
 import {
   MANAGER_LOGIN,
   MANAGER_LOGIN_R,
+  MANAGER_LOGOUT,
   ANCHOR_ALL_QUERY_REQ,
   ANCHORS_ON_DUTY_REQUEST,
   CDS_OPERATOR_LOGIN,
-  CDS_OPERATOR_LOGIN_R
+  CDS_OPERATOR_LOGIN_R,
+  CDS_OPERATOR_LOGOUT
 } from '../protocols';
 import { VALUE_LENGTH, DATA_SERVER_VALUE_LENGTH, RESPONSE_CODES } from '../constants';
 
 const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
-    paddingTop: theme.spacing.unit * 2,
+    paddingTop: theme.spacing.unit * 5,
     paddingBottom: theme.spacing.unit * 2,
     width: '350px',
     margin: '30px auto',
@@ -100,17 +110,26 @@ class Login extends React.Component {
     ...this.formDefaults
   };
 
+  onVoiceSocketOpen = () => {
+    this.props.toggleToast(false);
+  }
+
+  onDataSocketOpen = () => {
+    this.props.toggleToast(false);
+  }
+
   onVoiceSocketPacket = async (evt) => {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-      const { setVoiceAppId, setIsUserAuthenticated } = this.props;
+      const { setVoiceAppId, data: dataSocket, managerCredential: { managerLoginname, managerPassword } } = this.props;
+      const { SUCCESS, REPEAT_LOGIN } = RESPONSE_CODES;
 
       switch(evt.data.respId) {
         case MANAGER_LOGIN_R:
           const { code: loginStatus, voiceAppId } = evt.data;
 
-          if (loginStatus === RESPONSE_CODES.SUCCESS) {
+          if (loginStatus === SUCCESS) {
             if (voiceAppId) {
               setVoiceAppId(voiceAppId);
               RTC.init(voiceAppId);
@@ -118,14 +137,20 @@ class Login extends React.Component {
               this.getAnchorList();
               this.getAnchorsDutyList();
 
-              setIsUserAuthenticated(true);
+              if (dataSocket.readyState === Socket.ReadyState.OPEN) {
+                toggleToast(false);
+                this.dataServerLoginCMD(managerLoginname, managerPassword);
+              } else {
+                await dataSocket.autoConnect();
+                this.dataServerLoginCMD(managerLoginname, managerPassword);
+              }
             } else {
-              // TODO: show error popup
-              setIsUserAuthenticated(false);
+              this.handleLoginFailure("[VoiceServer] 沒有AppId, 請聯絡管理員");
             }
+          } else if (loginStatus === REPEAT_LOGIN) {
+            this.handleLoginFailure("經理重覆登入");
           } else {
-            // TODO: show error popup
-            setIsUserAuthenticated(false);
+            this.handleLoginFailure("[VoiceServer] 無法登入, 請聯絡管理員");
           }
         break;
 
@@ -135,7 +160,7 @@ class Login extends React.Component {
     }
   }
 
-  onDataSocketPacket = async (evt) => {
+  onDataSocketPacket =  evt => {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
     }
@@ -145,12 +170,11 @@ class Login extends React.Component {
     switch(evt.data.respId) {
       case CDS_OPERATOR_LOGIN_R:
         const { code: loginStatus } = evt.data;
-
+      
         if (loginStatus === RESPONSE_CODES.SUCCESS) {
           setIsUserAuthenticated(true);
         } else {
-          setIsUserAuthenticated(false);
-          // TODO: show error popup
+          this.handleLoginFailure("[DataServer] 無法登入, 請聯絡管理員");
         }
       break;
 
@@ -159,13 +183,41 @@ class Login extends React.Component {
     }
   }
 
+  handleLoginFailure = async(message) => {
+    const { setToastMessage, setToastVariant, setToastDuration, toggleToast } = this.props;
+    
+    setIsUserAuthenticated(false);
+    setToastMessage(message);
+    setToastVariant('error');
+    setToastDuration(null);
+    toggleToast(true);
+
+    await this.reset();
+  }
+
+  reset = async () => {
+    const { voice: voiceSocket, data: dataSocket, setManagerCredential, setIsUserAuthenticated } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
+    voiceSocket.close();
+    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
+    dataSocket.close();
+
+    setManagerCredential(null);
+    setIsUserAuthenticated(false);
+  }
+
   async componentDidMount() {
-    const { voice: voiceSocket, data: dataSocket } = this.props;
+    const {
+      voice: voiceSocket,
+      data: dataSocket
+    } = this.props;
 
+    voiceSocket.addEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
     voiceSocket.addEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
-
+    dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketOpen);
     dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
-
+    
     await voiceSocket.autoConnect();
     await dataSocket.autoConnect();
   }
@@ -173,7 +225,9 @@ class Login extends React.Component {
   componentWillUnmount() {
     const { voice: voiceSocket, data: dataSocket } = this.props;
 
+    voiceSocket.removeEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
     voiceSocket.removeEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
+    dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
   }
 
@@ -189,13 +243,18 @@ class Login extends React.Component {
     this.setState(state);
   }
 
-  onSubmit = e => {
+  onSubmit = async (e) => {
     e.preventDefault();
     this.resetValidationStates();
 
     if (this.formIsValid()) {
       const { managerLoginname, managerPassword } = this.state;
-      const { voice: voiceSocket, data: dataSocket, setManagerCredential } = this.props;
+      const { voice: voiceSocket, setManagerCredential, setToastMessage, setToastVariant, setToastDuration, toggleToast } = this.props;
+  
+      setToastMessage("連線中......");
+      setToastVariant('info');
+      setToastDuration(null);
+      toggleToast(true);
 
       setManagerCredential({
         managerLoginname: managerLoginname.value,
@@ -203,23 +262,11 @@ class Login extends React.Component {
       });
 
       if (voiceSocket.readyState === Socket.ReadyState.OPEN) {
-        voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
-          bytes.writeBytes(Socket.stringToBytes(managerLoginname, VALUE_LENGTH.LOGIN_NAME));
-          bytes.writeBytes(Socket.stringToBytes(managerPassword, VALUE_LENGTH.PASSWORD));
-        }));
-      }
-
-      if (dataSocket.readyState === Socket.ReadyState.OPEN) {
-        const { VL_VIDEO_ID, VL_USER_NAME, VL_PSW } = DATA_SERVER_VALUE_LENGTH;
-
-        dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
-          bytes.writeUnsignedShort();
-          bytes.writeUnsignedShort();
-          bytes.writeBytes(Socket.stringToBytes('', VL_VIDEO_ID));
-          bytes.writeBytes(Socket.stringToBytes(managerLoginname, VL_USER_NAME));
-          bytes.writeBytes(Socket.stringToBytes(managerPassword, VL_PSW));
-          bytes.writeUnsignedInt();
-        }));
+        toggleToast(false);
+        this.voiceServerLoginCMD(managerLoginname.value, managerPassword.value);
+      } else {
+        await voiceSocket.autoConnect();
+        this.voiceServerLoginCMD(managerLoginname.value, managerPassword.value);
       }
     }
   }
@@ -283,6 +330,28 @@ class Login extends React.Component {
     this.setState(...this.formDefaults);
   }
 
+  voiceServerLoginCMD = (username, password) => {
+    const { voice: voiceSocket} = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(username, VALUE_LENGTH.LOGIN_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
+    }));
+  }
+  
+  dataServerLoginCMD = (username, password) => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+      bytes.writeBytes(Socket.stringToBytes(username, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, DATA_SERVER_VALUE_LENGTH.VL_PSW));
+      bytes.writeUnsignedInt();
+    })); 
+  }
+
   getAnchorList = () => {
     const { voice: voiceSocket } = this.props;
     voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ALL_QUERY_REQ));
@@ -293,10 +362,17 @@ class Login extends React.Component {
     voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_REQUEST));
   }
 
+  onClose = (evt, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.props.toggleToast(false);
+  }
 
   render () {
     const { managerLoginname, managerPassword } = this.state;
-    const { classes } = this.props;
+    const { classes, variant, message, duration, open } = this.props;
     const {
       root,
       fieldWrapper,
@@ -366,6 +442,13 @@ class Login extends React.Component {
             </div>
           </form>
         </Paper>
+        <MessageBar
+          variant={variant}
+          message={message}
+          duration={duration}
+          isOpen={open}
+          onClose={this.onClose}
+        />
       </div>
     );
   }
@@ -377,10 +460,25 @@ Login.propTypes = {
 
 const RoutedLogin = withRouter(withStyles(styles)(Login));
 
+const mapStateToProps = state => {
+  const { variant, message, duration, open, managerCredential } = state.app;
+  return ({
+    variant,
+    message,
+    duration,
+    open,
+    managerCredential
+  });
+};
+
 const mapDispatchToProps = dispatch => ({
   setVoiceAppId: id => dispatch(setVoiceAppId(id)),
   setIsUserAuthenticated: status => dispatch(setIsUserAuthenticated(status)),
-  setManagerCredential: credential => dispatch(setManagerCredential(credential))
+  setManagerCredential: credential => dispatch(setManagerCredential(credential)),
+  setToastMessage: message => dispatch(setToastMessage(message)),
+  setToastVariant: variant => dispatch(setToastVariant(variant)),
+  setToastDuration: duration => dispatch(setToastDuration(duration)),
+  toggleToast: toggle => dispatch(toggleToast(toggle))
 });
 
-export default connect(null, mapDispatchToProps)(RoutedLogin);
+export default connect(mapStateToProps, mapDispatchToProps)(RoutedLogin);

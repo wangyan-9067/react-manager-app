@@ -97,7 +97,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton } = classes;
 	let { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
 
-	// TODO: 顯示限紅
+	// TODO: 顯示限紅及牌靴
 
 	const tableTileClasses = classNames.bind(classes);
 	const tileHeaderClass = tableTileClasses({
@@ -118,7 +118,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 				<Typography color="inherit"><span>主播:</span><span className={tableValue}>{getAnchorByVid(vid, anchorsOnDutyList)}</span></Typography>
 				<Typography color="inherit"><span>限紅:</span><span className={tableValue}>10,000-300,000</span></Typography>
 				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
-				<Typography color="inherit"><span>牌靴:</span><span className={tableValue}>n32</span></Typography>
+				<Typography color="inherit"><span>牌靴:</span><span className={tableValue}>-</span></Typography>
 				<Typography color="inherit"><span>遊戲狀態:</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
 			</CardContent>
 			<CardActions>

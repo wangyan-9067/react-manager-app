@@ -486,7 +486,11 @@ class App extends React.Component {
     voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_REQUEST));
   }
 
-  onClose = () => {
+  onClose = (evt, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    
     this.props.toggleToast(false);
   }
 
