@@ -14,7 +14,8 @@ import {
   setIsAnswerCall,
   setWaitingList,
   setAnchorList,
-  setAnchorsOnDutyList
+  setAnchorsOnDutyList,
+  setManagerList
 } from './actions/voice';
 import {
   setTableList
@@ -47,6 +48,12 @@ import {
   ANCHORS_ON_DUTY_UPDATE,
   ANCHORS_ON_DUTY_REQUEST,
   ANCHORS_ON_DUTY_R,
+  MANAGER_ALL_QUERY_REQ,
+  MANAGER_ALL_QUERY_R,
+  MANAGER_ADD_REQ,
+  MANAGER_ADD_R,
+  MANAGER_DELETE,
+  MANAGER_DELETE_R,
   CDS_OPERATOR_LOGIN,
   CDS_OPERATOR_LOGIN_R,
   CDS_OPERATOR_LOGOUT,
@@ -102,7 +109,8 @@ class App extends React.Component {
         setToastMessage,
         setToastVariant,
         toggleToast,
-        toggleDialog
+        toggleDialog,
+        setManagerList
       } = this.props;
 
       switch(evt.data.respId) {
@@ -114,6 +122,7 @@ class App extends React.Component {
 
           this.getAnchorList();
           this.getAnchorsDutyList();
+          this.getManagerList();
         break;
 
         case CHANNEL_LIST_R:
@@ -187,6 +196,37 @@ class App extends React.Component {
 
         case ANCHORS_ON_DUTY_R:
           setAnchorsOnDutyList(evt.data.anchorsOnDutyList);
+        break;
+
+        case MANAGER_ALL_QUERY_R:
+          console.log('manager all query response', evt.data.allManagersList);
+          setManagerList(evt.data.allManagersList);
+        break;
+
+        case MANAGER_ADD_R:
+          const { code: managerAddStatus } = evt.data;
+
+          if (managerAddStatus !== RESPONSE_CODES.SUCCESS) {
+            setToastMessage('無法加入經理!');
+            setToastVariant('error');
+            toggleToast(true);
+          } else {
+            this.getManagerList();
+          }
+        break;
+
+        case MANAGER_DELETE_R:
+          const { code: managerDeleteStatus } = evt.data;
+
+          if (managerDeleteStatus !== RESPONSE_CODES.SUCCESS) {
+            toggleDialog(false);
+            setToastMessage('無法刪除經理!');
+            setToastVariant('error');
+            toggleToast(true);
+          } else {
+            toggleDialog(false);
+            this.getManagerList();
+          }
         break;
 
         default:
@@ -486,6 +526,33 @@ class App extends React.Component {
     voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_REQUEST));
   }
 
+  getManagerList = () => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_ALL_QUERY_REQ));
+  }
+
+  addManager = (loginName, password, nickName, url, flag = 1) => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_ADD_REQ, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
+      bytes.writeBytes(Socket.stringToBytes(nickName, VALUE_LENGTH.NICK_NAME));
+      bytes.writeUnsignedInt(url.length);
+      bytes.writeBytes(Socket.stringToBytes(url, url.length));
+      bytes.writeByte(flag);
+    }));
+  }
+
+  deleteManager = loginName => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_DELETE, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+    }));
+  }
+
   onClose = () => {
     this.props.toggleToast(false);
   }
@@ -505,7 +572,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { open, variant, message, duration, managerCredential: { managerLoginname } } = this.props;
+    const { open, variant, message, duration, managerCredential: { managerLoginname }, managerLevel } = this.props;
     return (
       <div className="App">
         <MenuBar
@@ -522,8 +589,12 @@ class App extends React.Component {
           deleteAnchor={this.deleteAnchor}
           setAnchorsDuty={this.setAnchorsDuty}
           getAnchorsDutyList={this.getAnchorsDutyList}
+          getManagerList={this.getManagerList}
+          addManager={this.addManager}
+          deleteManager={this.deleteManager}
           logout={this.logout}
           managerLoginname={managerLoginname}
+          managerLevel={managerLevel}
         />
         <MessageBar
           variant={variant}
@@ -538,7 +609,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { voiceAppId, channelList, currentChannelId, managerAction } = state.voice;
+  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel } = state.voice;
   const { variant, message, duration, open, managerCredential } = state.app;
   return ({
     voiceAppId,
@@ -549,7 +620,8 @@ const mapStateToProps = state => {
     duration,
     open,
     managerAction,
-    managerCredential
+    managerCredential,
+    managerLevel
   });
 };
 
@@ -569,7 +641,8 @@ const mapDispatchToProps = dispatch => ({
   setAnchorsOnDutyList: list => dispatch(setAnchorsOnDutyList(list)),
   toggleDialog: toggle => dispatch(toggleDialog(toggle)),
   setIsUserAuthenticated: status => dispatch(setIsUserAuthenticated(status)),
-  setManagerCredential: credential => dispatch(setManagerCredential(credential))
+  setManagerCredential: credential => dispatch(setManagerCredential(credential)),
+  setManagerList: list => dispatch(setManagerList(list))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

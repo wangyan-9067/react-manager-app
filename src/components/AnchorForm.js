@@ -77,7 +77,8 @@ class AnchorForm extends React.Component {
     anchorNickname: { value: '', isValid: true, message: '' },
     anchorPassword: { value: '', isValid: true, message: '' },
     anchorPasswordConfirm: { value: '', isValid: true, message: '' },
-    anchorIconUrl: { value: '', isValid: true, message: '' }
+    anchorIconUrl: { value: '', isValid: true, message: '' },
+    level: { value: '', isValid: true, message: '' }
   }
 
   constructor(props) {
@@ -86,13 +87,17 @@ class AnchorForm extends React.Component {
     const { selectedAnchor } = this.props;
 
     if (selectedAnchor) {
-      const { loginname, nickname, password, url } = selectedAnchor;
-      
+      const { loginname, nickname, password, url, level } = selectedAnchor;
+
       this.formDefaults.anchorLoginname.value = loginname;
       this.formDefaults.anchorNickname.value = nickname;
       this.formDefaults.anchorPassword.value = password;
       this.formDefaults.anchorPasswordConfirm.value = password;
       this.formDefaults.anchorIconUrl.value = url;
+
+      if (level) {
+        this.formDefaults.level.value = level;
+      }
     }
 
     this.state = {
@@ -115,11 +120,16 @@ class AnchorForm extends React.Component {
   onSubmit = e => {
     e.preventDefault();
     this.resetValidationStates();
-    
+
     if (this.formIsValid()) {
-      const { anchorLoginname, anchorNickname, anchorPassword, anchorIconUrl } = this.state;
-      const { addAnchor, setOpenAddManagerDialog } = this.props;
-      addAnchor(anchorLoginname.value, anchorPassword.value, anchorNickname.value, anchorIconUrl.value);
+      const { anchorLoginname, anchorNickname, anchorPassword, anchorIconUrl, level } = this.state;
+      const { addAnchor, setOpenAddManagerDialog, isManager } = this.props;
+
+      if (isManager) {
+        addAnchor(anchorLoginname.value, anchorPassword.value, anchorNickname.value, anchorIconUrl.value, level.value);
+      } else {
+        addAnchor(anchorLoginname.value, anchorPassword.value, anchorNickname.value, anchorIconUrl.value);
+      }
       setOpenAddManagerDialog(false);
     }
   }
@@ -130,7 +140,8 @@ class AnchorForm extends React.Component {
     const anchorPassword = { ...this.state.anchorPassword };
     const anchorPasswordConfirm = { ...this.state.anchorPasswordConfirm };
     const anchorIconUrl = { ...this.state.anchorIconUrl };
-    const { isEdit, anchorList } = this.props;
+    const level = { ...this.state.level };
+    const { isEdit, anchorList, isManager } = this.props;
 
     let isGood = true;
 
@@ -182,13 +193,20 @@ class AnchorForm extends React.Component {
       isGood = false;
     }
 
+    if (isManager && !(level.value === '0' || level.value === '1')) {
+      level.isValid = false;
+      level.message = 'Only accept 0 or 1';
+      isGood = false;
+    }
+
     if (!isGood) {
       this.setState({
         anchorLoginname,
         anchorNickname,
         anchorPassword,
         anchorPasswordConfirm,
-        anchorIconUrl
+        anchorIconUrl,
+        level
       });
     }
 
@@ -221,8 +239,8 @@ class AnchorForm extends React.Component {
   }
 
   render() {
-    const { anchorLoginname, anchorNickname, anchorPassword, anchorPasswordConfirm, anchorIconUrl } = this.state;
-    const { classes, setOpenAddManagerDialog, isEdit, deleteAnchor, openDialog, toggleDialog } = this.props;
+    const { anchorLoginname, anchorNickname, anchorPassword, anchorPasswordConfirm, anchorIconUrl, level } = this.state;
+    const { classes, setOpenAddManagerDialog, isEdit, deleteAnchor, openDialog, toggleDialog, isManager } = this.props;
     const {
       managerActionDialog,
       managerActionFormLabel,
@@ -244,7 +262,7 @@ class AnchorForm extends React.Component {
           <div className={managerActionDialog}>
             <div className={managerActionDialogSectionLeft}>
               <FormControl classes={{ root: formControlRoot }} className={formControl} error={!anchorLoginname.isValid}>
-                <div className={managerActionFormLabel}>主播Login名</div>
+                <div className={managerActionFormLabel}>Login名</div>
                 <Input
                   defaultValue=""
                   classes={{underline: inputUnderline}}
@@ -261,7 +279,7 @@ class AnchorForm extends React.Component {
                 <FormHelperText id="component-error-text">{anchorLoginname.message}</FormHelperText>
               </FormControl>
               <FormControl classes={{ root: formControlRoot }} className={formControl} error={!anchorNickname.isValid}>
-                <div className={managerActionFormLabel}>主播暱稱</div>
+                <div className={managerActionFormLabel}>暱稱</div>
                 <Input
                   defaultValue=""
                   classes={{underline: inputUnderline}}
@@ -324,6 +342,24 @@ class AnchorForm extends React.Component {
                 />
                 <FormHelperText id="component-error-text">{anchorIconUrl.message}</FormHelperText>
               </FormControl>
+              { isManager && (
+                <FormControl classes={{ root: formControlRoot }} className={formControl} error={!level.isValid}>
+                  <div className={managerActionFormLabel}>權限</div>
+                  <Input
+                    defaultValue=""
+                    classes={{underline: inputUnderline}}
+                    className={input}
+                    inputProps={{
+                      'aria-label': 'level',
+                    }}
+                    name="level"
+                    placeholder="0 - 普通經理, 1 - admin經理"
+                    value={level.value}
+                    onChange={this.onChange}
+                  />
+                  <FormHelperText id="component-error-text">{level.message}</FormHelperText>
+                </FormControl>
+              )}
             </div>
             <div className={managerActionDialogSectionRight}>
               <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)}>確定</Button>
@@ -341,7 +377,7 @@ class AnchorForm extends React.Component {
             deleteAnchor(anchorLoginname.value);
             setOpenAddManagerDialog(false);
           }}
-          content="確定要刪除主播嗎?"
+          content="確定要刪除嗎?"
         />
       </div>
     );

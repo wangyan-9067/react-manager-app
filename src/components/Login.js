@@ -16,7 +16,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { withRouter } from "react-router";
 
-import { setVoiceAppId } from '../actions/voice';
+import { setVoiceAppId, setUserLevel } from '../actions/voice';
 import { setIsUserAuthenticated, setManagerCredential } from '../actions/app';
 import {
   MANAGER_LOGIN,
@@ -104,11 +104,11 @@ class Login extends React.Component {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-      const { setVoiceAppId, setIsUserAuthenticated } = this.props;
+      const { setVoiceAppId, setIsUserAuthenticated, setUserLevel } = this.props;
 
       switch(evt.data.respId) {
         case MANAGER_LOGIN_R:
-          const { code: loginStatus, voiceAppId } = evt.data;
+          const { code: loginStatus, voiceAppId, level } = evt.data;
 
           if (loginStatus === RESPONSE_CODES.SUCCESS) {
             if (voiceAppId) {
@@ -119,6 +119,7 @@ class Login extends React.Component {
               this.getAnchorsDutyList();
 
               setIsUserAuthenticated(true);
+              setUserLevel(level);
             } else {
               // TODO: show error popup
               setIsUserAuthenticated(false);
@@ -380,7 +381,8 @@ const RoutedLogin = withRouter(withStyles(styles)(Login));
 const mapDispatchToProps = dispatch => ({
   setVoiceAppId: id => dispatch(setVoiceAppId(id)),
   setIsUserAuthenticated: status => dispatch(setIsUserAuthenticated(status)),
-  setManagerCredential: credential => dispatch(setManagerCredential(credential))
+  setManagerCredential: credential => dispatch(setManagerCredential(credential)),
+  setUserLevel: level => dispatch(setUserLevel(level))
 });
 
 export default connect(null, mapDispatchToProps)(RoutedLogin);

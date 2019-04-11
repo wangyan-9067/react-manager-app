@@ -14,7 +14,6 @@ import Typography from '@material-ui/core/Typography';
 import AnchorForm from './AnchorForm';
 import ToggleButtonGridList from './ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
-import { compareArray } from '../helpers/utils';
 
 const styles = () => ({
   root: {
@@ -104,20 +103,17 @@ const usePrevious = value => {
   return ref.current;
 }
 
-const AnchorList = props => {
+const ManagerList = props => {
   const [openAddManagerDialog, setOpenAddManagerDialog] = useState(false);
   const [selected, setSelected] = useState();
   const [isEdit, setIsEdit] = useState(false);
   const {
     classes,
-    anchorList,
-    addAnchor,
-    deleteAnchor,
-    setAnchorsDuty,
-    getAnchorsDutyList,
+    managerList,
+    addManager,
+    deleteManager,
     openDialog,
-    toggleDialog,
-    anchorsOnDutyList
+    toggleDialog
   } = props;
   const {
     root,
@@ -132,7 +128,6 @@ const AnchorList = props => {
     dialogTitle,
     tileClass
   } = classes;
-  const prevAnchorsOnDutyList = usePrevious(anchorsOnDutyList);
 
   const onClickHandler = () => {
     if (isEdit) {
@@ -140,44 +135,33 @@ const AnchorList = props => {
     }
   };
 
-  anchorList.map(anchor => {
-    anchor.value = anchor.loginname;
-    return anchor;
+  managerList.map(manager => {
+    manager.value = manager.loginname;
+    return manager;
   });
 
   let panel;
-  let selectedAnchor;
+  let selectedManager;
 
   if (selected && !Array.isArray(selected)) {
-    selectedAnchor = anchorList.find(anchor => anchor.value === selected);
+    selectedManager = managerList.find(anchor => anchor.value === selected);
   }
 
-  if (Array.isArray(anchorList) && anchorList.length === 0) {
+  if (Array.isArray(managerList) && managerList.length === 0) {
     panel = (
       <Card className={emptyAnchorCardRoot}>
         <CardContent>
-          <Typography color="inherit" className={emptyText}>沒有主播記錄!</Typography>
+          <Typography color="inherit" className={emptyText}>沒有經理記錄!</Typography>
         </CardContent>
       </Card>
     );
   }
 
-  useEffect(() => {
-    const flattenArrays = {
-      prev: prevAnchorsOnDutyList && prevAnchorsOnDutyList.map(anchor => anchor.anchorName),
-      current: anchorsOnDutyList && anchorsOnDutyList.map(anchor => anchor.anchorName)
-    }
-
-    if (!compareArray(flattenArrays.prev, flattenArrays.current)) {
-      setSelected(flattenArrays.current);
-    }
-  });
-
 	return (
 		<div className={root}>
-      <Typography color="inherit" align="left" className={headerText}>請選取值班主播</Typography>
+      <Typography color="inherit" align="left" className={headerText}>請選取需要編輯的經理</Typography>
       <div className={grow} />
-      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddManagerDialog(true); }}>新增主播</Button>
+      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddManagerDialog(true); }}>新增經理</Button>
       <Button
         variant="contained"
         size="medium"
@@ -196,26 +180,26 @@ const AnchorList = props => {
         disableBackdropClick
 			>
 				<DialogTitle id="responsive-dialog-title">
-					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}主播資料</Typography>
+					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}經理資料</Typography>
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
             <AnchorForm
-              selectedAnchor={selectedAnchor}
-              addAnchor={addAnchor}
-              deleteAnchor={deleteAnchor}
+              selectedAnchor={selectedManager}
+              addAnchor={addManager}
+              deleteAnchor={deleteManager}
               setOpenAddManagerDialog={setOpenAddManagerDialog}
-              anchorList={anchorList}
+              anchorList={managerList}
               isEdit={isEdit}
               openDialog={openDialog}
               toggleDialog={toggleDialog}
-              isManager={false}
+              isManager={true}
             />
           </DialogContentText>
 				</DialogContent>
 			</Dialog>
       <ToggleButtonGridList
-        list={anchorList}
+        list={managerList}
         tileClass={tileClass}
         customCols={6}
         isEdit={isEdit}
@@ -226,22 +210,20 @@ const AnchorList = props => {
         onClickHandler={onClickHandler}
       />
       <div>
-        <Button variant="contained" size="medium" color="inherit" className={dutyButton} disabled={isEdit} onClick={() => { setAnchorsDuty(selected); getAnchorsDutyList(); }}>確定</Button>
         <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} disabled={isEdit} onClick={() => { setSelected(); }}>取消選取</Button>
       </div>
 		</div>
 	);
 }
 
-const StyledAnchorList = withStyles(styles)(AnchorList);
+const StyledManagerList = withStyles(styles)(ManagerList);
 
 const mapStateToProps = state => {
-  const { anchorList, anchorsOnDutyList } = state.voice;
+  const { managerList } = state.voice;
   const { openDialog } = state.app;
 
   return ({
-    anchorList,
-    anchorsOnDutyList,
+    managerList,
     openDialog
   });
 };
@@ -250,4 +232,4 @@ const mapDispatchToProps = dispatch => ({
 	toggleDialog: toggle => dispatch(toggleDialog(toggle))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(StyledAnchorList);
+export default connect(mapStateToProps, mapDispatchToProps)(StyledManagerList);
