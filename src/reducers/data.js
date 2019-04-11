@@ -16,7 +16,7 @@ export default function data(state = initialState, action) {
 		case SET_TABLE_LIST:
 			let newTable;
 			const table = action.table;
-			const newState = { ...state };
+			const newState = Object.assign({}, state);
 			const newTableList = newState.tableList;
 			const targetIndex = newTableList.findIndex((item) => item.vid === table.vid);
 
@@ -27,7 +27,7 @@ export default function data(state = initialState, action) {
 				newTableList.push(table);
 			}
 
-			return { 
+			return {
 				...state,
 				tableList: newTableList
 			};

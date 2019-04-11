@@ -39,8 +39,7 @@ export default class VoiceSocket extends Socket.WebSocketBase {
 	constructor() {
 		const config = {
 			tag: '[VoiceSocket]',
-			ucHeartBeatPeriod: 15000,
-			debug: true
+			ucHeartBeatPeriod: 15000
 		};
 		super(config);
 	}

@@ -59,7 +59,9 @@ import {
   CDS_BET_HIST,
   CDS_CONTROL_REQ_VIDEO_RES,
   CDS_VIDEO_STATUS,
-  MANAGER_LOGOUT
+  CDS_CLIENT_ENTER_TABLE_NOTIFY,
+  CDS_CLIENT_LEAVE_TABLE_NOTIFY,
+  MANAGER_LOGOUT,
 } from './protocols';
 import {
   VALUE_LENGTH,
@@ -256,7 +258,9 @@ class App extends React.Component {
       case CDS_CLIENT_LIST:
         setTableList({
           vid: evt.data.vid,
-          seatedPlayerNum: evt.data.seatedPlayerNum
+          seatedPlayerNum: evt.data.seatedPlayerNum,
+          tableOwner: evt.data.usernamem,
+          account: evt.data.account
         });
       break;
 
@@ -267,6 +271,29 @@ class App extends React.Component {
           gameCode: evt.data.gmcode,
           tableOwner: evt.data.username,
           status: evt.data.videoStatus
+        });
+      break;
+
+      case CDS_CLIENT_ENTER_TABLE_NOTIFY:
+        setTableList({
+          vid: evt.data.vid,
+          username: evt.data.username,
+          account: evt.data.currentAmount
+        });
+      break;
+
+      case CDS_CLIENT_LEAVE_TABLE_NOTIFY:
+        setTableList({
+          vid: evt.data.vid,
+          dealerName: '',
+          gameCode: '',
+          gmType: '',
+          gameStatus: 0,
+
+          seatedPlayerNum: 0,
+          account: 0,
+          tableOwner: '',
+          status: 0
         });
       break;
 
@@ -291,7 +318,6 @@ class App extends React.Component {
       break;
 
       case CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC:
-        // TODO: get reason table
         const { username } = evt.data;
 
         setToastMessage(`無法將玩家${username}配對到桌枱!`);
@@ -490,7 +516,7 @@ class App extends React.Component {
     if (reason === 'clickaway') {
       return;
     }
-    
+
     this.props.toggleToast(false);
   }
 

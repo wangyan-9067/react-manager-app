@@ -34,7 +34,7 @@ const TableList = ({
   clientToKickOut
 }) => {
   const { root } = classes;
-
+  
   return (
     <div className={root}>
       <GridListBase list={tableList} bgColor={GRID_ITEM_BG_COLOR}>

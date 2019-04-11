@@ -83,10 +83,6 @@ const leaveRoom = (channelId, leaveChannel) => {
 	leaveChannel(channelId);
 };
 
-const assignTable = (channelId, assignTableToChannel) => {
-	assignTableToChannel(channelId, 'V01');
-}
-
 const EmptyCard = ({classes}) => {
 	return (
     <Card className={classes.emptyCard} />
@@ -97,7 +93,7 @@ EmptyCard.propTypes = {
 	classes: PropTypes.object.isRequired
 };
 
-const DisabledCard = ({ classes, item, role, roleName, voiceAppId, leaveChannel, assignTableToChannel }) => {
+const DisabledCard = ({ classes, item, role, roleName, voiceAppId, leaveChannel }) => {
 	const { disabledCard, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientBalance, channelId } = item;
 
@@ -113,9 +109,6 @@ const DisabledCard = ({ classes, item, role, roleName, voiceAppId, leaveChannel,
       <CardActions>
         <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, leaveChannel) }}>離開</Button>
       </CardActions>
-      <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { assignTable(channelId, assignTableToChannel) }}>配對</Button>
-      </CardActions>
     </Card>
 	);
 };
@@ -126,11 +119,10 @@ DisabledCard.propTypes = {
 	role: PropTypes.string,
 	roleName: PropTypes.string,
 	voiceAppId: PropTypes.string,
-	leaveChannel: PropTypes.func,
-	assignTableToChannel: PropTypes.func
+	leaveChannel: PropTypes.func
 };
 
-const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, leaveChannel, assignTableToChannel }) => {
+const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, leaveChannel }) => {
 	const { cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientBalance, channelId, anchorState } = item;
 	const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;
@@ -176,9 +168,6 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
       <CardActions>
         <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, leaveChannel) }}>離開</Button>
       </CardActions>
-      <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { assignTable(channelId, assignTableToChannel) }}>配對</Button>
-      </CardActions>
     </Card>
 	);
 };
@@ -193,11 +182,10 @@ CallInfoCard.propTypes = {
 	cardClass: PropTypes.string,
 	roleClass: PropTypes.string,
 	joinChannel: PropTypes.func,
-	leaveChannel: PropTypes.func,
-	assignTableToChannel: PropTypes.func
+	leaveChannel: PropTypes.func
 };
 
-const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, leaveChannel, assignTableToChannel, isManagerReconnect }) => {
+const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, leaveChannel, isManagerReconnect }) => {
 	const { cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientName, anchorName, clientBalance, channelId, managerName } = item;
 	const maskedClientName = getAnonymousName(clientName);
@@ -215,9 +203,6 @@ const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChann
       <CardActions>
         <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { leaveRoom(channelId, leaveChannel) }}>離開</Button>
       </CardActions>
-      <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { assignTable(channelId, assignTableToChannel) }}>配對</Button>
-      </CardActions>
     </Card>
 	);
 };
@@ -227,7 +212,7 @@ FullChatroomCard.propTypes = {
 };
 
 const TelebetTile = props => {
-	const { classes, voiceAppId, setIsAnchorCall, item, joinChannel, leaveChannel, assignTableToChannel, managerCredential } = props;
+	const { classes, voiceAppId, setIsAnchorCall, item, joinChannel, leaveChannel, managerCredential } = props;
 	const { anchorName, clientName, managerName, anchorState, clientState, vid } = item;
 	const { WAITING_MANAGER, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CONNECTED, CONNECTING } = USER_STATE;
 	const currentManagerName = isObject(managerCredential) ? managerCredential.managerLoginname: '';
@@ -271,7 +256,6 @@ const TelebetTile = props => {
 		cardClass = 'emptyCard';
 		panel = <EmptyCard classes={classes} />;
 	} else if (clientDealIn || anchorDealIn) {
-		// TODO: 需要handle經理斷線
 		if (managerName && !isManagerReconnect) {
 			cardClass = 'disabledCard';
 			panel = (
@@ -282,7 +266,6 @@ const TelebetTile = props => {
 					roleName={roleName}
 					voiceAppId={voiceAppId}
 					leaveChannel={leaveChannel}
-					assignTableToChannel={assignTableToChannel}
 				/>
 			);
 		} else {
@@ -298,7 +281,6 @@ const TelebetTile = props => {
 					roleClass={roleClass}
 					joinChannel={joinChannel}
 					leaveChannel={leaveChannel}
-					assignTableToChannel={assignTableToChannel}
 				/>
 			);
 		}
@@ -311,7 +293,6 @@ const TelebetTile = props => {
 				cardClass={cardClass}
 				joinChannel={joinChannel}
 				leaveChannel={leaveChannel}
-				assignTableToChannel={assignTableToChannel}
 				isManagerReconnect={isManagerReconnect}
 			/>
 		);
@@ -328,8 +309,7 @@ TelebetTile.propTypes = {
 	setIsAnchorCall: PropTypes.func, 
 	item: PropTypes.object, 
 	joinChannel: PropTypes.func, 
-	leaveChannel: PropTypes.func, 
-	assignTableToChannel: PropTypes.func
+	leaveChannel: PropTypes.func
 };
 
 const StyledTelebetTile = withStyles(styles)(TelebetTile);

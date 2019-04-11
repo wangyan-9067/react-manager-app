@@ -22,7 +22,7 @@ import GridListBase from './GridListBase';
 import TelebetTile from './TelebetTile';
 import WaitingUser from './WaitingUser';
 import { MUTE_STATE, MANAGER_ACTION_TYPE } from '../constants';
-import { formatAmount, getAnonymousName } from '../helpers/utils';
+import { formatAmount, getAnonymousName, isObject } from '../helpers/utils';
 
 const styles = theme => ({
   root: {
@@ -211,7 +211,8 @@ const AnswerCallPanel = ({
 	} = classes;
 	const { MUTE, UNMUTE } = MUTE_STATE;
 	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
-	const { vid, clientName, anchorName, clientBalance, clientMute, anchorMute } = currentChannel;
+	const { vid, clientName, anchorName, clientMute, anchorMute } = currentChannel;
+	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;
 	const maskedClientName = getAnonymousName(clientName);
 
 	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
@@ -264,7 +265,7 @@ const AnswerCallPanel = ({
 				<Card classes={{ root: answerCallPanelRightRoot }}>
 					<CardContent className={answerCallPanelRight}>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>玩家:</span><span className={answerCallPanelRightTextValue}>{maskedClientName}</span></Typography>
-						<Typography color="inherit" className={answerCallPanelRightText}><span>餘額:</span><span className={answerCallPanelRightTextValue}>{formatAmount(clientBalance)}</span></Typography>
+						<Typography color="inherit" className={answerCallPanelRightText}><span>餘額:</span><span className={answerCallPanelRightTextValue}>{isObject(currentTable) && currentTable.amount ? formatAmount(currentTable.amount) : '-'}</span></Typography>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>桌號:</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
 					</CardContent>
 				</Card>
@@ -415,6 +416,7 @@ const TelebetList = props => {
 	// channelList[4].clientState = 2;
 	// channelList[4].anchorName = 'alice';
 	// channelList[4].anchorState = 1;
+	// channelList[4].vid = 'V010';
 	// channelList[1].clientName = 'hk789';
 	// channelList[1].anchorName = 'joyce';
 	// channelList[1].anchorState = 7;
@@ -448,7 +450,7 @@ const TelebetList = props => {
 	} else {
 		panel = (
 			<GridListBase list={channelList} tileClass={tile}>
-				<TelebetTile joinChannel={joinChannel} leaveChannel={leaveChannel} assignTableToChannel={assignTableToChannel} />
+				<TelebetTile joinChannel={joinChannel} leaveChannel={leaveChannel} />
 			</GridListBase>
 		);
 	}

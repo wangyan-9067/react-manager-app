@@ -32,8 +32,7 @@ export default class DataSocket extends Socket.WebSocketBase {
 		const config = {
 			tag: '[DataSocket]',
 			ucHeartBeatPeriod: 15000,
-			heartBeatLength: 16,
-			debug: true
+			heartBeatLength: 16
 		};
 		super(config);
 	}
