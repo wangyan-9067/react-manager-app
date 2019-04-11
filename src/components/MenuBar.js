@@ -94,7 +94,6 @@ class MenuBar extends React.Component {
   };
 
   handleChange = (event, value) => {
-    console.log('set state', value);
     this.setState({ value });
   };
 

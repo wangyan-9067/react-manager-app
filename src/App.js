@@ -199,7 +199,6 @@ class App extends React.Component {
         break;
 
         case MANAGER_ALL_QUERY_R:
-          console.log('manager all query response', evt.data.allManagersList);
           setManagerList(evt.data.allManagersList);
         break;
 
