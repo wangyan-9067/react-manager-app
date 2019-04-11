@@ -552,7 +552,11 @@ class App extends React.Component {
     }));
   }
 
-  onClose = () => {
+  onClose = (evt, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
     this.props.toggleToast(false);
   }
 

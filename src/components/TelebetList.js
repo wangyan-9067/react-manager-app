@@ -22,7 +22,7 @@ import GridListBase from './GridListBase';
 import TelebetTile from './TelebetTile';
 import WaitingUser from './WaitingUser';
 import { MUTE_STATE, MANAGER_ACTION_TYPE } from '../constants';
-import { formatAmount } from '../helpers/utils';
+import { formatAmount, getAnonymousName } from '../helpers/utils';
 
 const styles = theme => ({
   root: {
@@ -212,6 +212,7 @@ const AnswerCallPanel = ({
 	const { MUTE, UNMUTE } = MUTE_STATE;
 	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
 	const { vid, clientName, anchorName, clientBalance, clientMute, anchorMute } = currentChannel;
+	const maskedClientName = getAnonymousName(clientName);
 
 	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
 	const [tableAssigned, setTableAssigned] = useState(vid);
@@ -225,10 +226,10 @@ const AnswerCallPanel = ({
 
 	if (isAnchorCall) {
 		line1Text = `與 ${vid}`;
-		line2Text = `玩家 ${clientName} 主播 ${anchorName}`;
+		line2Text = `玩家 ${maskedClientName} 主播 ${anchorName}`;
 	} else {
 		line1Text = '與玩家';
-		line2Text = clientName;
+		line2Text = maskedClientName;
 	}
 
 	clientMuteStatusTextDisplay = clientMute === MUTE ? '(玩家靜音中)' : '';
@@ -262,7 +263,7 @@ const AnswerCallPanel = ({
 				</Card>
 				<Card classes={{ root: answerCallPanelRightRoot }}>
 					<CardContent className={answerCallPanelRight}>
-						<Typography color="inherit" className={answerCallPanelRightText}><span>玩家:</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
+						<Typography color="inherit" className={answerCallPanelRightText}><span>玩家:</span><span className={answerCallPanelRightTextValue}>{maskedClientName}</span></Typography>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>餘額:</span><span className={answerCallPanelRightTextValue}>{formatAmount(clientBalance)}</span></Typography>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>桌號:</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
 					</CardContent>
@@ -319,7 +320,7 @@ const AnswerCallPanel = ({
 				classes={{ paper: dialogPaper }}
 			>
 				<DialogContent>
-					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}踢出桌台嗎?</Typography></DialogContentText>
+					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{maskedClientName}踢出桌台嗎?</Typography></DialogContentText>
 				</DialogContent>
 				<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
 					<Button 
@@ -346,7 +347,7 @@ const AnswerCallPanel = ({
 				classes={{ paper: dialogPaper }}
 			>
 				<DialogContent>
-					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}列入黑名單嗎?</Typography></DialogContentText>
+					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{maskedClientName}列入黑名單嗎?</Typography></DialogContentText>
 				</DialogContent>
 				<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
 					<Button 
