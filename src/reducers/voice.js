@@ -8,9 +8,11 @@ import {
 	SET_WAITING_LIST,
 	SET_ANCHOR_LIST,
 	SET_MANAGER_ACTION,
-	SET_ANCHORS_ON_DUTY_LIST
+	SET_ANCHORS_ON_DUTY_LIST,
+	SET_MANAGER_LIST,
+	SET_MANAGER_LEVEL
 } from '../types';
-  
+
 const initialState = {
 	voiceAppId: null,
 	channelList: [],
@@ -21,7 +23,9 @@ const initialState = {
 	waitingList: [],
 	anchorList: [],
 	managerAction: '',
-	anchorsOnDutyList: []
+	anchorsOnDutyList: [],
+	managerList: [],
+	managerLevel: 1
 };
 
 export default function voice(state = initialState, action) {
@@ -66,8 +70,14 @@ export default function voice(state = initialState, action) {
 			const anchorsOnDutyList = action.list;
 			return { ...state, anchorsOnDutyList };
 
+		case SET_MANAGER_LIST:
+			const managerList = action.list;
+			return { ...state, managerList };
+
+		case SET_MANAGER_LEVEL:
+			return { ...state, managerLevel: action.level };
+
     default:
     	return state;
 	}
 };
-  

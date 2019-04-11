@@ -18,6 +18,7 @@ import AnchorList from './AnchorList';
 import TelebetList from './TelebetList';
 import TableList from './TableList';
 import AnchorStatusList from './AnchorStatusList';
+import ManagerList from './ManagerList';
 
 const styles = theme => ({
   appBar: {
@@ -113,7 +114,11 @@ class MenuBar extends React.Component {
       setAnchorsDuty,
       getAnchorsDutyList,
       logout,
-      managerLoginname
+      managerLoginname,
+      getManagerList,
+      addManager,
+      deleteManager,
+      managerLevel
     } = this.props;
     const { value } = this.state;
     const {
@@ -159,7 +164,9 @@ class MenuBar extends React.Component {
               </ListItem>
             </List>
             <div className={grow} />
-            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)}>管理經理</Button>
+            {managerLevel === 1 && (
+              <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.handleChange.bind(null, null, 3)}>管理經理</Button>
+            )}
             <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={logout}>登出</Button>
           </Toolbar>
         </AppBar>
@@ -195,6 +202,15 @@ class MenuBar extends React.Component {
                 <TableList kickoutClientFromDataServer={kickoutClientFromDataServer} />
               </TabContainer>
             )}
+            {value === 3 && (
+              <TabContainer classes={classes}>
+                <ManagerList
+                  getManagerList={getManagerList}
+                  addManager={addManager}
+                  deleteManager={deleteManager}
+                />
+            </TabContainer>
+            )}
           </Grid>
           <Grid item xs={3}>
             <TabContainer classes={classes}>
@@ -215,7 +231,8 @@ MenuBar.propTypes = {
   toggleMuteChannel: PropTypes.func,
   kickoutClient: PropTypes.func,
   blacklistClient: PropTypes.func,
-  logout: PropTypes.func
+  logout: PropTypes.func,
+  managerLevel: PropTypes.number.isRequired
 };
 
 export default withStyles(styles)(MenuBar);
