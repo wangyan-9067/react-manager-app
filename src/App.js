@@ -16,7 +16,8 @@ import {
   setAnchorList,
   setAnchorsOnDutyList,
   setManagerList,
-  setIsAnchorCall
+  setIsAnchorCall,
+  setUserLevel
 } from './actions/voice';
 import {
   setTableList
@@ -31,7 +32,6 @@ import {
   setManagerCredential
 } from './actions/app';
 import {
-  MANAGER_LOGIN,
   MANAGER_LOGIN_R,
   CHANNEL_LIST_R,
   CHANNEL_JOIN,
@@ -56,7 +56,6 @@ import {
   MANAGER_DELETE,
   MANAGER_DELETE_R,
   MANAGER_LOGOUT,
-  CDS_OPERATOR_LOGIN,
   CDS_OPERATOR_LOGIN_R,
   CDS_OPERATOR_LOGOUT,
   CDS_CLIENT_LIST,
@@ -66,6 +65,7 @@ import {
   CDS_OPERATOR_CONTROL_KICKOUT_CLIENT,
   CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R,
   CDS_BET_HIST,
+  CDS_BET_HIST_R,
   CDS_CONTROL_REQ_VIDEO_RES,
   CDS_VIDEO_STATUS,
   CDS_CLIENT_ENTER_TABLE_NOTIFY,
@@ -84,17 +84,14 @@ import {
   USER_STATE
 } from './constants';
 import { isObject } from './helpers/utils';
+import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure } from './helpers/appUtils';
 import './App.css';
 
 class App extends React.Component {
   onVoiceSocketOpen = evt => {
     if (isObject(this.props.managerCredential)) {
       const { voice: voiceSocket, managerCredential: { managerLoginname, managerPassword } } = this.props;
-
-      voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
-        bytes.writeBytes(Socket.stringToBytes(managerLoginname, VALUE_LENGTH.LOGIN_NAME));
-        bytes.writeBytes(Socket.stringToBytes(managerPassword, VALUE_LENGTH.PASSWORD));
-      }));
+      voiceServerLoginCMD(managerLoginname, managerPassword, voiceSocket);
     }
   }
 
@@ -102,8 +99,8 @@ class App extends React.Component {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
+      const { SUCCESS, REPEAT_LOGIN } = RESPONSE_CODES;
       const {
-        voiceAppId,
         setVoiceAppId,
         setChannelList,
         currentChannelId,
@@ -118,19 +115,71 @@ class App extends React.Component {
         toggleDialog,
         setManagerList,
         setIsAnchorCall,
-        isAnswerCall
+        isAnswerCall,
+        data: dataSocket,
+        managerCredential,
+        setUserLevel,
+        setIsUserAuthenticated
       } = this.props;
 
       switch(evt.data.respId) {
         case MANAGER_LOGIN_R:
-          if (evt.data.voiceAppId) {
-            setVoiceAppId(evt.data.voiceAppId);
-            RTC.init(evt.data.voiceAppId);
-          }
+          const { code: loginStatus, voiceAppId, level } = evt.data;
+          const { managerLoginname, managerPassword } = managerCredential;
 
-          this.getAnchorList();
-          this.getAnchorsDutyList();
-          this.getManagerList();
+          if (loginStatus === SUCCESS) {
+            if (voiceAppId) {
+              setVoiceAppId(voiceAppId);
+              RTC.init(voiceAppId);
+
+              this.getAnchorList();
+              this.getAnchorsDutyList();
+              this.getManagerList();
+              setUserLevel(level);
+
+              if (dataSocket.readyState === Socket.ReadyState.OPEN) {
+                toggleToast(false);
+                dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);
+              } else {
+                dataSocket.close();
+                await dataSocket.autoConnect();
+                dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);
+              }
+            } else {
+              handleLoginFailure({
+                setIsUserAuthenticated,
+                setToastMessage,
+                setToastVariant,
+                setToastDuration,
+                toggleToast,
+                message: "[VoiceServer] 沒有AppId, 請聯絡管理員"
+              });
+
+              this.reset();
+            }
+          } else if (loginStatus === REPEAT_LOGIN) {
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "經理重覆登入"
+            });
+
+            this.reset();
+          } else {
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "[VoiceServer] 無法登入, 請聯絡管理員"
+            });
+
+            this.reset();
+          }
         break;
 
         case CHANNEL_LIST_R:
@@ -266,25 +315,15 @@ class App extends React.Component {
   }
 
   onDataSocketOpen = evt => {
-    const { VL_VIDEO_ID, VL_USER_NAME, VL_PSW } = DATA_SERVER_VALUE_LENGTH;
-
     if (isObject(this.props.managerCredential)) {
       const { data: dataSocket, managerCredential: { managerLoginname, managerPassword } } = this.props;
-
-      dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
-        bytes.writeUnsignedShort();
-        bytes.writeUnsignedShort();
-        bytes.writeBytes(Socket.stringToBytes('', VL_VIDEO_ID));
-        bytes.writeBytes(Socket.stringToBytes(managerLoginname, VL_USER_NAME));
-        bytes.writeBytes(Socket.stringToBytes(managerPassword, VL_PSW));
-        bytes.writeUnsignedInt();
-      }));
+      dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);
     }
   }
 
   onDataSocketPacket = evt => {
     if (evt.$type === Socket.EVENT_PACKET) {
-      console.log(`app ${Socket.EVENT_PACKET} data:`, evt.data);
+      console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
     }
 
     const {
@@ -294,7 +333,8 @@ class App extends React.Component {
       setToastVariant,
       toggleToast,
       managerAction,
-      tableList
+      tableList,
+      setIsUserAuthenticated
     } = this.props;
 
     switch(evt.data.respId) {
@@ -366,6 +406,17 @@ class App extends React.Component {
 
         if (loginStatus === GAME_SERVER_RESPONSE_CODES.SUCCESS) {
           this.getBetHistory();
+        } else {
+          handleLoginFailure({
+            setIsUserAuthenticated,
+            setToastMessage,
+            setToastVariant,
+            setToastDuration,
+            toggleToast,
+            message: "[DataServer] 無法登入, 請聯絡管理員"
+          });
+
+          this.reset();
         }
       break;
 
@@ -405,14 +456,30 @@ class App extends React.Component {
           toggleToast(true);
         }
       break;
-
+      
+      // TODO: waiting for game server update
       case CDS_TABLE_LIMIT:
+      break;
 
+      case CDS_BET_HIST_R:
       break;
 
       default:
       break;
     }
+  }
+
+  // TODO: move to appUtils
+  reset = () => {
+    const { voice: voiceSocket, data: dataSocket, setManagerCredential, setIsUserAuthenticated } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
+    voiceSocket.close();
+    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
+    dataSocket.close();
+
+    setManagerCredential(null);
+    setIsUserAuthenticated(false);
   }
 
   async componentDidMount() {
@@ -704,7 +771,8 @@ const mapDispatchToProps = dispatch => ({
   setIsUserAuthenticated: status => dispatch(setIsUserAuthenticated(status)),
   setManagerCredential: credential => dispatch(setManagerCredential(credential)),
   setManagerList: list => dispatch(setManagerList(list)),
-  setIsAnchorCall: isAnchor => dispatch(setIsAnchorCall(isAnchor))
+  setIsAnchorCall: isAnchor => dispatch(setIsAnchorCall(isAnchor)),
+  setUserLevel: level => dispatch(setUserLevel(level))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

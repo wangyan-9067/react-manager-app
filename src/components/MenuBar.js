@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -25,6 +24,7 @@ import TelebetList from './TelebetList';
 import TableList from './TableList';
 import AnchorStatusList from './AnchorStatusList';
 import ManagerList from './ManagerList';
+import BetHistory from './BetHistory';
 
 const styles = theme => ({
   appBar: {
@@ -79,7 +79,11 @@ const styles = theme => ({
   },
   managerName: {
     fontSize: '1rem'
-  }
+  },
+  dialogPaper: {
+    maxWidth: '100%',
+    height: '100%'
+	}
 });
 
 const DialogTitle = withStyles(theme => ({
@@ -115,14 +119,6 @@ const DialogContent = withStyles(theme => ({
   },
 }))(MuiDialogContent);
 
-const DialogActions = withStyles(theme => ({
-  root: {
-    borderTop: `1px solid ${theme.palette.divider}`,
-    margin: 0,
-    padding: theme.spacing.unit,
-  },
-}))(MuiDialogActions);
-
 const TabContainer = props => {
   const { classes } = props;
 
@@ -145,7 +141,7 @@ class MenuBar extends React.Component {
     this.setState({ value });
   };
 
-  handleClickOpen = () => {
+  handleOpen = () => {
     this.setState({
       open: true,
     });
@@ -193,7 +189,8 @@ class MenuBar extends React.Component {
       menuButton,
       secondary,
       bold,
-      managerName
+      managerName,
+      dialogPaper
     } = classes;
 
     return (
@@ -208,7 +205,7 @@ class MenuBar extends React.Component {
               <Tab label="桌台狀態" classes={{ root: tabRoot, selected: tabSelected }} />
             </Tabs>
             <div className={grow1} />
-            <Button variant="contained" size="medium" color="inherit" className={menuButton}>遊戲記錄</Button>
+            <Button variant="contained" size="medium" color="inherit" className={menuButton} onClick={() => { this.handleOpen(); }}>遊戲記錄</Button>
             <div className={grow1} />
             <List>
               <ListItem alignItems="flex-start">
@@ -280,31 +277,14 @@ class MenuBar extends React.Component {
           onClose={this.handleClose}
           aria-labelledby="customized-dialog-title"
           open={this.state.open}
+          classes={{ paper: dialogPaper }}
         >
           <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
             Modal title
           </DialogTitle>
           <DialogContent>
-            <Typography gutterBottom>
-              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac
-              facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum
-              at eros.
-            </Typography>
-            <Typography gutterBottom>
-              Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-              lacus vel augue laoreet rutrum faucibus dolor auctor.
-            </Typography>
-            <Typography gutterBottom>
-              Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-              scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-              auctor fringilla.
-            </Typography>
+            <BetHistory />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Save changes
-            </Button>
-          </DialogActions>
         </Dialog>
       </div>
     );

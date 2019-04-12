@@ -1,6 +1,5 @@
 import 'cube-egret-polyfill';
 import * as Socket from 'cube-socket/live';
-import * as RTC from 'cube-rtc';
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -27,16 +26,15 @@ import {
   toggleToast
 } from '../actions/app';
 import {
-  MANAGER_LOGIN,
   MANAGER_LOGIN_R,
   MANAGER_LOGOUT,
   ANCHOR_ALL_QUERY_REQ,
   ANCHORS_ON_DUTY_REQUEST,
-  CDS_OPERATOR_LOGIN,
   CDS_OPERATOR_LOGIN_R,
   CDS_OPERATOR_LOGOUT
 } from '../protocols';
-import { VALUE_LENGTH, DATA_SERVER_VALUE_LENGTH, RESPONSE_CODES } from '../constants';
+import { RESPONSE_CODES } from '../constants';
+import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure } from '../helpers/appUtils';
 
 const styles = theme => ({
   root: {
@@ -122,37 +120,72 @@ class Login extends React.Component {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-      const { setVoiceAppId, data: dataSocket, managerCredential, setUserLevel } = this.props;
+      const {
+        data: dataSocket,
+        managerCredential,
+        setIsUserAuthenticated,
+        setToastMessage,
+        setToastVariant,
+        setToastDuration,
+        toggleToast
+      } = this.props;
       const { SUCCESS, REPEAT_LOGIN } = RESPONSE_CODES;
 
       switch(evt.data.respId) {
         case MANAGER_LOGIN_R:
-          const { code: loginStatus, voiceAppId, level } = evt.data;
+          const { code: loginStatus, voiceAppId } = evt.data;
           const { managerLoginname, managerPassword } = managerCredential;
 
           if (loginStatus === SUCCESS) {
             if (voiceAppId) {
-              setVoiceAppId(voiceAppId);
-              RTC.init(voiceAppId);
+              // setVoiceAppId(voiceAppId);
+              // RTC.init(voiceAppId);
 
-              this.getAnchorList();
-              this.getAnchorsDutyList();
-              setUserLevel(level);
+              // this.getAnchorList();
+              // this.getAnchorsDutyList();
+              // setUserLevel(level);
 
               if (dataSocket.readyState === Socket.ReadyState.OPEN) {
                 toggleToast(false);
-                this.dataServerLoginCMD(managerLoginname, managerPassword);
+                dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);
               } else {
                 await dataSocket.autoConnect();
-                this.dataServerLoginCMD(managerLoginname, managerPassword);
+                dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);
               }
             } else {
-              this.handleLoginFailure("[VoiceServer] 沒有AppId, 請聯絡管理員");
+              handleLoginFailure({
+                setIsUserAuthenticated,
+                setToastMessage,
+                setToastVariant,
+                setToastDuration,
+                toggleToast,
+                message: "[VoiceServer] 沒有AppId, 請聯絡管理員"
+              });
+
+              this.reset();
             }
           } else if (loginStatus === REPEAT_LOGIN) {
-            this.handleLoginFailure("經理重覆登入");
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "經理重覆登入"
+            });
+
+            this.reset();
           } else {
-            this.handleLoginFailure("[VoiceServer] 無法登入, 請聯絡管理員");
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "[VoiceServer] 無法登入, 請聯絡管理員"
+            });
+
+            this.reset();
           }
         break;
 
@@ -162,12 +195,12 @@ class Login extends React.Component {
     }
   }
 
-  onDataSocketPacket =  evt => {
+  onDataSocketPacket =  async (evt) => {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
     }
 
-    const { setIsUserAuthenticated } = this.props;
+    const { setIsUserAuthenticated, setToastMessage, setToastVariant, setToastDuration, toggleToast } = this.props;
 
     switch(evt.data.respId) {
       case CDS_OPERATOR_LOGIN_R:
@@ -176,7 +209,16 @@ class Login extends React.Component {
         if (loginStatus === RESPONSE_CODES.SUCCESS) {
           setIsUserAuthenticated(true);
         } else {
-          this.handleLoginFailure("[DataServer] 無法登入, 請聯絡管理員");
+          handleLoginFailure({
+            setIsUserAuthenticated,
+            setToastMessage,
+            setToastVariant,
+            setToastDuration,
+            toggleToast,
+            message: "[DataServer] 無法登入, 請聯絡管理員"
+          });
+
+          this.reset();
         }
       break;
 
@@ -185,19 +227,8 @@ class Login extends React.Component {
     }
   }
 
-  handleLoginFailure = async(message) => {
-    const { setToastMessage, setToastVariant, setToastDuration, toggleToast } = this.props;
-
-    setIsUserAuthenticated(false);
-    setToastMessage(message);
-    setToastVariant('error');
-    setToastDuration(null);
-    toggleToast(true);
-
-    await this.reset();
-  }
-
-  reset = async () => {
+  // TODO: move to appUtils
+  reset = () => {
     const { voice: voiceSocket, data: dataSocket, setManagerCredential, setIsUserAuthenticated } = this.props;
 
     voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
@@ -231,6 +262,9 @@ class Login extends React.Component {
     voiceSocket.removeEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
     dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
+    
+    voiceSocket.close();
+    dataSocket.close();
   }
 
   onChange = (e) => {
@@ -265,10 +299,10 @@ class Login extends React.Component {
 
       if (voiceSocket.readyState === Socket.ReadyState.OPEN) {
         toggleToast(false);
-        this.voiceServerLoginCMD(managerLoginname.value, managerPassword.value);
+        voiceServerLoginCMD(managerLoginname.value, managerPassword.value, voiceSocket);
       } else {
         await voiceSocket.autoConnect();
-        this.voiceServerLoginCMD(managerLoginname.value, managerPassword.value);
+        voiceServerLoginCMD(managerLoginname.value, managerPassword.value, voiceSocket);
       }
     }
   }
@@ -332,27 +366,27 @@ class Login extends React.Component {
     this.setState(...this.formDefaults);
   }
 
-  voiceServerLoginCMD = (username, password) => {
-    const { voice: voiceSocket} = this.props;
+  // voiceServerLoginCMD = (username, password) => {
+  //   const { voice: voiceSocket} = this.props;
 
-    voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
-      bytes.writeBytes(Socket.stringToBytes(username, VALUE_LENGTH.LOGIN_NAME));
-      bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
-    }));
-  }
+  //   voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
+  //     bytes.writeBytes(Socket.stringToBytes(username, VALUE_LENGTH.LOGIN_NAME));
+  //     bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
+  //   }));
+  // }
 
-  dataServerLoginCMD = (username, password) => {
-    const { data: dataSocket } = this.props;
+  // dataServerLoginCMD = (username, password) => {
+  //   const { data: dataSocket } = this.props;
 
-    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
-      bytes.writeUnsignedShort();
-      bytes.writeUnsignedShort();
-      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-      bytes.writeBytes(Socket.stringToBytes(username, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-      bytes.writeBytes(Socket.stringToBytes(password, DATA_SERVER_VALUE_LENGTH.VL_PSW));
-      bytes.writeUnsignedInt();
-    }));
-  }
+  //   dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
+  //     bytes.writeUnsignedShort();
+  //     bytes.writeUnsignedShort();
+  //     bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+  //     bytes.writeBytes(Socket.stringToBytes(username, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+  //     bytes.writeBytes(Socket.stringToBytes(password, DATA_SERVER_VALUE_LENGTH.VL_PSW));
+  //     bytes.writeUnsignedInt();
+  //   }));
+  // }
 
   getAnchorList = () => {
     const { voice: voiceSocket } = this.props;
