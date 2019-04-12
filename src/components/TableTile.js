@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS } from '../constants';
-import { getAnonymousName } from '../helpers/utils';
+import { getAnonymousName, isObject } from '../helpers/utils';
 
 const styles = {
 	cardHeader: {
@@ -89,15 +89,17 @@ const getGameStatus = status => {
 	}
 };
 
-const getAnchorByVid = (vid, anchorsOnDutyList) => {
-	const targetAnchor = anchorsOnDutyList.find(anchor => anchor.vid === vid);
-	return targetAnchor ? targetAnchor.anchorName : '-';
-}
+// const getAnchorByVid = (vid, anchorsOnDutyList) => {
+// 	const targetAnchor = anchorsOnDutyList.find(anchor => anchor.vid === vid);
+// 	return targetAnchor ? targetAnchor.anchorName : '-';
+// }
 
-const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient }) => {
+const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList }) => {
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton } = classes;
 	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
 	const maskedTableOwner = tableOwner ? getAnonymousName(tableOwner) : '-';
+	const currentChannel = channelList.find(channel => channel.vid === vid);
+	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorName ? currentChannel.anchorName : '-';
 
 	// TODO: 顯示限紅及牌靴
 
@@ -117,7 +119,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 				<Typography color="inherit"><span>座位數:</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>
 				<Typography color="inherit"><span>局號:</span><span className={tableValue}>{gameCode || '-'}</span></Typography>
 				<Typography color="inherit"><span>荷官:</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
-				<Typography color="inherit"><span>主播:</span><span className={tableValue}>{getAnchorByVid(vid, anchorsOnDutyList)}</span></Typography>
+				<Typography color="inherit"><span>主播:</span><span className={tableValue}>{/* getAnchorByVid(vid, anchorsOnDutyList) */}{currentAnchorName}</span></Typography>
 				<Typography color="inherit"><span>限紅:</span><span className={tableValue}>-</span></Typography>
 				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{maskedTableOwner}</span></Typography>
 				<Typography color="inherit"><span>牌靴:</span><span className={tableValue}>-</span></Typography>

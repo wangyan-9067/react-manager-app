@@ -91,3 +91,35 @@ export const DATA_SERVER_GAME_STATUS = {
 	PAUSE_BET: 12,	//暂停下注
 	UNKNOWN: 13
 };
+
+export const GAME_SERVER_RESPONSE_CODES = {
+	SUCCESS: 0, // 成功
+	ERR_INVL_PARAM: 1, // 无效参数
+	ERR_DB: 2, // 数据库I/O失败
+	ERR_PWD_ERROR: 3, // 密码错误,
+	ERR_NO_USER: 4, // 用户不存在
+	ERR_TIMEOUT: 5, // 超時
+	ERR_SQL_ERROR: 6, // sql发生异常
+	ERR_NO_DBRECORD: 7, // 不存在数据库记录
+	ERR_NO_LOGIN: 8, // 用户未登录
+	ERR_INVL_PLAYTYPE: 13, // 玩法无效
+	ERR_NO_TABLE: 14, // 没有该台桌
+	ERR_INVL_USER_TYPE: 15, // 用户类型无效
+	ERR_INVL_GAME_STATUS: 16, // 游戏状态无效
+	ERR_SEAT_OCCUPIED: 19, // 位置被占
+	ERR_INVL_SEATNUM: 21, // 无效座位
+	ERR_NOT_ON_SEAT: 24, // 不在座位上
+	ERR_LESS_AMOUNT: 26, // 额度不够
+	ERR_PERSONAL_LIMIT: 44, // 超个人盘口限额
+	ERR_USER_FUNC_LIMIT: 45, // 试玩/真钱用户功能被限制
+	ERR_LOW_VER: 46, // 登录时，版本比服务器低
+	ERR_UNKNOWN_GAMETYPE: 48, // 未支持游戏类别
+	ERR_INVL_ROUND: 50, // 无效期号
+	ERR_USER_LIMITED: 51, //用户受限制
+	ERR_USER_BET_LIMITED: 52, //用户下注受限制
+	ERR_FOLLOW_TOO_MANY_MEMBERS: 53,
+	ERR_LED_ENTER_COMMON_TYPE_ONLY: 54,
+	ERR_NO_CREDIT_AND_CREDIT_SEQ_TOO_LOW: 78,
+	ERR_SAME_BET_MODE: 88, //用户在用同一个下注模式
+	ERR_SAME_OPEN_CARD_MODE: 89 //用户在用同一个开牌模式
+};

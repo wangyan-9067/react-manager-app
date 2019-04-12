@@ -15,7 +15,8 @@ import {
   setWaitingList,
   setAnchorList,
   setAnchorsOnDutyList,
-  setManagerList
+  setManagerList,
+  setIsAnchorCall
 } from './actions/voice';
 import {
   setTableList
@@ -54,6 +55,7 @@ import {
   MANAGER_ADD_R,
   MANAGER_DELETE,
   MANAGER_DELETE_R,
+  MANAGER_LOGOUT,
   CDS_OPERATOR_LOGIN,
   CDS_OPERATOR_LOGIN_R,
   CDS_OPERATOR_LOGOUT,
@@ -68,7 +70,7 @@ import {
   CDS_VIDEO_STATUS,
   CDS_CLIENT_ENTER_TABLE_NOTIFY,
   CDS_CLIENT_LEAVE_TABLE_NOTIFY,
-  MANAGER_LOGOUT,
+  CDS_TABLE_LIMIT
 } from './protocols';
 import {
   VALUE_LENGTH,
@@ -77,7 +79,9 @@ import {
   DATA_SERVER_VALUE_LENGTH,
   CONTRACT_MODE,
   RESPONSE_CODES,
-  MANAGER_ACTION_TYPE
+  MANAGER_ACTION_TYPE,
+  GAME_SERVER_RESPONSE_CODES,
+  USER_STATE
 } from './constants';
 import { isObject } from './helpers/utils';
 import './App.css';
@@ -112,7 +116,9 @@ class App extends React.Component {
         setToastVariant,
         toggleToast,
         toggleDialog,
-        setManagerList
+        setManagerList,
+        setIsAnchorCall,
+        isAnswerCall
       } = this.props;
 
       switch(evt.data.respId) {
@@ -129,6 +135,17 @@ class App extends React.Component {
 
         case CHANNEL_LIST_R:
           setChannelList(evt.data.channelList);
+
+          if (isAnswerCall) {
+            const currentChannel = evt.data.channelList.find(channel => channel.channelId === currentChannelId);
+            
+            if (
+              isObject(currentChannel) && 
+              currentChannel.anchorName && 
+              (currentChannel.anchorState === USER_STATE.CONNECTING || currentChannel.anchorState === USER_STATE.CONNECTED)) {
+                setIsAnchorCall(true);
+            }
+          }
         break;
 
         case CHANNEL_JOIN_R:
@@ -159,6 +176,10 @@ class App extends React.Component {
               default:
               break;
             }
+          } else {
+            setToastMessage(`經理操作不能執行! (code: ${actionStatus})`);
+            setToastVariant('error');
+            toggleToast(true);
           }
         break;
 
@@ -272,7 +293,8 @@ class App extends React.Component {
       setToastMessage,
       setToastVariant,
       toggleToast,
-      managerAction
+      managerAction,
+      tableList
     } = this.props;
 
     switch(evt.data.respId) {
@@ -298,7 +320,7 @@ class App extends React.Component {
         setTableList({
           vid: evt.data.vid,
           seatedPlayerNum: evt.data.seatedPlayerNum,
-          tableOwner: evt.data.usernamem,
+          tableOwner: evt.data.username,
           account: evt.data.account
         });
       break;
@@ -309,15 +331,19 @@ class App extends React.Component {
           gameStatus: evt.data.gameStatus,
           gameCode: evt.data.gmcode,
           tableOwner: evt.data.username,
-          status: evt.data.videoStatus
+          status: evt.data.videoStatus,
+          dealerName: evt.data.deal
         });
       break;
 
       case CDS_CLIENT_ENTER_TABLE_NOTIFY:
+        const currentTable = tableList.find(table => table.vid === evt.data.vid);
+
         setTableList({
           vid: evt.data.vid,
           username: evt.data.username,
-          account: evt.data.currentAmount
+          account: evt.data.currentAmount,
+          seatedPlayerNum: currentTable.seatedPlayerNum + 1
         });
       break;
 
@@ -328,7 +354,6 @@ class App extends React.Component {
           gameCode: '',
           gmType: '',
           gameStatus: 0,
-
           seatedPlayerNum: 0,
           account: 0,
           tableOwner: '',
@@ -339,7 +364,7 @@ class App extends React.Component {
       case CDS_OPERATOR_LOGIN_R:
         const { code: loginStatus } = evt.data;
 
-        if (loginStatus === RESPONSE_CODES.SUCCESS) {
+        if (loginStatus === GAME_SERVER_RESPONSE_CODES.SUCCESS) {
           this.getBetHistory();
         }
       break;
@@ -347,7 +372,7 @@ class App extends React.Component {
       case CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R:
         const { code: assignTableStatus, vid } = evt.data;
 
-        if (assignTableStatus === RESPONSE_CODES.SUCCESS) {
+        if (assignTableStatus === GAME_SERVER_RESPONSE_CODES.SUCCESS) {
           this.assignTableToChannel(currentChannelId, vid);
         } else {
           setToastMessage('無法將玩家配對到桌枱!');
@@ -368,17 +393,21 @@ class App extends React.Component {
       case CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R:
         const { reason: kickoutReason } = evt.data;
 
-        if (kickoutReason === RESPONSE_CODES.SUCCESS) {
+        if (kickoutReason === GAME_SERVER_RESPONSE_CODES.SUCCESS || kickoutReason === GAME_SERVER_RESPONSE_CODES.ERR_NO_LOGIN) {
           if (managerAction === MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
             this.kickoutClient(currentChannelId);
           } else {
             this.blacklistClient(currentChannelId);
           }
         } else {
-          setToastMessage('無法將玩家踢出桌枱/加入黑名單!');
+          setToastMessage(`無法將玩家踢出桌枱/加入黑名單! (Reason: ${kickoutReason})`);
           setToastVariant('error');
           toggleToast(true);
         }
+      break;
+
+      case CDS_TABLE_LIMIT:
+
       break;
 
       default:
@@ -638,7 +667,8 @@ class App extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel } = state.voice;
+  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall } = state.voice;
+  const { tableList } = state.data;
   const { variant, message, duration, open, managerCredential } = state.app;
   return ({
     voiceAppId,
@@ -650,7 +680,9 @@ const mapStateToProps = state => {
     open,
     managerAction,
     managerCredential,
-    managerLevel
+    managerLevel,
+    tableList,
+    isAnswerCall
   });
 };
 
@@ -671,7 +703,8 @@ const mapDispatchToProps = dispatch => ({
   toggleDialog: toggle => dispatch(toggleDialog(toggle)),
   setIsUserAuthenticated: status => dispatch(setIsUserAuthenticated(status)),
   setManagerCredential: credential => dispatch(setManagerCredential(credential)),
-  setManagerList: list => dispatch(setManagerList(list))
+  setManagerList: list => dispatch(setManagerList(list)),
+  setIsAnchorCall: isAnchor => dispatch(setIsAnchorCall(isAnchor))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

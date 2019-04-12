@@ -27,6 +27,7 @@ const TableList = ({
   classes,
   tableList,
   anchorsOnDutyList,
+  channelList,
   openDialog,
   toggleDialog,
   kickoutClientFromDataServer,
@@ -38,7 +39,7 @@ const TableList = ({
   return (
     <div className={root}>
       <GridListBase list={tableList} bgColor={GRID_ITEM_BG_COLOR}>
-				<TableTile anchorsOnDutyList={anchorsOnDutyList} toggleDialog={toggleDialog} setKickoutClient={setKickoutClient} />
+				<TableTile anchorsOnDutyList={anchorsOnDutyList} toggleDialog={toggleDialog} setKickoutClient={setKickoutClient} channelList={channelList} />
       </GridListBase>
 			<DialogWrapper
         isOpen={openDialog}
@@ -66,12 +67,13 @@ const StyledTableList = withStyles(styles)(TableList);
 
 const mapStateToProps = state => {
   const { voice, data, app } = state;
-  const { anchorsOnDutyList } = voice;
+  const { anchorsOnDutyList, channelList } = voice;
   const { tableList, clientToKickOut } = data;
   const { openDialog } = app;
 	
   return ({
     anchorsOnDutyList,
+    channelList,
     tableList,
     clientToKickOut,
     openDialog

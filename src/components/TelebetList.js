@@ -265,7 +265,7 @@ const AnswerCallPanel = ({
 				<Card classes={{ root: answerCallPanelRightRoot }}>
 					<CardContent className={answerCallPanelRight}>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>玩家:</span><span className={answerCallPanelRightTextValue}>{maskedClientName}</span></Typography>
-						<Typography color="inherit" className={answerCallPanelRightText}><span>餘額:</span><span className={answerCallPanelRightTextValue}>{isObject(currentTable) && currentTable.amount ? formatAmount(currentTable.amount) : '-'}</span></Typography>
+						<Typography color="inherit" className={answerCallPanelRightText}><span>餘額:</span><span className={answerCallPanelRightTextValue}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</span></Typography>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>桌號:</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
 					</CardContent>
 				</Card>
@@ -331,7 +331,13 @@ const AnswerCallPanel = ({
 						className={classNames(actionButton, dialogActionButton)}
 						onClick={() => {
 							setManagerAction(MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
-							kickoutClientFromDataServer(tableAssigned, clientName);
+
+							if (!tableAssigned) {
+								kickoutClient(currentChannelId);
+							} else {
+								kickoutClientFromDataServer(tableAssigned, clientName);
+							}
+
 							setOpenKickoutClientDialog(false);
 						}}
 					>
@@ -358,7 +364,13 @@ const AnswerCallPanel = ({
 						className={classNames(actionButton, dialogActionButton)}
 						onClick={() => {
 							setManagerAction(MANAGER_ACTION_TYPE.BLACKLIST_CLIENT);
-							kickoutClientFromDataServer(tableAssigned, clientName);
+
+							if (!tableAssigned) {
+								blacklistClient(currentChannelId);
+							} else {
+								kickoutClientFromDataServer(tableAssigned, clientName);
+							}
+
 							setOpenBlacklistDialog(false);
 						}}>
 							確定
@@ -450,7 +462,7 @@ const TelebetList = props => {
 	} else {
 		panel = (
 			<GridListBase list={channelList} tileClass={tile}>
-				<TelebetTile joinChannel={joinChannel} leaveChannel={leaveChannel} />
+				<TelebetTile joinChannel={joinChannel} tableList={tableList} />
 			</GridListBase>
 		);
 	}

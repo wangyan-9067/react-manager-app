@@ -122,12 +122,13 @@ class Login extends React.Component {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-      const { setVoiceAppId, data: dataSocket, managerCredential: { managerLoginname, managerPassword }, setUserLevel } = this.props;
+      const { setVoiceAppId, data: dataSocket, managerCredential, setUserLevel } = this.props;
       const { SUCCESS, REPEAT_LOGIN } = RESPONSE_CODES;
 
       switch(evt.data.respId) {
         case MANAGER_LOGIN_R:
           const { code: loginStatus, voiceAppId, level } = evt.data;
+          const { managerLoginname, managerPassword } = managerCredential;
 
           if (loginStatus === SUCCESS) {
             if (voiceAppId) {
