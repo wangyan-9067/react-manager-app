@@ -138,17 +138,11 @@ class Login extends React.Component {
 
           if (loginStatus === SUCCESS) {
             if (voiceAppId) {
-              // setVoiceAppId(voiceAppId);
-              // RTC.init(voiceAppId);
-
-              // this.getAnchorList();
-              // this.getAnchorsDutyList();
-              // setUserLevel(level);
-
               if (dataSocket.readyState === Socket.ReadyState.OPEN) {
                 toggleToast(false);
                 dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);
               } else {
+                await dataSocket.killSocket();
                 await dataSocket.autoConnect();
                 dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);
               }
@@ -301,6 +295,7 @@ class Login extends React.Component {
         toggleToast(false);
         voiceServerLoginCMD(managerLoginname.value, managerPassword.value, voiceSocket);
       } else {
+        await voiceSocket.killSocket();
         await voiceSocket.autoConnect();
         voiceServerLoginCMD(managerLoginname.value, managerPassword.value, voiceSocket);
       }
@@ -365,28 +360,6 @@ class Login extends React.Component {
   resetForm = () => {
     this.setState(...this.formDefaults);
   }
-
-  // voiceServerLoginCMD = (username, password) => {
-  //   const { voice: voiceSocket} = this.props;
-
-  //   voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
-  //     bytes.writeBytes(Socket.stringToBytes(username, VALUE_LENGTH.LOGIN_NAME));
-  //     bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
-  //   }));
-  // }
-
-  // dataServerLoginCMD = (username, password) => {
-  //   const { data: dataSocket } = this.props;
-
-  //   dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGIN, bytes => {
-  //     bytes.writeUnsignedShort();
-  //     bytes.writeUnsignedShort();
-  //     bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-  //     bytes.writeBytes(Socket.stringToBytes(username, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-  //     bytes.writeBytes(Socket.stringToBytes(password, DATA_SERVER_VALUE_LENGTH.VL_PSW));
-  //     bytes.writeUnsignedInt();
-  //   }));
-  // }
 
   getAnchorList = () => {
     const { voice: voiceSocket } = this.props;

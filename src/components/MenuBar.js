@@ -173,8 +173,7 @@ class MenuBar extends React.Component {
       managerLoginname,
       getManagerList,
       addManager,
-      deleteManager,
-      managerLevel
+      deleteManager
     } = this.props;
     const { value } = this.state;
     const {
@@ -299,8 +298,7 @@ MenuBar.propTypes = {
   toggleMuteChannel: PropTypes.func,
   kickoutClient: PropTypes.func,
   blacklistClient: PropTypes.func,
-  logout: PropTypes.func,
-  managerLevel: PropTypes.number.isRequired
+  logout: PropTypes.func
 };
 
 export default withStyles(styles)(MenuBar);
