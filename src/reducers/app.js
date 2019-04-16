@@ -5,7 +5,9 @@ import {
   TOGGLE_TOAST,
   TOGGLE_DIALOG,
   SET_IS_USER_AUTHENTICATED,
-  SET_MANAGER_CREDENTIAL
+  SET_MANAGER_CREDENTIAL,
+  RESET_ACTION,
+  TOGGLE_LOADING
 } from '../types';
   
 const initialState = {
@@ -15,12 +17,13 @@ const initialState = {
   open: false,
   openDialog: false,
   isUserAuthenticated: null,
-  managerCredential: null
+  managerCredential: null,
+  showLoading: false
 };
 
 export default function app(state = initialState, action) {
 	switch (action.type) {
-		case SET_TOAST_MESSAGE:
+    case SET_TOAST_MESSAGE:
       const message = action.message;
       return { ...state, message };
 
@@ -47,6 +50,13 @@ export default function app(state = initialState, action) {
     case SET_MANAGER_CREDENTIAL:
       const managerCredential = action.credential;
       return { ...state, managerCredential };
+
+    case RESET_ACTION:
+      return initialState;
+
+    case TOGGLE_LOADING:
+      const showLoading = action.toggle;
+      return { ...state, showLoading };
 
     default:
     	return state;

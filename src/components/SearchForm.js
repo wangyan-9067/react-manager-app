@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import validator from 'validator';
 import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
@@ -25,7 +23,7 @@ const styles = theme => ({
 
 class SearchForm extends React.Component {
   formDefaults = {
-    gmCode: { value: '', isValid: true, message: '' }
+    gmCode: { value: '' }
   }
 
   state = {
@@ -46,51 +44,6 @@ class SearchForm extends React.Component {
 
   onSubmit = e => {
     e.preventDefault();
-    this.resetValidationStates();
-
-    if (this.formIsValid()) {
-    }
-  }
-
-  formIsValid = () => {
-    const gmCode = { ...this.state.gmCode };
-
-    let isGood = true;
-
-    if (validator.isEmpty(gmCode.value)) {
-      gmCode.isValid = false;
-      gmCode.message = '必須輸入局號';
-      isGood = false;
-    }
-
-    if (!isGood) {
-      this.setState({
-        gmCode
-      });
-    }
-
-    return isGood;
-  }
-
-  resetValidationStates = () => {
-    // make a copy of everything in state
-    const state = JSON.parse(JSON.stringify(this.state));
-
-    /*
-    loop through each item in state and if it's safe to assume that only
-    form values have an 'isValid' property, we can use that to reset their
-    validation states and keep their existing value property. This process
-    makes it easy to set all validation states on form inputs in case the number
-    of fields on our form grows in the future.
-    */
-    Object.keys(state).map(key => {
-      if (state[key].hasOwnProperty('isValid')) {
-        state[key].isValid = true;
-        state[key].message = '';
-      }
-    });
-
-    this.setState(state);
   }
 
   resetForm = () => {
@@ -111,7 +64,7 @@ class SearchForm extends React.Component {
       <div>
         <form onSubmit={this.onSubmit}>
           <div>
-            <FormControl classes={{ root: formControlRoot }} className={formControl} error={!gmCode.isValid}>
+            <FormControl classes={{ root: formControlRoot }} className={formControl}>
               <Input
                 defaultValue=""
                 classes={{underline: inputUnderline}}
@@ -126,7 +79,8 @@ class SearchForm extends React.Component {
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="Search"
-                      onClick={() => {
+                      onClick={e => {
+                        e.preventDefault();
                         getBetHistory(gmCode.value);
                       }}
                     >
@@ -135,7 +89,6 @@ class SearchForm extends React.Component {
                   </InputAdornment>
                 }
               />
-              <FormHelperText id="component-error-text">{gmCode.message}</FormHelperText>
             </FormControl>
           </div>
         </form>

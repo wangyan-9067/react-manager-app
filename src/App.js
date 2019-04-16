@@ -5,7 +5,7 @@ import * as RTC from 'cube-rtc';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { MenuBar, MessageBar } from './components';
+import { MenuBar, MessageBar, LoadingIndicator } from './components';
 import {
   setVoiceAppId,
   setChannelList,
@@ -30,7 +30,9 @@ import {
   toggleToast,
   toggleDialog,
   setIsUserAuthenticated,
-  setManagerCredential
+  setManagerCredential,
+  resetAction,
+  toggleLoading
 } from './actions/app';
 import {
   MANAGER_LOGIN_R,
@@ -328,7 +330,8 @@ class App extends React.Component {
       managerAction,
       tableList,
       setIsUserAuthenticated,
-      setBetHistory
+      setBetHistory,
+      toggleLoading
     } = this.props;
     const { SUCCESS, ERR_NO_LOGIN } = GAME_SERVER_RESPONSE_CODES;
 
@@ -399,9 +402,7 @@ class App extends React.Component {
       case CDS_OPERATOR_LOGIN_R:
         const { code: loginStatus } = evt.data;
 
-        if (loginStatus === SUCCESS) {
-          this.getBetHistory();
-        } else {
+        if (loginStatus !== SUCCESS) {
           handleLoginFailure({
             setIsUserAuthenticated,
             setToastMessage,
@@ -456,6 +457,7 @@ class App extends React.Component {
 
       case CDS_BET_HIST_R:
         setBetHistory('billno', evt.data.betHistList);
+        toggleLoading(false);
       break;
 
       default:
@@ -675,7 +677,7 @@ class App extends React.Component {
   }
 
   logout = () => {
-    const { voice: voiceSocket, data: dataSocket, setManagerCredential, setIsUserAuthenticated } = this.props;
+    const { voice: voiceSocket, data: dataSocket, resetAction } = this.props;
 
     voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
     voiceSocket.close();
@@ -684,12 +686,12 @@ class App extends React.Component {
     dataSocket.close();
 
     RTC.leaveRoom();
-    setManagerCredential(null);
-    setIsUserAuthenticated(false);
+    resetAction();
   }
 
   render() {
-    const { open, variant, message, duration, managerCredential: { managerLoginname }, managerLevel } = this.props;
+    const { open, variant, message, duration, managerCredential: { managerLoginname }, managerLevel, toggleLoading, showLoading } = this.props;
+
     return (
       <div className="App">
         <MenuBar
@@ -713,6 +715,7 @@ class App extends React.Component {
           managerLoginname={managerLoginname}
           managerLevel={managerLevel}
           getBetHistory={this.getBetHistory}
+          toggleLoading={toggleLoading}
         />
         <MessageBar
           variant={variant}
@@ -721,6 +724,7 @@ class App extends React.Component {
           isOpen={open}
           onClose={this.onClose}
         />
+        <LoadingIndicator showLoading={showLoading} />
       </div>
     );
   }
@@ -729,7 +733,7 @@ class App extends React.Component {
 const mapStateToProps = state => {
   const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall } = state.voice;
   const { tableList } = state.data;
-  const { variant, message, duration, open, managerCredential } = state.app;
+  const { variant, message, duration, open, managerCredential, showLoading } = state.app;
   return ({
     voiceAppId,
     channelList,
@@ -742,7 +746,8 @@ const mapStateToProps = state => {
     managerCredential,
     managerLevel,
     tableList,
-    isAnswerCall
+    isAnswerCall,
+    showLoading
   });
 };
 
@@ -766,7 +771,9 @@ const mapDispatchToProps = dispatch => ({
   setManagerList: list => dispatch(setManagerList(list)),
   setIsAnchorCall: isAnchor => dispatch(setIsAnchorCall(isAnchor)),
   setUserLevel: level => dispatch(setUserLevel(level)),
-  setBetHistory: (keyField, payload) => dispatch(setBetHistory(keyField, payload))
+  setBetHistory: (keyField, payload) => dispatch(setBetHistory(keyField, payload)),
+  resetAction: () => dispatch(resetAction()),
+  toggleLoading: toggle => dispatch(toggleLoading(toggle))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

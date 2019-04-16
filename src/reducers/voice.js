@@ -10,7 +10,8 @@ import {
 	SET_MANAGER_ACTION,
 	SET_ANCHORS_ON_DUTY_LIST,
 	SET_MANAGER_LIST,
-	SET_MANAGER_LEVEL
+	SET_MANAGER_LEVEL,
+	RESET_ACTION
 } from '../types';
 
 const initialState = {
@@ -76,6 +77,9 @@ export default function voice(state = initialState, action) {
 
 		case SET_MANAGER_LEVEL:
 			return { ...state, managerLevel: action.level };
+
+		case RESET_ACTION:
+      return initialState;
 
     default:
     	return state;

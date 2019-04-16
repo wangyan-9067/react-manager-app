@@ -149,6 +149,7 @@ class MenuBar extends React.Component {
   };
 
   handleClose = () => {
+    this.props.toggleLoading(false);
     this.setState({
       open: false
     });
@@ -175,7 +176,8 @@ class MenuBar extends React.Component {
       getManagerList,
       addManager,
       deleteManager,
-      getBetHistory
+      getBetHistory,
+      toggleLoading
     } = this.props;
     const { value } = this.state;
     const {
@@ -206,7 +208,19 @@ class MenuBar extends React.Component {
               <Tab label="桌台狀態" classes={{ root: tabRoot, selected: tabSelected }} />
             </Tabs>
             <div className={grow1} />
-            <Button variant="contained" size="medium" color="inherit" className={menuButton} onClick={() => { this.handleOpen(); }}>遊戲記錄</Button>
+            <Button
+              variant="contained"
+              size="medium"
+              color="inherit"
+              className={menuButton}
+              onClick={() => {
+                toggleLoading(true);
+                getBetHistory();
+                this.handleOpen();
+              }}
+            >
+              遊戲記錄
+            </Button>
             <div className={grow1} />
             <List>
               <ListItem alignItems="flex-start">

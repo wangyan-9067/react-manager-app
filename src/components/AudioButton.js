@@ -11,7 +11,7 @@ const styles = () => ({
   }
 });
 
-const AudioButton = ({ classes }) => {
+const AudioButton = ({ classes, gmcode, toggleToast, setToastMessage, setToastVariant }) => {
   const { playerIcon } = classes;
   const [ isPlaying, setIsPlaying ] = useState(false);
   const audioObject = useRef(null);
@@ -19,15 +19,29 @@ const AudioButton = ({ classes }) => {
   return (
     <Fragment>
       <IconButton
-        onClick={() => {          
-          audioObject.current.src = "https://36.255.220.33/e-telebet/test.aac";
+        onClick={() => {
+          const player = audioObject.current;
+
+          // TODO: put base url to config file
+          player.src = `https://36.255.220.33/e-telebet/${gmcode}.aac`;
           setIsPlaying(!isPlaying);
 
           if (isPlaying) {
-            audioObject.current.pause();
-            audioObject.current.currentTime = 0;
+            player.pause();
+            player.currentTime = 0;
           } else {
-            audioObject.current.play();
+            player.play();
+          }
+
+          player.onerror = () => {
+            toggleToast(true);
+            setToastMessage("錄音不能播放!");
+            setToastVariant("error");
+            setIsPlaying(false);
+          }
+
+          player.onended = () => {
+            setIsPlaying(false);
           }
         }}
         aria-label="Play Audio"

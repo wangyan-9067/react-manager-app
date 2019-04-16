@@ -18,6 +18,7 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 
+import { toggleToast, setToastMessage, setToastVariant } from '../actions/app';
 import AudioButton from './AudioButton';
 import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
 import { PLAYTYPE } from '../constants';
@@ -176,10 +177,10 @@ const usePrevious = value => {
   return ref.current;
 };
 
-const BetHistory = ({ classes, betHistory }) => {
+const BetHistory = ({ classes, betHistory, toggleToast, setToastMessage, setToastVariant }) => {
   let betHistoryList = convertObjectListToArrayList(betHistory.byHash);
 
-  const { root, cellRoot, cellWidth, tableWrapper, table, playerIcon } = classes;
+  const { root, cellRoot, cellWidth, tableWrapper, table } = classes;
   const [rows, setRows] = useState(betHistoryList);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -241,7 +242,7 @@ const BetHistory = ({ classes, betHistory }) => {
                     </Moment>
                   </TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">庄 {row.bankerVal} 閑 {row.playerVal}</TableCell>
-                  <TableCell classes={{ root: cellRoot }} align="center"><AudioButton /></TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center"><AudioButton gmcode={row.gmcode} toggleToast={toggleToast} setToastMessage={setToastMessage} setToastVariant={setToastVariant} /></TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{row.name}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">-</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
@@ -295,6 +296,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  toggleToast: toggle => dispatch(toggleToast(toggle)),
+  setToastMessage: message => dispatch(setToastMessage(message)),
+  setToastVariant: variant => dispatch(setToastVariant(variant))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledBetHistory);

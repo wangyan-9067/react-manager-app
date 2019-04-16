@@ -1,7 +1,8 @@
 import {
 	SET_TABLE_LIST,
 	SET_KICK_OUT_CLIENT,
-	SET_BET_HISTORY
+	SET_BET_HISTORY,
+	RESET_ACTION
 } from '../types';
   
 const initialState = {
@@ -69,6 +70,9 @@ export default function data(state = initialState, action) {
 					byHash
 				}
 			};
+
+		case RESET_ACTION:
+      return initialState;
 
     default:
     	return state;

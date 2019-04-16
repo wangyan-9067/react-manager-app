@@ -72,7 +72,8 @@ const GridListBase = ({ classes, children, width, bgColor, customCols, list, til
 					>
 						{ React.cloneElement(children, { item }) }
           </GridListTile>
-        ))}
+				))}
+				{ !data || data.length <= 0 ? '沒有桌台資訊' : '' }
       </GridList>
     </div>
   );

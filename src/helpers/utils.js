@@ -24,7 +24,11 @@ export const compareArray = (array1, array2) => {
 
 export const isObject = obj => {
   const type = typeof obj;
-  return type === 'function' || type === 'object' && !!obj;
+  return (type === 'function' || type === 'object') && !!obj;
+};
+
+export const isNonEmptyArray = value => {
+	return Array.isArray(value) && value.length > 0;
 };
 
 export const convertObjectListToArrayList = data => {
