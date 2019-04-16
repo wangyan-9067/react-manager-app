@@ -1,6 +1,7 @@
 import {
 	SET_TABLE_LIST,
-	SET_KICK_OUT_CLIENT
+	SET_KICK_OUT_CLIENT,
+	SET_BET_HISTORY
 } from '../types';
   
 const initialState = {
@@ -8,30 +9,16 @@ const initialState = {
 	clientToKickOut: {
 		vid: '',
 		clientName: ''
+	},
+	betHistory: {
+		byId: [],
+		byHash: {}
 	}
 };
 
 export default function data(state = initialState, action) {
 	switch (action.type) {
 		case SET_TABLE_LIST:
-			// let newTable;
-			// const table = action.table;
-			// const newState = Object.assign({}, state);
-			// const newTableList = newState.tableList;
-			// const targetIndex = newTableList.findIndex((item) => item.vid === table.vid);
-
-			// if (targetIndex > -1) {
-			// 	newTable = { ...newTableList[targetIndex], ...table };
-			// 	newTableList[targetIndex] = newTable;
-			// } else {
-			// 	newTableList.push(table);
-			// }
-
-			// return {
-			// 	...state,
-			// 	tableList: newTableList
-			// };
-
 			const tableToUpdate = action.table;
 			const targetIndex = state.tableList.findIndex((item) => item.vid === tableToUpdate.vid);
 
@@ -48,11 +35,6 @@ export default function data(state = initialState, action) {
 					...state,
 					tableList: updatedTableList
 				};
-				// console.log("targetIndex", targetIndex, updatedTableList, {
-				// 	...state,
-				// 	tableList: updatedTableList
-				// });
-				// return { ...state };
 			} else {
 				// Add new table
 				return { 
@@ -67,6 +49,26 @@ export default function data(state = initialState, action) {
 				clientName: action.data.clientName
 			};
 			return { ...state, clientToKickOut };
+
+		case SET_BET_HISTORY:
+			const { keyField, payload: historyData } = action;
+			const byId = [];
+			const byHash = {};
+
+			if (Array.isArray(historyData) && historyData.length > 0 && keyField) {
+				for (const value of historyData) {
+					byId.push(value[keyField]);
+					byHash[value[keyField]] = value;
+				}
+			}
+
+			return {
+				...state,
+				betHistory: {
+					byId,
+					byHash
+				}
+			};
 
     default:
     	return state;

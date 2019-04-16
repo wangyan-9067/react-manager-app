@@ -123,3 +123,17 @@ export const GAME_SERVER_RESPONSE_CODES = {
 	ERR_SAME_BET_MODE: 88, //用户在用同一个下注模式
 	ERR_SAME_OPEN_CARD_MODE: 89 //用户在用同一个开牌模式
 };
+
+export const PLAYTYPE = {
+	BANKER: 1, // 庄
+	PLAYER: 2, // 闲
+	TIE: 3, // 和
+	BANKER_PAIR: 4, // 闲对
+	PLAYER_PAIR: 5, // 庄对
+	BANKER_NO_COMMISSION: 11,
+	BANKER_DRAGON_BONUS: 12, // 庄龙宝
+	PLAYER_DRAGON_BONUS: 13, // 闲龙宝
+	SUPER_SIX: 14, // 超级六
+	ANY_PAIR: 15, // 任意对子
+	PERFECT_PAIR: 16 // 完美对子
+};

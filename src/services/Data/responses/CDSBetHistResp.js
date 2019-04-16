@@ -17,22 +17,35 @@ export default class CDSBetHistResp extends Socket.ResponseBase {
 		this.betHistList = [];
 
 		for (let i = 0 ; i < this.num; i++) {
-			this.betHistList.push({
-				name: bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_USER_NAME),
-				gmtype: bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_GM_TYPE),
-				gmcode: bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_GAME_CODE),
-				billno: bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_BILL_NO),
-        betTime: bytes.readDouble(),
-        table: bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_TBL_CODE),
-				playerVal: bytes.readByte(),
-				bankerVal: bytes.readByte(),
-				amount: bytes.readDouble(),
-        profit: bytes.readDouble(),
-        playtype: bytes.readByte(),
-				banker: bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_BANKER),
-				player: bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_PLAYER),
-				flag: bytes.readByte()
-			});
+			let result = {};
+			result.name = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_USER_NAME);
+			result.gmtype = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_GM_TYPE);
+			result.gmcode = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_GAME_CODE);
+			result.billno = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_BILL_NO);
+			result.betTime = (bytes.readUnsignedInt() << 32) | bytes.readUnsignedInt();
+			result.table = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_TBL_CODE);
+			result.playerVal = bytes.readByte();
+			result.bankerVal = bytes.readByte();
+			result.amount = bytes.readDouble();
+			result.profit = bytes.readDouble();
+			result.playtype = bytes.readByte();
+			
+			let banker = [];
+			let player = [];
+
+			for (let i = 0; i < DATA_SERVER_VALUE_LENGTH.VL_BANKER; i++) {
+				banker.push(bytes.readByte());
+			}
+			result.banker = banker;
+
+			for (let i = 0; i < DATA_SERVER_VALUE_LENGTH.VL_PLAYER; i++) {
+				player.push(bytes.readByte());
+			}
+			result.player = player;
+
+			result.flag = bytes.readByte();
+			
+			this.betHistList.push(result);
 		}
 	}
 }

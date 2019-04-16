@@ -20,7 +20,8 @@ import {
   setUserLevel
 } from './actions/voice';
 import {
-  setTableList
+  setTableList,
+  setBetHistory
 } from './actions/data';
 import {
   setToastMessage,
@@ -326,7 +327,8 @@ class App extends React.Component {
       toggleToast,
       managerAction,
       tableList,
-      setIsUserAuthenticated
+      setIsUserAuthenticated,
+      setBetHistory
     } = this.props;
     const { SUCCESS, ERR_NO_LOGIN } = GAME_SERVER_RESPONSE_CODES;
 
@@ -453,6 +455,7 @@ class App extends React.Component {
       break;
 
       case CDS_BET_HIST_R:
+        setBetHistory('billno', evt.data.betHistList);
       break;
 
       default:
@@ -602,7 +605,7 @@ class App extends React.Component {
     this.sendManagerAction(MANAGER_ACTIONS.BLACKLIST_CLIENT, channelId);
   }
 
-  getBetHistory = (vid = '', gmCode = '', gmType = '', beginTime = '', endTime = '') => {
+  getBetHistory = (gmCode = '', vid = 'V010', gmType = '', beginTime = '', endTime = '') => {
     const { data: dataSocket, managerCredential: { managerLoginname } } = this.props;
 
     dataSocket.writeBytes(Socket.createCMD(CDS_BET_HIST, bytes => {
@@ -612,7 +615,7 @@ class App extends React.Component {
       bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_TIMESTAMP));
       bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_TIMESTAMP));
       bytes.writeBytes(Socket.stringToBytes(gmCode, DATA_SERVER_VALUE_LENGTH.VL_GAME_CODE));
-      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort(0);
       bytes.writeBytes(Socket.stringToBytes(gmType, DATA_SERVER_VALUE_LENGTH.VL_GM_TYPE));
       bytes.writeBytes(Socket.stringToBytes(managerLoginname, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
     }));
@@ -709,6 +712,7 @@ class App extends React.Component {
           logout={this.logout}
           managerLoginname={managerLoginname}
           managerLevel={managerLevel}
+          getBetHistory={this.getBetHistory}
         />
         <MessageBar
           variant={variant}
@@ -761,7 +765,8 @@ const mapDispatchToProps = dispatch => ({
   setManagerCredential: credential => dispatch(setManagerCredential(credential)),
   setManagerList: list => dispatch(setManagerList(list)),
   setIsAnchorCall: isAnchor => dispatch(setIsAnchorCall(isAnchor)),
-  setUserLevel: level => dispatch(setUserLevel(level))
+  setUserLevel: level => dispatch(setUserLevel(level)),
+  setBetHistory: (keyField, payload) => dispatch(setBetHistory(keyField, payload))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

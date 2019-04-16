@@ -6,10 +6,10 @@ export default class CDSTableLimitResp extends Socket.ResponseBase {
 	parseResp(bytes) {
 		bytes.readUnsignedShort();
 		bytes.readUnsignedShort();
-		
+
     this.vid = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID);
-    this.table = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_TBL_CODE)
-    this.num = bytes.readUnsignedShort();
+    this.username = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_USER_NAME);
+    this.num = bytes.readByte();
 		this.tableLimit = [];
 
 		for (let i = 0 ; i < this.num; i++) {

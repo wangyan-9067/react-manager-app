@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import Moment from 'react-moment';
+import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,12 +18,16 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 
+import AudioButton from './AudioButton';
+import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
+import { PLAYTYPE } from '../constants';
+
 const actionsStyles = theme => ({
   root: {
     flexShrink: 0,
     color: theme.palette.text.secondary,
     marginLeft: theme.spacing.unit * 2.5,
-  },
+  }
 });
 
 const TablePaginationActions  = ({ classes, count, page, rowsPerPage, theme, onChangePage }) => {
@@ -91,26 +97,76 @@ const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: tru
   TablePaginationActions,
 );
 
-let counter = 0;
-function createData(name, calories, fat) {
-  counter += 1;
-  return { id: counter, name, calories, fat };
-}
-
 const styles = theme => ({
   root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    width: '100%'
+  },
+  cellRoot: {
+    padding: '4px 0px 4px 12px',
+    color: '#818181',
+    fontWeight: 'bold',
+    fontSize: '0.85rem'
+  },
+  cellWidth: {
+    width: '75px'
   },
   table: {
     minWidth: 500,
   },
   tableWrapper: {
     overflowX: 'auto',
+  },
+  profitClass: {
+    color: '#ED4217' 
+  },
+  lossClass: {
+    color: '#13C636' 
   }
 });
 
-const getPreviousBetHistoryState = value => {
+const getPlayType = playtype => {
+  const {	BANKER, PLAYER, TIE, BANKER_PAIR, PLAYER_PAIR, BANKER_NO_COMMISSION, BANKER_DRAGON_BONUS, PLAYER_DRAGON_BONUS, SUPER_SIX, ANY_PAIR, PERFECT_PAIR } = PLAYTYPE;
+  
+  switch (playtype) {
+    case BANKER:
+      return '庄';
+
+    case PLAYER:
+      return '闲';
+
+    case TIE:
+      return '和';
+
+    case BANKER_PAIR:
+      return '闲对';
+
+    case PLAYER_PAIR:
+      return '庄对';
+      
+    case BANKER_NO_COMMISSION:
+      return '庄免佣';
+
+    case BANKER_DRAGON_BONUS:
+      return '庄龙宝';
+
+    case PLAYER_DRAGON_BONUS:
+      return '闲龙宝';
+
+    case SUPER_SIX:
+      return '超级六';
+
+    case ANY_PAIR:
+      return '任意对子';
+
+    case PERFECT_PAIR:
+      return '完美对子';
+    
+    default:
+      return '';
+  }
+};
+
+const usePrevious = value => {
   const ref = useRef();
 
   useEffect(() => {
@@ -120,25 +176,15 @@ const getPreviousBetHistoryState = value => {
   return ref.current;
 };
 
-const BetHistory = ({ classes }) => {
-  const [rows, setRows] = useState([
-    createData('Cupcake', 305, 3.7),
-    createData('Donut', 452, 25.0),
-    createData('Eclair', 262, 16.0),
-    createData('Frozen yoghurt', 159, 6.0),
-    createData('Gingerbread', 356, 16.0),
-    createData('Honeycomb', 408, 3.2),
-    createData('Ice cream sandwich', 237, 9.0),
-    createData('Jelly Bean', 375, 0.0),
-    createData('KitKat', 518, 26.0),
-    createData('Lollipop', 392, 0.2),
-    createData('Marshmallow', 318, 0),
-    createData('Nougat', 360, 19.0),
-    createData('Oreo', 437, 18.0),
-  ].sort((a, b) => (a.calories < b.calories ? -1 : 1)));
+const BetHistory = ({ classes, betHistory }) => {
+  let betHistoryList = convertObjectListToArrayList(betHistory.byHash);
+
+  const { root, cellRoot, cellWidth, tableWrapper, table, playerIcon } = classes;
+  const [rows, setRows] = useState(betHistoryList);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const prevRows = usePrevious(betHistoryList);
 
   const handleChangePage = (event, page) => {
     setPage(page);
@@ -147,27 +193,64 @@ const BetHistory = ({ classes }) => {
     setRowsPerPage(event.target.value);
   };
 
+  useEffect(() => {
+    const flattenArrays = {
+      prev: prevRows,
+      current: betHistoryList
+    };
+
+    if (!compareArray(flattenArrays.prev, flattenArrays.current)) {
+      setRows(flattenArrays.current);
+    }
+  });
+
   return (
-    <Paper className={classes.root}>
-      <div className={classes.tableWrapper}>
-        <Table className={classes.table}>
+    <Paper className={root}>
+      <div className={tableWrapper}>
+        <Table className={table}>
           <TableHead>
             <TableRow>
-              <TableCell component="th" scope="row">A</TableCell>
-              <TableCell align="right">B</TableCell>
-              <TableCell align="right">C</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">訂單號</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">局號</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">時間</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">結果</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">重播</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">玩家</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">主播</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">玩法</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">總投注</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">派彩</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">狀態</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-              <TableRow key={row.id}>
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="right">{row.calories}</TableCell>
-                <TableCell align="right">{row.fat}</TableCell>
-              </TableRow>
-            ))}
+            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+              const betHistoryClasses = classNames.bind(classes);
+              const profitClasses = betHistoryClasses({
+                profitClass: row.profit > 0,
+                lossClass: row.profit < 0
+              });
+
+              return (
+                <TableRow key={row.billno}>
+                  <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.billno}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.gmcode}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">
+                    <Moment format="YYYY-MM-DD HH:mm:ss">
+                      {row.betTime * 1000}
+                    </Moment>
+                  </TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">庄 {row.bankerVal} 閑 {row.playerVal}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center"><AudioButton /></TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{row.name}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">-</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{formatAmount(row.amount)}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} className={profitClasses} align="center">{row.profit > 0 ? '+' : ''}{formatAmount(row.profit)}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{row.flag === 0 ? '未派彩' : '已派彩'}</TableCell>
+                </TableRow>
+              );
+            })}
             {emptyRows > 0 && (
               <TableRow style={{ height: 48 * emptyRows }}>
                 <TableCell colSpan={6} />
@@ -204,7 +287,11 @@ BetHistory.prototype = {
 const StyledBetHistory = withStyles(styles)(BetHistory);
 
 const mapStateToProps = state => {
-  return ({});
+  const { betHistory } = state.data;
+
+  return ({
+    betHistory
+  });
 };
 
 const mapDispatchToProps = dispatch => ({

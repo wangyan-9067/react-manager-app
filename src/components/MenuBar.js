@@ -24,6 +24,7 @@ import TelebetList from './TelebetList';
 import TableList from './TableList';
 import AnchorStatusList from './AnchorStatusList';
 import ManagerList from './ManagerList';
+import SearchForm from './SearchForm';
 import BetHistory from './BetHistory';
 
 const styles = theme => ({
@@ -173,7 +174,8 @@ class MenuBar extends React.Component {
       managerLoginname,
       getManagerList,
       addManager,
-      deleteManager
+      deleteManager,
+      getBetHistory
     } = this.props;
     const { value } = this.state;
     const {
@@ -279,7 +281,7 @@ class MenuBar extends React.Component {
           classes={{ paper: dialogPaper }}
         >
           <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
-            Modal title
+            <SearchForm getBetHistory={getBetHistory} />
           </DialogTitle>
           <DialogContent>
             <BetHistory />

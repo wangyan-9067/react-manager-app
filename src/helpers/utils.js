@@ -27,6 +27,10 @@ export const isObject = obj => {
   return type === 'function' || type === 'object' && !!obj;
 };
 
+export const convertObjectListToArrayList = data => {
+	return Object.keys(data).map(key => data[key]);
+};
+
 export const getAnonymousName = (loginname, nick, showFirstChar, showNickNameFirstChar) => {
 	if (nick && nick !== loginname.substring(3) && nick.slice(0, 16) !== loginname.substring(3).slice(0, 16)){
 		return nick;
@@ -41,4 +45,4 @@ export const getAnonymousName = (loginname, nick, showFirstChar, showNickNameFir
 			}
 		}
 	}
-}
+};
