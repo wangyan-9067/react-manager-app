@@ -2,7 +2,8 @@ import {
 	SET_TABLE_LIST,
 	SET_KICK_OUT_CLIENT,
 	SET_BET_HISTORY,
-	RESET_ACTION
+	RESET_ACTION,
+	SET_TABLE_LIMIT
 } from '../types';
   
 const initialState = {
@@ -12,6 +13,10 @@ const initialState = {
 		clientName: ''
 	},
 	betHistory: {
+		byId: [],
+		byHash: {}
+	},
+	tableLimit: {
 		byId: [],
 		byHash: {}
 	}
@@ -68,6 +73,24 @@ export default function data(state = initialState, action) {
 				betHistory: {
 					byId,
 					byHash
+				}
+			};
+
+		case SET_TABLE_LIMIT:
+			const { data: tableLimitData, vid: tableId } = action;
+			const tableIds = [];
+			const tableLimitList = {};
+
+			if (Array.isArray(tableLimitData) && tableLimitData.length > 0) {
+				tableIds.push(tableId);
+				tableLimitList[tableId] = tableLimitData;
+			}
+
+			return {
+				...state,
+				tableLimit: {
+					byId: tableIds,
+					byHash: tableLimitList
 				}
 			};
 

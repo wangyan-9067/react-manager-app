@@ -21,7 +21,8 @@ import {
 } from './actions/voice';
 import {
   setTableList,
-  setBetHistory
+  setBetHistory,
+  setTableLimit
 } from './actions/data';
 import {
   setToastMessage,
@@ -331,7 +332,8 @@ class App extends React.Component {
       tableList,
       setIsUserAuthenticated,
       setBetHistory,
-      toggleLoading
+      toggleLoading,
+      setTableLimit
     } = this.props;
     const { SUCCESS, ERR_NO_LOGIN } = GAME_SERVER_RESPONSE_CODES;
 
@@ -397,6 +399,7 @@ class App extends React.Component {
           tableOwner: '',
           status: 0
         });
+        setTableLimit(evt.data.vid, []);
       break;
 
       case CDS_OPERATOR_LOGIN_R:
@@ -451,8 +454,8 @@ class App extends React.Component {
         }
       break;
       
-      // TODO: waiting for game server update
       case CDS_TABLE_LIMIT:
+        setTableLimit(evt.data.vid, evt.data.tableLimit);
       break;
 
       case CDS_BET_HIST_R:
@@ -773,7 +776,8 @@ const mapDispatchToProps = dispatch => ({
   setUserLevel: level => dispatch(setUserLevel(level)),
   setBetHistory: (keyField, payload) => dispatch(setBetHistory(keyField, payload)),
   resetAction: () => dispatch(resetAction()),
-  toggleLoading: toggle => dispatch(toggleLoading(toggle))
+  toggleLoading: toggle => dispatch(toggleLoading(toggle)),
+  setTableLimit: (vid, data) => dispatch(setTableLimit(vid, data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

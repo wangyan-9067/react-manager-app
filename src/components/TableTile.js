@@ -3,13 +3,18 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
+import Button from '@material-ui/core/Button';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
-import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS } from '../constants';
-import { getAnonymousName, isObject } from '../helpers/utils';
+import PopoverList from './PopoverList';
+import TextList from './TextList';
+import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS, PLAYTYPE } from '../constants';
+import { getAnonymousName, isObject, isNonEmptyArray } from '../helpers/utils';
 
 const styles = {
 	cardHeader: {
@@ -41,6 +46,9 @@ const styles = {
 	tableValue: {
 		fontWeight: 'bold',
 		padding: '10px'
+	},
+	fieldWrapper: {
+		alignItems: 'center'
 	}
 };
 
@@ -89,19 +97,94 @@ const getGameStatus = status => {
 	}
 };
 
+const getPlayTypeText = playtype => {
+	const { BANKER, PLAYER, TIE, BANKER_PAIR, PLAYER_PAIR, BANKER_NO_COMMISSION, BANKER_DRAGON_BONUS, PLAYER_DRAGON_BONUS, SUPER_SIX, ANY_PAIR, PERFECT_PAIR } = PLAYTYPE;
+
+	switch(playtype) {
+		case BANKER:
+			return '庄';
+
+		case PLAYER:
+			return '閑';
+
+		case TIE:
+			return '和';
+
+		case BANKER_PAIR:
+			return '閑對';
+		
+		case PLAYER_PAIR:
+			return '庄對';
+
+		case BANKER_NO_COMMISSION:
+			return '庄免佣';
+
+		case BANKER_DRAGON_BONUS:
+			return '庄龍寶';
+
+		case PLAYER_DRAGON_BONUS:
+			return '闲龍寶';
+
+		case SUPER_SIX:
+			return '超级六';
+
+		case ANY_PAIR:
+			return '任意對子';
+
+		case PERFECT_PAIR:
+			return '完美對子';
+		
+		default:
+		return;
+	}
+}
+
 // const getAnchorByVid = (vid, anchorsOnDutyList) => {
 // 	const targetAnchor = anchorsOnDutyList.find(anchor => anchor.vid === vid);
 // 	return targetAnchor ? targetAnchor.anchorName : '-';
-// }
+// };
 
-const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList }) => {
-	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton } = classes;
+const getTableLimitList = (vid, tableLimit) => {
+	const playtypeList = Object.values(PLAYTYPE);
+	const hashTableList = tableLimit.byHash[vid];
+	
+	if (isNonEmptyArray(hashTableList)) {
+		return hashTableList.filter(value => {
+			if (playtypeList.includes(value.playtype)) {
+				return value;
+			}
+		});
+	}
+
+	return [];
+}
+
+const DataItem = ({ item }) => {
+	const { playtype, min, max} = item;
+
+  return (
+    <ListItem>
+      <ListItemText
+        primary={`${getPlayTypeText(playtype)}: $${min} - $${max}`}
+      />
+    </ListItem>
+  );
+};
+
+const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList, tableLimit }) => {
+	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
 	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
 	const maskedTableOwner = tableOwner ? getAnonymousName(tableOwner) : '-';
 	const currentChannel = channelList.find(channel => channel.vid === vid);
 	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorName ? currentChannel.anchorName : '-';
+	const tableLimitList = getTableLimitList(vid, tableLimit);
+	const tableLimitDisplay = isNonEmptyArray(tableLimitList) ? (
+		<PopoverList buttonText="限紅列表">
+			<TextList list={tableLimitList} dataItem={DataItem} />
+		</PopoverList>
+	) : <span className={tableValue}>-</span>
 
-	// TODO: 顯示限紅及牌靴
+	// TODO: 顯示牌靴
 
 	const tableTileClasses = classNames.bind(classes);
 	const tileHeaderClass = tableTileClasses({
@@ -120,7 +203,10 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 				<Typography color="inherit"><span>局號:</span><span className={tableValue}>{gameCode || '-'}</span></Typography>
 				<Typography color="inherit"><span>荷官:</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
 				<Typography color="inherit"><span>主播:</span><span className={tableValue}>{/* getAnchorByVid(vid, anchorsOnDutyList) */}{currentAnchorName}</span></Typography>
-				<Typography color="inherit"><span>限紅:</span><span className={tableValue}>-</span></Typography>
+				<Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
+					<Grid item><Typography color="inherit">限紅:</Typography></Grid>
+					<Grid item>{tableLimitDisplay}</Grid>
+				</Grid>
 				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{maskedTableOwner}</span></Typography>
 				<Typography color="inherit"><span>牌靴:</span><span className={tableValue}>-</span></Typography>
 				<Typography color="inherit"><span>遊戲狀態:</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>

@@ -37,7 +37,8 @@ const TableList = ({
   toggleDialog,
   kickoutClientFromDataServer,
   setKickoutClient,
-  clientToKickOut
+  clientToKickOut,
+  tableLimit
 }) => {
   const { root, emptyText } = classes;
   let panel;
@@ -46,7 +47,7 @@ const TableList = ({
     panel = (
       <Fragment>
         <GridListBase list={tableList} bgColor={GRID_ITEM_BG_COLOR}>
-          <TableTile anchorsOnDutyList={anchorsOnDutyList} toggleDialog={toggleDialog} setKickoutClient={setKickoutClient} channelList={channelList} />
+          <TableTile anchorsOnDutyList={anchorsOnDutyList} toggleDialog={toggleDialog} setKickoutClient={setKickoutClient} channelList={channelList} tableLimit={tableLimit} />
         </GridListBase>
         <DialogWrapper
           isOpen={openDialog}
@@ -82,7 +83,7 @@ const StyledTableList = withStyles(styles)(TableList);
 const mapStateToProps = state => {
   const { voice, data, app } = state;
   const { anchorsOnDutyList, channelList } = voice;
-  const { tableList, clientToKickOut } = data;
+  const { tableList, clientToKickOut, tableLimit } = data;
   const { openDialog } = app;
 	
   return ({
@@ -90,7 +91,8 @@ const mapStateToProps = state => {
     channelList,
     tableList,
     clientToKickOut,
-    openDialog
+    openDialog,
+    tableLimit
   });
 };
 
