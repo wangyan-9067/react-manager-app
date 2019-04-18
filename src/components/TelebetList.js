@@ -17,11 +17,12 @@ import CallEndIcon from '@material-ui/icons/CallEnd';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-import { setManagerAction } from '../actions/voice';
+import { setToastMessage, setToastVariant, toggleToast } from '../actions/app';
+import { setManagerAction, setIsAnswerCall } from '../actions/voice';
 import GridListBase from './GridListBase';
 import TelebetTile from './TelebetTile';
 import WaitingUser from './WaitingUser';
-import { MUTE_STATE, MANAGER_ACTION_TYPE } from '../constants';
+import { MUTE_STATE, MANAGER_ACTION_TYPE, DATA_SERVER_VIDEO_STATUS } from '../constants';
 import { formatAmount, getAnonymousName, isObject } from '../helpers/utils';
 
 const styles = theme => ({
@@ -189,7 +190,11 @@ const AnswerCallPanel = ({
 	kickoutClient,
 	blacklistClient,
 	tableList,
-	setManagerAction
+	setManagerAction,
+	setIsAnswerCall,
+	setToastMessage,
+	setToastVariant,
+	toggleToast
 }) => {
 	const {
 		answerCallPanel, 
@@ -211,6 +216,15 @@ const AnswerCallPanel = ({
 	} = classes;
 	const { MUTE, UNMUTE } = MUTE_STATE;
 	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
+
+	// Error handling when currentChannel is not found in existing channel list
+	if (!currentChannel) {
+		setIsAnswerCall(false);
+		setToastMessage("因為系統問題, 所以暫時不能接停電話, 請聯絡管理員!");
+		setToastVariant('error');
+		toggleToast(true);
+	}
+
 	const { vid, clientName, anchorName, clientMute, anchorMute } = currentChannel;
 	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;
 	const maskedClientName = getAnonymousName(clientName);
@@ -301,7 +315,7 @@ const AnswerCallPanel = ({
 							}}
 						>
 						{tableList.map((table, index) =>
-							<ToggleButton value={table.vid}>
+							<ToggleButton value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE}>
 								<Typography color="inherit">{table.vid}</Typography>
 							</ToggleButton>
         		)}
@@ -411,7 +425,11 @@ const TelebetList = props => {
 		blacklistClient,
 		waitingList,
 		tableList,
-		setManagerAction
+		setManagerAction,
+		setIsAnswerCall,
+		setToastMessage,
+		setToastVariant,
+		toggleToast
 	} = props;
 	const { separator, tile } = classes;
 
@@ -422,13 +440,13 @@ const TelebetList = props => {
 	});
 
 	// TODO: remove testing data
-	// channelList[3].clientName = 'TSThk456';
-	// channelList[3].clientState = 2;
-	// channelList[4].clientName = 'TSThk457';
-	// channelList[4].clientState = 2;
-	// channelList[4].anchorName = 'alice';
-	// channelList[4].anchorState = 1;
-	// channelList[4].vid = 'V010';
+	channelList[3].clientName = 'TSThk456';
+	channelList[3].clientState = 2;
+	channelList[4].clientName = 'TSThk457';
+	channelList[4].clientState = 2;
+	channelList[4].anchorName = 'alice';
+	channelList[4].anchorState = 1;
+	channelList[4].vid = 'V010';
 	// channelList[1].clientName = 'hk789';
 	// channelList[1].anchorName = 'joyce';
 	// channelList[1].anchorState = 7;
@@ -457,6 +475,10 @@ const TelebetList = props => {
 				blacklistClient={blacklistClient}
 				tableList={tableList}
 				setManagerAction={setManagerAction}
+				setIsAnswerCall={setIsAnswerCall}
+				setToastMessage={setToastMessage}
+				setToastVariant={setToastVariant}
+				toggleToast={toggleToast}
 			/>
 		);
 	} else {
@@ -519,7 +541,11 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-	setManagerAction: action => dispatch(setManagerAction(action))
+	setManagerAction: action => dispatch(setManagerAction(action)),
+	setIsAnswerCall: answer => dispatch(setIsAnswerCall(answer)),
+  setToastMessage: message => dispatch(setToastMessage(message)),
+  setToastVariant: variant => dispatch(setToastVariant(variant)),
+  toggleToast: toggle => dispatch(toggleToast(toggle))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledTelebetList);
