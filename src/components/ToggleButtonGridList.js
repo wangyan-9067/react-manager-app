@@ -34,7 +34,7 @@ const styles = theme => ({
   }
 });
 
-const ToggleButtonGridList = ({ classes, list, isEdit, selectedValue, onChangeHandler, onClickHandler }) => {
+const ToggleButtonGridList = ({ classes, list, exclusive, selectedValue, onChangeHandler, onClickHandler }) => {
   const [selected, setSelected] = useState();
   const { root, toggleButtonRoot, toggleButtonLabel, toggleListGroupRoot } = classes;
   const value = selectedValue || selected;
@@ -56,7 +56,7 @@ const ToggleButtonGridList = ({ classes, list, isEdit, selectedValue, onChangeHa
             onClickHandler();
           }
         }}
-        exclusive={isEdit}
+        exclusive={exclusive}
       >
         {data.map((item, index) => (
           <ToggleButton 

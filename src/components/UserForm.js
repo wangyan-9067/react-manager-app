@@ -6,6 +6,8 @@ import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
 import DialogWrapper from './DialogWrapper';
 
@@ -71,7 +73,7 @@ const styles = theme => ({
   }
 });
 
-class AnchorForm extends React.Component {
+class UserForm extends React.Component {
   formDefaults = {
     anchorLoginname: { value: '', isValid: true, message: '' },
     anchorNickname: { value: '', isValid: true, message: '' },
@@ -87,7 +89,7 @@ class AnchorForm extends React.Component {
     const { selectedAnchor } = this.props;
 
     if (selectedAnchor) {
-      const { loginname, nickname, password, url, level } = selectedAnchor;
+      const { loginname, nickname, password, url, flag } = selectedAnchor;
 
       this.formDefaults.anchorLoginname.value = loginname;
       this.formDefaults.anchorNickname.value = nickname;
@@ -95,8 +97,8 @@ class AnchorForm extends React.Component {
       this.formDefaults.anchorPasswordConfirm.value = password;
       this.formDefaults.anchorIconUrl.value = url;
 
-      if (level) {
-        this.formDefaults.level.value = level;
+      if (typeof flag !== 'undefined') {
+        this.formDefaults.level.value = flag;
       }
     }
 
@@ -193,9 +195,9 @@ class AnchorForm extends React.Component {
       isGood = false;
     }
 
-    if (isManager && !(level.value === '0' || level.value === '1')) {
+    if (isManager && !(level.value === 0 || level.value === 1)) {
       level.isValid = false;
-      level.message = 'Only accept 0 or 1';
+      level.message = 'Level is required';
       isGood = false;
     }
 
@@ -345,7 +347,7 @@ class AnchorForm extends React.Component {
               { isManager && (
                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!level.isValid}>
                   <div className={managerActionFormLabel}>權限</div>
-                  <Input
+                  {/* <Input
                     defaultValue=""
                     classes={{underline: inputUnderline}}
                     className={input}
@@ -356,7 +358,20 @@ class AnchorForm extends React.Component {
                     placeholder="0 - 普通經理, 1 - admin經理"
                     value={level.value}
                     onChange={this.onChange}
-                  />
+                  /> */}
+                  <Select
+                    value={level.value}
+                    onChange={this.onChange}
+                    classes={{underline: inputUnderline}}
+                    className={input}
+                    inputProps={{
+                      name: 'level',
+                      id: 'level',
+                    }}
+                  >
+                    <MenuItem value={0}>普通經理</MenuItem>
+                    <MenuItem value={1}>admin經理</MenuItem>
+                  </Select>
                   <FormHelperText id="component-error-text">{level.message}</FormHelperText>
                 </FormControl>
               )}
@@ -384,4 +399,4 @@ class AnchorForm extends React.Component {
   }
 };
 
-export default withStyles(styles)(AnchorForm);
+export default withStyles(styles)(UserForm);

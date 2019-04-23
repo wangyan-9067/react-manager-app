@@ -16,7 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import { withRouter } from "react-router";
 
 import MessageBar from '../components/MessageBar';
-import { setVoiceAppId, setUserLevel } from '../actions/voice';
+import { setVoiceAppId } from '../actions/voice';
 import {
   setIsUserAuthenticated,
   setManagerCredential,
@@ -484,7 +484,6 @@ const mapDispatchToProps = dispatch => ({
   setVoiceAppId: id => dispatch(setVoiceAppId(id)),
   setIsUserAuthenticated: status => dispatch(setIsUserAuthenticated(status)),
   setManagerCredential: credential => dispatch(setManagerCredential(credential)),
-  setUserLevel: level => dispatch(setUserLevel(level)),
   setToastMessage: message => dispatch(setToastMessage(message)),
   setToastVariant: variant => dispatch(setToastVariant(variant)),
   setToastDuration: duration => dispatch(setToastDuration(duration)),

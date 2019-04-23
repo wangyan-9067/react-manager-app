@@ -11,7 +11,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 
-import AnchorForm from './AnchorForm';
+import UserForm from './UserForm';
 import ToggleButtonGridList from './ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 import { compareArray } from '../helpers/utils';
@@ -200,7 +200,7 @@ const AnchorList = props => {
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-            <AnchorForm
+            <UserForm
               selectedAnchor={selectedAnchor}
               addAnchor={addAnchor}
               deleteAnchor={deleteAnchor}
@@ -218,9 +218,12 @@ const AnchorList = props => {
         list={anchorList}
         tileClass={tileClass}
         customCols={6}
-        isEdit={isEdit}
+        exclusive={isEdit}
         selectedValue={selected}
         onChangeHandler={value => {
+          if (!value) {
+            return;
+          }
           setSelected(value);
         }}
         onClickHandler={onClickHandler}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -11,7 +11,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 
-import AnchorForm from './AnchorForm';
+import UserForm from './UserForm';
 import ToggleButtonGridList from './ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 
@@ -93,16 +93,6 @@ const styles = () => ({
   }
 });
 
-const usePrevious = value => {
-  const ref = useRef();
-
-  useEffect(() => {
-    ref.current = value;
-  });
-
-  return ref.current;
-}
-
 const ManagerList = props => {
   const [openAddManagerDialog, setOpenAddManagerDialog] = useState(false);
   const [selected, setSelected] = useState();
@@ -157,11 +147,16 @@ const ManagerList = props => {
     );
   }
 
+  useEffect(() => {
+    if (selected && isEdit) {
+      setOpenAddManagerDialog(true);
+    }
+  }, [selected, isEdit]);
+
 	return (
 		<div className={root}>
       <Typography color="inherit" align="left" className={headerText}>請選取需要編輯的經理</Typography>
       <div className={grow} />
-      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddManagerDialog(true); }}>新增經理</Button>
       <Button
         variant="contained"
         size="medium"
@@ -169,8 +164,11 @@ const ManagerList = props => {
         className={operationButton}
         onClick={() => {
           setSelected();
-          setIsEdit(!isEdit);
-        }}>編輯</Button>
+          setIsEdit(false);
+          setOpenAddManagerDialog(true);
+        }}>
+          新增經理
+        </Button>
       {panel}
 			<Dialog
 				open={openAddManagerDialog}
@@ -184,7 +182,7 @@ const ManagerList = props => {
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-            <AnchorForm
+            <UserForm
               selectedAnchor={selectedManager}
               addAnchor={addManager}
               deleteAnchor={deleteManager}
@@ -202,10 +200,14 @@ const ManagerList = props => {
         list={managerList}
         tileClass={tileClass}
         customCols={6}
-        isEdit={isEdit}
+        exclusive={true}
         selectedValue={selected}
         onChangeHandler={value => {
+          if (!value) {
+            return;
+          }
           setSelected(value);
+          setIsEdit(true);
         }}
         onClickHandler={onClickHandler}
       />
