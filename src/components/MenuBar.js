@@ -177,7 +177,9 @@ class MenuBar extends React.Component {
       addManager,
       deleteManager,
       getBetHistory,
-      toggleLoading
+      toggleLoading,
+      assignTokenToDelegator,
+      kickDelegator
     } = this.props;
     const { value } = this.state;
     const {
@@ -264,6 +266,8 @@ class MenuBar extends React.Component {
                   kickoutClientFromDataServer={kickoutClientFromDataServer}
                   kickoutClient={kickoutClient}
                   blacklistClient={blacklistClient}
+                  assignTokenToDelegator={assignTokenToDelegator}
+                  kickDelegator={kickDelegator}
                 />
               </TabContainer>
             )}

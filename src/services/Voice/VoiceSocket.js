@@ -16,6 +16,11 @@ import AnchorDeleteResp from './responses/AnchorDeleteResp';
 import AnchorAllQueryResp from './responses/AnchorAllQueryResp';
 import ManagerKickoutResp from './responses/ManagerKickoutResp';
 import WaitingListResp from './responses/WaitingListResp';
+import AssignTokenToDelegatorResp from './responses/AssignTokenToDelegatorResp';
+import KickDelegatorResp from './responses/KickDelegatorResp';
+import AddDelegatorResp from './responses/AddDelegatorResp';
+import DeleteDelegatorResp from './responses/DeleteDelegatorResp';
+import QueryAllDelegatorResp from './responses/QueryAllDelegatorResp';
 
 import { 
 	MANAGER_LOGIN_R, 
@@ -32,7 +37,12 @@ import {
 	ANCHOR_DELETE_R,
 	ANCHOR_ALL_QUERY_R,
 	MANAGER_KICKOUT_R,
-	WAITING_LIST_R
+	WAITING_LIST_R,
+	ASSIGN_TOKEN_TO_DELEGATOR_R,
+	KICK_DELEGATOR_R,
+	ADD_DELEGATOR_R,
+	DELETE_DELEGATOR_R,
+	QUERY_ALL_DELEGATOR_R
 } from '../../protocols';
 
 export default class VoiceSocket extends Socket.WebSocketBase {
@@ -63,8 +73,13 @@ export default class VoiceSocket extends Socket.WebSocketBase {
 		// this.respClazzMap.set(ANCHOR_UPDATE_R, AnchorUpdateResp);
 		this.respClazzMap.set(ANCHOR_DELETE_R, AnchorDeleteResp);
 		this.respClazzMap.set(ANCHOR_ALL_QUERY_R, AnchorAllQueryResp);
-
 		this.respClazzMap.set(MANAGER_KICKOUT_R, ManagerKickoutResp);
+
 		this.respClazzMap.set(WAITING_LIST_R, WaitingListResp);
+		this.respClazzMap.set(ASSIGN_TOKEN_TO_DELEGATOR_R, AssignTokenToDelegatorResp);
+		this.respClazzMap.set(KICK_DELEGATOR_R, KickDelegatorResp);
+		this.respClazzMap.set(ADD_DELEGATOR_R, AddDelegatorResp);
+		this.respClazzMap.set(DELETE_DELEGATOR_R, DeleteDelegatorResp);
+		this.respClazzMap.set(QUERY_ALL_DELEGATOR_R, QueryAllDelegatorResp);
 	}
 }

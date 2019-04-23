@@ -23,7 +23,7 @@ import GridListBase from './GridListBase';
 import TelebetTile from './TelebetTile';
 import WaitingUser from './WaitingUser';
 import { MUTE_STATE, MANAGER_ACTION_TYPE, DATA_SERVER_VIDEO_STATUS } from '../constants';
-import { formatAmount, getAnonymousName, isObject } from '../helpers/utils';
+import { formatAmount, isObject } from '../helpers/utils';
 
 const styles = theme => ({
   root: {
@@ -43,9 +43,9 @@ const styles = theme => ({
 		left: 0,
 		width: '100%',
 		height: '100%',
-		backgroundColor: '#F5F5F5',
-		borderRadius: '16px',
-		minHeight: '200px'
+		// backgroundColor: '#F5F5F5',
+		// borderRadius: '16px',
+		// minHeight: '200px'
 	},
 	answerCallPanel: {
     display: 'flex',
@@ -220,14 +220,13 @@ const AnswerCallPanel = ({
 	// Error handling when currentChannel is not found in existing channel list
 	if (!currentChannel) {
 		setIsAnswerCall(false);
-		setToastMessage("因為系統問題, 所以暫時不能接停電話, 請聯絡管理員!");
+		setToastMessage("因為系統問題, 所以暫時不能接聽電話, 請聯絡管理員!");
 		setToastVariant('error');
 		toggleToast(true);
 	}
 
 	const { vid, clientName, anchorName, clientMute, anchorMute } = currentChannel;
 	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;
-	const maskedClientName = getAnonymousName(clientName);
 
 	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
 	const [tableAssigned, setTableAssigned] = useState(vid);
@@ -241,10 +240,10 @@ const AnswerCallPanel = ({
 
 	if (isAnchorCall) {
 		line1Text = `與 ${vid}`;
-		line2Text = `玩家 ${maskedClientName} 主播 ${anchorName}`;
+		line2Text = `玩家 ${clientName} 主播 ${anchorName}`;
 	} else {
 		line1Text = '與玩家';
-		line2Text = maskedClientName;
+		line2Text = clientName;
 	}
 
 	clientMuteStatusTextDisplay = clientMute === MUTE ? '(玩家靜音中)' : '';
@@ -278,7 +277,7 @@ const AnswerCallPanel = ({
 				</Card>
 				<Card classes={{ root: answerCallPanelRightRoot }}>
 					<CardContent className={answerCallPanelRight}>
-						<Typography color="inherit" className={answerCallPanelRightText}><span>玩家:</span><span className={answerCallPanelRightTextValue}>{maskedClientName}</span></Typography>
+						<Typography color="inherit" className={answerCallPanelRightText}><span>玩家:</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>餘額:</span><span className={answerCallPanelRightTextValue}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</span></Typography>
 						<Typography color="inherit" className={answerCallPanelRightText}><span>桌號:</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
 					</CardContent>
@@ -335,7 +334,7 @@ const AnswerCallPanel = ({
 				classes={{ paper: dialogPaper }}
 			>
 				<DialogContent>
-					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{maskedClientName}踢出桌台嗎?</Typography></DialogContentText>
+					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}踢出桌台嗎?</Typography></DialogContentText>
 				</DialogContent>
 				<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
 					<Button 
@@ -368,7 +367,7 @@ const AnswerCallPanel = ({
 				classes={{ paper: dialogPaper }}
 			>
 				<DialogContent>
-					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{maskedClientName}列入黑名單嗎?</Typography></DialogContentText>
+					<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}列入黑名單嗎?</Typography></DialogContentText>
 				</DialogContent>
 				<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
 					<Button 
@@ -429,7 +428,9 @@ const TelebetList = props => {
 		setIsAnswerCall,
 		setToastMessage,
 		setToastVariant,
-		toggleToast
+		toggleToast,
+		assignTokenToDelegator,
+		kickDelegator
 	} = props;
 	const { separator, tile } = classes;
 
@@ -493,7 +494,7 @@ const TelebetList = props => {
 		<div className={classList}>
 			{ panel }
 			<div className={separator} />
-			<WaitingUser waitingList={waitingList} />
+			<WaitingUser waitingList={waitingList} assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
 		</div>
 	);
 }

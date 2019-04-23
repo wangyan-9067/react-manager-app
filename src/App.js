@@ -60,6 +60,10 @@ import {
   MANAGER_DELETE,
   MANAGER_DELETE_R,
   MANAGER_LOGOUT,
+  ASSIGN_TOKEN_TO_DELEGATOR,
+  ASSIGN_TOKEN_TO_DELEGATOR_R,
+  KICK_DELEGATOR,
+  KICK_DELEGATOR_R,
   CDS_OPERATOR_LOGIN_R,
   CDS_OPERATOR_LOGOUT,
   CDS_CLIENT_LIST,
@@ -103,7 +107,7 @@ class App extends React.Component {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-      const { SUCCESS, REPEAT_LOGIN } = RESPONSE_CODES;
+      const { SUCCESS, REPEAT_LOGIN, DELEGATOR_NOT_IN_LINE } = RESPONSE_CODES;
       const {
         voiceAppId,
         setVoiceAppId,
@@ -229,7 +233,7 @@ class App extends React.Component {
         break;
 
         case WAITING_LIST_R:
-          setWaitingList(evt.data.clientList);
+          setWaitingList(evt.data.delegatorList);
         break;
 
         case ANCHOR_ALL_QUERY_R:
@@ -293,6 +297,30 @@ class App extends React.Component {
           } else {
             toggleDialog(false);
             this.getManagerList();
+          }
+        break;
+
+        case ASSIGN_TOKEN_TO_DELEGATOR_R:
+          const { code: assignTokenStatus } = evt.data;
+          
+          if (assignTokenStatus === DELEGATOR_NOT_IN_LINE) {
+            setToastMessage('代理並不在線!');
+            setToastVariant('error');
+            toggleToast(true);
+          } else if (assignTokenStatus !== SUCCESS) {
+            setToastMessage(`不能成功派籌, 請聯絡管理員! (code: ${assignTokenStatus})`);
+            setToastVariant('error');
+            toggleToast(true);
+          }
+        break;
+
+        case KICK_DELEGATOR_R:
+          const { code: kickDelegatorStatus } = evt.data;
+          
+          if (kickDelegatorStatus !== SUCCESS) {
+            setToastMessage(`不能成功踢走代理, 請聯絡管理員! (code: ${kickDelegatorStatus})`);
+            setToastVariant('error');
+            toggleToast(true);
           }
         break;
 
@@ -526,31 +554,6 @@ class App extends React.Component {
     }));
   }
 
-  getAnchorList = () => {
-    const { voice: voiceSocket } = this.props;
-    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ALL_QUERY_REQ));
-  }
-
-  addAnchor = (loginName, password, nickName, url) => {
-    const { voice: voiceSocket } = this.props;
-
-    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ADD_REQ, bytes => {
-      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
-      bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
-      bytes.writeBytes(Socket.stringToBytes(nickName, VALUE_LENGTH.NICK_NAME));
-      bytes.writeUnsignedInt(url.length);
-      bytes.writeBytes(Socket.stringToBytes(url, url.length));
-    }));
-  }
-
-  deleteAnchor = loginName => {
-    const { voice: voiceSocket } = this.props;
-
-    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_DELETE_REQ, bytes => {
-      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
-    }));
-  }
-
   assignTable = (vid, clientName)=> {
     const { data: dataSocket } = this.props;
 
@@ -645,6 +648,31 @@ class App extends React.Component {
     voiceSocket.writeBytes(Socket.createCMD(ANCHORS_ON_DUTY_REQUEST));
   }
 
+  getAnchorList = () => {
+    const { voice: voiceSocket } = this.props;
+    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ALL_QUERY_REQ));
+  }
+
+  addAnchor = (loginName, password, nickName, url) => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_ADD_REQ, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
+      bytes.writeBytes(Socket.stringToBytes(nickName, VALUE_LENGTH.NICK_NAME));
+      bytes.writeUnsignedInt(url.length);
+      bytes.writeBytes(Socket.stringToBytes(url, url.length));
+    }));
+  }
+
+  deleteAnchor = loginName => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(ANCHOR_DELETE_REQ, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+    }));
+  }
+
   getManagerList = () => {
     const { voice: voiceSocket } = this.props;
     voiceSocket.writeBytes(Socket.createCMD(MANAGER_ALL_QUERY_REQ));
@@ -671,14 +699,6 @@ class App extends React.Component {
     }));
   }
 
-  onClose = (evt, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    this.props.toggleToast(false);
-  }
-
   logout = () => {
     const { voice: voiceSocket, data: dataSocket, resetAction } = this.props;
 
@@ -690,6 +710,30 @@ class App extends React.Component {
 
     RTC.leaveRoom();
     resetAction();
+  }
+
+  assignTokenToDelegator = delegatorName => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(ASSIGN_TOKEN_TO_DELEGATOR, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(delegatorName, VALUE_LENGTH.LOGIN_NAME));
+    }));
+  }
+
+  kickDelegator = delegatorName => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(KICK_DELEGATOR, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(delegatorName, VALUE_LENGTH.LOGIN_NAME));
+    }));
+  }
+
+  onClose = (evt, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.props.toggleToast(false);
   }
 
   render() {
@@ -719,6 +763,8 @@ class App extends React.Component {
           managerLevel={managerLevel}
           getBetHistory={this.getBetHistory}
           toggleLoading={toggleLoading}
+          assignTokenToDelegator={this.assignTokenToDelegator}
+          kickDelegator={this.kickDelegator}
         />
         <MessageBar
           variant={variant}

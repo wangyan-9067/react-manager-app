@@ -12,27 +12,41 @@ const styles = theme => ({
 		fontSize: '1.125rem',
 		fontWeight: 'bold',
 		marginLeft: '10px'
+	},
+	listRoot: {
+		width: '115%',
+    backgroundColor: '#F5F5F5',
+    marginLeft: '-10px',
+		marginRight: '-10px',
+    top: '0',
+    left: '0',
+    height: '100%',
+    minHeight: '140px'
 	}
 });
 
-const WaitingUser = props => {
-	let { classes, waitingList } = props;
+const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegator }) => {
+	const { title, listRoot } = classes;
 
 	return (
 		<div style={{ width: '100%' }}>
-			<Typography color="inherit" align="left" className={classes.title}>
-				等候中玩家
+			<Typography color="inherit" align="left" className={title}>
+				輪候中代理
 			</Typography>
-			<GridListBase list={waitingList} bgColor="#F5F5F5" customCols={6}>
-				<WaitingUserTile />
-			</GridListBase>
+			<div className={listRoot}>
+				<GridListBase list={waitingList} bgColor="#F5F5F5" customCols={6}>
+					<WaitingUserTile assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
+				</GridListBase>
+			</div>
 		</div>
 	);
 };
 
 WaitingUser.propTypes = {
 	classes: PropTypes.object.isRequired,
-	waitingList: PropTypes.array
+	waitingList: PropTypes.array,
+	assignTokenToDelegator: PropTypes.func,
+	kickDelegator: PropTypes.func
 };
 
 export default withStyles(styles)(WaitingUser);

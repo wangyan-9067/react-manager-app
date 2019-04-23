@@ -29,6 +29,16 @@ export const ANCHOR_ALL_QUERY_REQ = 0x0bb214;
 export const ANCHOR_ALL_QUERY_R = 0x0bb214;
 export const MANAGER_KICKOUT_R = 0x0bb215;
 export const WAITING_LIST_R = 0x0bb216;
+export const ASSIGN_TOKEN_TO_DELEGATOR = 0x0bb217;
+export const ASSIGN_TOKEN_TO_DELEGATOR_R = 0x0bb217;
+export const KICK_DELEGATOR = 0x0bb218;
+export const KICK_DELEGATOR_R = 0x0bb218;
+export const ADD_DELEGATOR = 0x0bb219;
+export const ADD_DELEGATOR_R = 0x0bb219;
+export const DELETE_DELEGATOR = 0x0bb21a;
+export const DELETE_DELEGATOR_R = 0x0bb21a;
+export const QUERY_ALL_DELEGATOR = 0x0bb21b;
+export const QUERY_ALL_DELEGATOR_R = 0x0bb21b;
 
 //Data server
 export const CDS_OPERATOR_LOGIN = 0x090038;

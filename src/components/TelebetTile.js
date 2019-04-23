@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { setIsAnchorCall } from '../actions/voice';
 import { USER_STATE } from '../constants';
-import { formatAmount, isObject, getAnonymousName } from '../helpers/utils';
+import { formatAmount, isObject } from '../helpers/utils';
 
 const styles = {
 	emptyCard: {
@@ -175,13 +175,12 @@ CallInfoCard.propTypes = {
 const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable }) => {
 	const { cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientName, anchorName, channelId, managerName } = item;
-	const maskedClientName = getAnonymousName(clientName);
 
 	return (
     <Card className={classes[cardClass]}>
       <CardContent className={cardContent}>
 				<Typography color="inherit" className={cardContentText}>主播<span className={client}>{anchorName}</span></Typography>
-				<Typography color="inherit" className={cardContentText}>玩家<span className={client}>{maskedClientName}</span>遊戲中</Typography>
+				<Typography color="inherit" className={cardContentText}>玩家<span className={client}>{clientName}</span>遊戲中</Typography>
 				<Typography color="inherit" className={cardContentText}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
@@ -205,7 +204,6 @@ const TelebetTile = props => {
 	const CALLING_MANAGER_STATES = [WAITING_MANAGER, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT];
 	const isCallingManager = CALLING_MANAGER_STATES.findIndex(state => state === anchorState) !== -1;
 	const isManagerReconnect = managerName === currentManagerName;
-	const maskedClientName = getAnonymousName(clientName);
 
 	const clientDealIn = clientName && !anchorName && clientState === CONNECTED;
 	const anchorDealIn = clientName && anchorName && isCallingManager;
@@ -223,7 +221,7 @@ const TelebetTile = props => {
 		cardClass = 'card';
 		roleClass = 'player';
 		role = '玩家';
-		roleName = maskedClientName;
+		roleName = clientName;
 	}
 
 	if (anchorDealIn) {

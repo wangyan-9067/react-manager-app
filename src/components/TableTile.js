@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import PopoverList from './PopoverList';
 import TextList from './TextList';
 import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS, PLAYTYPE } from '../constants';
-import { getAnonymousName, isObject, isNonEmptyArray } from '../helpers/utils';
+import { isObject, isNonEmptyArray } from '../helpers/utils';
 
 const styles = {
 	cardHeader: {
@@ -174,7 +174,6 @@ const DataItem = ({ item }) => {
 const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList, tableLimit }) => {
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
 	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
-	const maskedTableOwner = tableOwner ? getAnonymousName(tableOwner) : '-';
 	const currentChannel = channelList.find(channel => channel.vid === vid);
 	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorName ? currentChannel.anchorName : '-';
 	const tableLimitList = getTableLimitList(vid, tableLimit);
@@ -207,7 +206,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 					<Grid item><Typography color="inherit">限紅:</Typography></Grid>
 					<Grid item>{tableLimitDisplay}</Grid>
 				</Grid>
-				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{maskedTableOwner}</span></Typography>
+				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
 				<Typography color="inherit"><span>牌靴:</span><span className={tableValue}>-</span></Typography>
 				<Typography color="inherit"><span>遊戲狀態:</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
 			</CardContent>
