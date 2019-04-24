@@ -9,7 +9,7 @@ export default class QueryAllDelegatorResp extends Socket.ResponseBase {
 
 		for (let i = 0 ; i < this.count; i++) {
 			this.delegatorList.push({
-				name: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),
+				loginname: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),
 				password: bytes.readUTFBytes(VALUE_LENGTH.PASSWORD),
 				tel: bytes.readUTFBytes(VALUE_LENGTH.TEL)
 			});

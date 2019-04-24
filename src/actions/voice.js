@@ -10,7 +10,8 @@ import {
 	SET_MANAGER_ACTION,
 	SET_ANCHORS_ON_DUTY_LIST,
 	SET_MANAGER_LIST,
-	SET_MANAGER_LEVEL
+	SET_MANAGER_LEVEL,
+	SET_DELEGATOR_LIST
 } from '../types';
 
 export const setVoiceAppId = id => ({ type: SET_VOICE_APP_ID, id });
@@ -25,3 +26,4 @@ export const setManagerAction = action => ({ type: SET_MANAGER_ACTION, action })
 export const setAnchorsOnDutyList = list => ({ type: SET_ANCHORS_ON_DUTY_LIST, list });
 export const setManagerList = list => ({ type: SET_MANAGER_LIST, list });
 export const setUserLevel = level => ({ type: SET_MANAGER_LEVEL, level });
+export const setDelegatorList = list => ({ type: SET_DELEGATOR_LIST, list });

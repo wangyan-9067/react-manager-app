@@ -15,7 +15,8 @@ const styles = {
 		border: '1px solid #EDEDED',
 		backgroundColor: '#EDEDED',
     padding: '0 60px 0 0',
-    width: '100%'
+    width: '100%',
+    minHeight: '148px'
   },
   cardContentRoot: {
     padding: '5px',
@@ -46,7 +47,7 @@ const styles = {
     fontWeight: 'bold',
     borderRadius: '18px',
     width: '80%',
-    margin: '10px auto',
+    margin: '16px auto',
     padding: '2px 0',
 		backgroundColor: '#1779E6',
     '&:hover': {
@@ -117,7 +118,7 @@ const WaitingUserTile = ({ classes, item, assignTokenToDelegator, kickDelegator 
 
   let panel;
 
-  if (token) {
+  if (token === 1) {
     panel = <AlreadyHaveToken classes={classes} name={name} waitingTime={waitingTime[item.name]} kickDelegator={kickDelegator} />;
   } else {
     panel = <WaitingForToken classes={classes} name={name} waitingTime={waitingTime[item.name]} assignTokenToDelegator={assignTokenToDelegator} />;

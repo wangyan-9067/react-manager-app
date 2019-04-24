@@ -75,30 +75,35 @@ const styles = theme => ({
 
 class UserForm extends React.Component {
   formDefaults = {
-    anchorLoginname: { value: '', isValid: true, message: '' },
-    anchorNickname: { value: '', isValid: true, message: '' },
-    anchorPassword: { value: '', isValid: true, message: '' },
-    anchorPasswordConfirm: { value: '', isValid: true, message: '' },
-    anchorIconUrl: { value: '', isValid: true, message: '' },
-    level: { value: '', isValid: true, message: '' }
+    loginname: { value: '', isValid: true, message: '' },
+    nickname: { value: '', isValid: true, message: '' },
+    password: { value: '', isValid: true, message: '' },
+    passwordConfirm: { value: '', isValid: true, message: '' },
+    iconUrl: { value: '', isValid: true, message: '' },
+    level: { value: '', isValid: true, message: '' },
+    tel: { value: '', isValid: true, message: '' }
   }
 
   constructor(props) {
     super(props);
 
-    const { selectedAnchor } = this.props;
+    const { selectedUser } = this.props;
 
-    if (selectedAnchor) {
-      const { loginname, nickname, password, url, flag } = selectedAnchor;
+    if (selectedUser) {
+      const { loginname, nickname, password, url, flag, tel } = selectedUser;
 
-      this.formDefaults.anchorLoginname.value = loginname;
-      this.formDefaults.anchorNickname.value = nickname;
-      this.formDefaults.anchorPassword.value = password;
-      this.formDefaults.anchorPasswordConfirm.value = password;
-      this.formDefaults.anchorIconUrl.value = url;
+      this.formDefaults.loginname.value = loginname;
+      this.formDefaults.nickname.value = nickname;
+      this.formDefaults.password.value = password;
+      this.formDefaults.passwordConfirm.value = password;
+      this.formDefaults.iconUrl.value = url;
 
       if (typeof flag !== 'undefined') {
         this.formDefaults.level.value = flag;
+      }
+
+      if (typeof tel !== 'undefined') {
+        this.formDefaults.tel.value = tel;
       }
     }
 
@@ -124,91 +129,137 @@ class UserForm extends React.Component {
     this.resetValidationStates();
 
     if (this.formIsValid()) {
-      const { anchorLoginname, anchorNickname, anchorPassword, anchorIconUrl, level } = this.state;
-      const { addAnchor, setOpenAddManagerDialog, isManager } = this.props;
+      const { loginname, nickname, password, iconUrl, level, tel } = this.state;
+      const { addUser, setOpenAddDialog, isManager, isDelegator } = this.props;
 
       if (isManager) {
-        addAnchor(anchorLoginname.value, anchorPassword.value, anchorNickname.value, anchorIconUrl.value, level.value);
+        addUser(loginname.value, password.value, nickname.value, iconUrl.value, level.value);
+      } else if (isDelegator) {
+        addUser(loginname.value, password.value, tel.value);
       } else {
-        addAnchor(anchorLoginname.value, anchorPassword.value, anchorNickname.value, anchorIconUrl.value);
+        addUser(loginname.value, password.value, nickname.value, iconUrl.value);
       }
-      setOpenAddManagerDialog(false);
+      setOpenAddDialog(false);
     }
   }
 
+  setField = (field, isValid, message) => {
+    field.isValid = isValid;
+    field.message = message;
+    
+    return isValid;
+  };
+
+  resetField = field => {
+    field.isValid = true;
+    field.message = '';
+    
+    return true;
+  };
+
   formIsValid = () => {
-    const anchorLoginname = { ...this.state.anchorLoginname };
-    const anchorNickname = { ...this.state.anchorNickname };
-    const anchorPassword = { ...this.state.anchorPassword };
-    const anchorPasswordConfirm = { ...this.state.anchorPasswordConfirm };
-    const anchorIconUrl = { ...this.state.anchorIconUrl };
+    const loginname = { ...this.state.loginname };
+    const nickname = { ...this.state.nickname };
+    const password = { ...this.state.password };
+    const passwordConfirm = { ...this.state.passwordConfirm };
+    const iconUrl = { ...this.state.iconUrl };
     const level = { ...this.state.level };
-    const { isEdit, anchorList, isManager } = this.props;
+    const tel = { ...this.state.tel };
+    const { isEdit, userList, isManager, isDelegator } = this.props;
 
     let isGood = true;
 
-    if (validator.isEmpty(anchorLoginname.value)) {
-      anchorLoginname.isValid = false;
-      anchorLoginname.message = 'Anchor Loginname is required';
-      isGood = false;
+    if (validator.isEmpty(loginname.value)) {
+      isGood = this.setField(loginname, false, 'Loginname is required');
+    } else {
+      this.resetField(loginname);
     }
 
-    if (anchorLoginname.isValid && !validator.isAlphanumeric(anchorLoginname.value)) {
-      anchorLoginname.isValid = false;
-      anchorLoginname.message = 'Anchor Loginname must be alphanumeric';
-      isGood = false;
+    if (loginname.isValid) {
+      if (!validator.isAlphanumeric(loginname.value)) {
+        isGood = this.setField(loginname, false, 'Loginname must be alphanumeric');
+      } else {
+        this.resetField(loginname);
+      }
     }
 
-    if (!isEdit && anchorList.find(anchor => anchor.loginname === anchorLoginname.value)) {
-      anchorLoginname.isValid = false;
-      anchorLoginname.message = 'Anchor loginname is already registered';
-      isGood = false;
+    if (loginname.isValid && !isEdit) {
+      if (userList.find(user => user.loginname.toLowerCase() === loginname.value.toLowerCase())) {
+        isGood = this.setField(loginname, false, 'Loginname is already registered');
+      } else {
+        this.resetField(loginname);
+      }
     }
 
-    if (validator.isEmpty(anchorNickname.value)) {
-      anchorNickname.isValid = false;
-      anchorNickname.message = 'Anchor Nickname is required';
-      isGood = false;
+    if (!isDelegator) {
+      if (validator.isEmpty(nickname.value)) {
+        isGood = this.setField(nickname, false, 'Nickname is required');
+      } else {
+        this.resetField(nickname);
+      }
     }
 
-    if (validator.isEmpty(anchorPassword.value)) {
-      anchorPassword.isValid = false;
-      anchorPassword.message = 'Anchor Password is required';
-      isGood = false;
+    if (validator.isEmpty(password.value)) {
+      isGood = this.setField(password, false, 'Password is required');
+    } else {
+      this.resetField(password);
     }
 
-    if (validator.isEmpty(anchorPasswordConfirm.value)) {
-      anchorPasswordConfirm.isValid = false;
-      anchorPasswordConfirm.message = 'Anchor Password Confirm is required';
-      isGood = false;
+    if (validator.isEmpty(passwordConfirm.value)) {
+      isGood = this.setField(passwordConfirm, false, 'Password Confirm is required');
+    } else {
+      this.resetField(passwordConfirm);
     }
 
-    if (!validator.equals(anchorPassword.value, anchorPasswordConfirm.value)) {
-      anchorPasswordConfirm.isValid = false;
-      anchorPasswordConfirm.message = 'Anchor Password does not match';
-      isGood = false;
+    if (passwordConfirm.isValid) {
+      if (!validator.equals(password.value, passwordConfirm.value)) {
+        isGood = this.setField(passwordConfirm, false, 'Password does not match');
+      } else {
+        this.resetField(passwordConfirm);
+      }
     }
 
-    if (validator.isEmpty(anchorIconUrl.value)) {
-      anchorIconUrl.isValid = false;
-      anchorIconUrl.message = 'Anchor Icon URL is required';
-      isGood = false;
+    if (!isDelegator) {
+      if (validator.isEmpty(iconUrl.value)) {
+        isGood = this.setField(iconUrl, false, 'Icon URL is required');
+      } else {
+        this.resetField(iconUrl);
+      }
     }
 
-    if (isManager && !(level.value === 0 || level.value === 1)) {
-      level.isValid = false;
-      level.message = 'Level is required';
-      isGood = false;
+    if (isManager) {
+      if (!(level.value === 0 || level.value === 1)) {
+        isGood = this.setField(level, false, 'Level is required');
+      } else {
+        this.resetField(level);
+      }
     }
 
+    if (isDelegator) {
+      if (validator.isEmpty(tel.value)) {
+        isGood = this.setField(tel, false, 'Phone number is required');
+      } else {
+        this.resetField(tel);
+      }
+
+      if (tel.isValid) {
+        if (!validator.isNumeric(tel.value)) {
+          isGood = this.setField(tel, false, 'Phone number must be numeric');
+        } else {
+          this.resetField(tel);
+        }
+      }
+    }
+    
     if (!isGood) {
       this.setState({
-        anchorLoginname,
-        anchorNickname,
-        anchorPassword,
-        anchorPasswordConfirm,
-        anchorIconUrl,
-        level
+        loginname,
+        nickname,
+        password,
+        passwordConfirm,
+        iconUrl,
+        level,
+        tel
       });
     }
 
@@ -219,12 +270,12 @@ class UserForm extends React.Component {
     // make a copy of everything in state
     const state = JSON.parse(JSON.stringify(this.state));
 
-    /*
-    loop through each item in state and if it's safe to assume that only
-    form values have an 'isValid' property, we can use that to reset their
-    validation states and keep their existing value property. This process
-    makes it easy to set all validation states on form inputs in case the number
-    of fields on our form grows in the future.
+    /**
+      loop through each item in state and if it's safe to assume that only
+      form values have an 'isValid' property, we can use that to reset their
+      validation states and keep their existing value property. This process
+      makes it easy to set all validation states on form inputs in case the number
+      of fields on our form grows in the future.
     */
     Object.keys(state).map(key => {
       if (state[key].hasOwnProperty('isValid')) {
@@ -241,8 +292,8 @@ class UserForm extends React.Component {
   }
 
   render() {
-    const { anchorLoginname, anchorNickname, anchorPassword, anchorPasswordConfirm, anchorIconUrl, level } = this.state;
-    const { classes, setOpenAddManagerDialog, isEdit, deleteAnchor, openDialog, toggleDialog, isManager } = this.props;
+    const { loginname, nickname, password, passwordConfirm, iconUrl, level, tel } = this.state;
+    const { classes, setOpenAddDialog, isEdit, deleteUser, openDialog, toggleDialog, isManager, isDelegator } = this.props;
     const {
       managerActionDialog,
       managerActionFormLabel,
@@ -263,102 +314,94 @@ class UserForm extends React.Component {
         <form onSubmit={this.onSubmit}>
           <div className={managerActionDialog}>
             <div className={managerActionDialogSectionLeft}>
-              <FormControl classes={{ root: formControlRoot }} className={formControl} error={!anchorLoginname.isValid}>
+              <FormControl classes={{ root: formControlRoot }} className={formControl} error={!loginname.isValid}>
                 <div className={managerActionFormLabel}>Login名</div>
                 <Input
                   defaultValue=""
                   classes={{underline: inputUnderline}}
                   className={input}
                   inputProps={{
-                    'aria-label': 'anchorLoginname',
+                    'aria-label': 'loginname',
                   }}
-                  name="anchorLoginname"
+                  name="loginname"
                   placeholder=""
-                  value={anchorLoginname.value}
+                  value={loginname.value}
                   onChange={this.onChange}
                   disabled={isEdit}
                 />
-                <FormHelperText id="component-error-text">{anchorLoginname.message}</FormHelperText>
+                <FormHelperText id="component-error-text">{loginname.message}</FormHelperText>
               </FormControl>
-              <FormControl classes={{ root: formControlRoot }} className={formControl} error={!anchorNickname.isValid}>
-                <div className={managerActionFormLabel}>暱稱</div>
-                <Input
-                  defaultValue=""
-                  classes={{underline: inputUnderline}}
-                  className={input}
-                  inputProps={{
-                    'aria-label': 'anchorNickname',
-                  }}
-                  name="anchorNickname"
-                  placeholder=""
-                  value={anchorNickname.value}
-                  onChange={this.onChange}
-                />
-                <FormHelperText id="component-error-text">{anchorNickname.message}</FormHelperText>
-              </FormControl>
-              <FormControl classes={{ root: formControlRoot }} className={formControl} error={!anchorPassword.isValid}>
+              {!isDelegator && (
+                <FormControl classes={{ root: formControlRoot }} className={formControl} error={!nickname.isValid}>
+                  <div className={managerActionFormLabel}>暱稱</div>
+                  <Input
+                    defaultValue=""
+                    classes={{underline: inputUnderline}}
+                    className={input}
+                    inputProps={{
+                      'aria-label': 'nickname',
+                    }}
+                    name="nickname"
+                    placeholder=""
+                    value={nickname.value}
+                    onChange={this.onChange}
+                  />
+                  <FormHelperText id="component-error-text">{nickname.message}</FormHelperText>
+                </FormControl>
+              )}
+              <FormControl classes={{ root: formControlRoot }} className={formControl} error={!password.isValid}>
                 <div className={managerActionFormLabel}>密碼</div>
                 <Input
                   defaultValue=""
                   classes={{underline: inputUnderline}}
                   className={input}
                   inputProps={{
-                    'aria-label': 'anchorPassword',
+                    'aria-label': 'password',
                   }}
-                  name="anchorPassword"
+                  name="password"
                   placeholder=""
-                  value={anchorPassword.value}
+                  value={password.value}
                   onChange={this.onChange}
                 />
-                <FormHelperText id="component-error-text">{anchorPassword.message}</FormHelperText>
+                <FormHelperText id="component-error-text">{password.message}</FormHelperText>
               </FormControl>
-              <FormControl classes={{ root: formControlRoot }} className={formControl} error={!anchorPasswordConfirm.isValid}>
+              <FormControl classes={{ root: formControlRoot }} className={formControl} error={!passwordConfirm.isValid}>
                 <div className={managerActionFormLabel}>確認密碼</div>
                 <Input
                   defaultValue=""
                   classes={{underline: inputUnderline}}
                   className={input}
                   inputProps={{
-                    'aria-label': 'anchorPasswordConfirm',
+                    'aria-label': 'passwordConfirm',
                   }}
-                  name="anchorPasswordConfirm"
+                  name="passwordConfirm"
                   placeholder=""
-                  value={anchorPasswordConfirm.value}
+                  value={passwordConfirm.value}
                   onChange={this.onChange}
                 />
-                <FormHelperText id="component-error-text">{anchorPasswordConfirm.message}</FormHelperText>
+                <FormHelperText id="component-error-text">{passwordConfirm.message}</FormHelperText>
               </FormControl>
-              <FormControl classes={{ root: formControlRoot }} className={formControl} error={!anchorIconUrl.isValid}>
-                <div className={managerActionFormLabel}>照片URL</div>
-                <Input
-                  defaultValue=""
-                  classes={{underline: inputUnderline}}
-                  className={input}
-                  inputProps={{
-                    'aria-label': 'anchorIconUrl',
-                  }}
-                  name="anchorIconUrl"
-                  placeholder=""
-                  value={anchorIconUrl.value}
-                  onChange={this.onChange}
-                />
-                <FormHelperText id="component-error-text">{anchorIconUrl.message}</FormHelperText>
-              </FormControl>
-              { isManager && (
-                <FormControl classes={{ root: formControlRoot }} className={formControl} error={!level.isValid}>
-                  <div className={managerActionFormLabel}>權限</div>
-                  {/* <Input
+              {!isDelegator && (
+                <FormControl classes={{ root: formControlRoot }} className={formControl} error={!iconUrl.isValid}>
+                  <div className={managerActionFormLabel}>照片URL</div>
+                  <Input
                     defaultValue=""
                     classes={{underline: inputUnderline}}
                     className={input}
                     inputProps={{
-                      'aria-label': 'level',
+                      'aria-label': 'iconUrl',
                     }}
-                    name="level"
-                    placeholder="0 - 普通經理, 1 - admin經理"
-                    value={level.value}
+                    name="iconUrl"
+                    placeholder=""
+                    value={iconUrl.value}
                     onChange={this.onChange}
-                  /> */}
+                  />
+                  <FormHelperText id="component-error-text">{iconUrl.message}</FormHelperText>
+                </FormControl>
+              )}
+              {isManager && (
+                <FormControl classes={{ root: formControlRoot }} className={formControl} error={!level.isValid}>
+                  <div className={managerActionFormLabel}>權限</div>
                   <Select
                     value={level.value}
                     onChange={this.onChange}
@@ -375,10 +418,28 @@ class UserForm extends React.Component {
                   <FormHelperText id="component-error-text">{level.message}</FormHelperText>
                 </FormControl>
               )}
+              {isDelegator && (
+                <FormControl classes={{ root: formControlRoot }} className={formControl} error={!tel.isValid}>
+                  <div className={managerActionFormLabel}>電話</div>
+                  <Input
+                    defaultValue=""
+                    classes={{underline: inputUnderline}}
+                    className={input}
+                    inputProps={{
+                      'aria-label': 'tel',
+                    }}
+                    name="tel"
+                    placeholder=""
+                    value={tel.value}
+                    onChange={this.onChange}
+                  />
+                  <FormHelperText id="component-error-text">{tel.message}</FormHelperText>
+                </FormControl>
+              )}
             </div>
             <div className={managerActionDialogSectionRight}>
               <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)}>確定</Button>
-              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogCancelButton)} onClick={() => { setOpenAddManagerDialog(false); }}>取消</Button>
+              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogCancelButton)} onClick={() => { setOpenAddDialog(false); }}>取消</Button>
               <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogDeleteButton)} disabled={!isEdit} onClick={() => { toggleDialog(true); }}>刪除</Button>
             </div>
           </div>
@@ -389,8 +450,8 @@ class UserForm extends React.Component {
             toggleDialog(false);
           }}
           actionHandler={() => {
-            deleteAnchor(anchorLoginname.value);
-            setOpenAddManagerDialog(false);
+            deleteUser(loginname.value);
+            setOpenAddDialog(false);
           }}
           content="確定要刪除嗎?"
         />

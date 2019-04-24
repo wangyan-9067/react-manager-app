@@ -17,7 +17,8 @@ import {
   setAnchorsOnDutyList,
   setManagerList,
   setIsAnchorCall,
-  setUserLevel
+  setUserLevel,
+  setDelegatorList
 } from './actions/voice';
 import {
   setTableList,
@@ -64,6 +65,12 @@ import {
   ASSIGN_TOKEN_TO_DELEGATOR_R,
   KICK_DELEGATOR,
   KICK_DELEGATOR_R,
+  QUERY_ALL_DELEGATOR,
+  QUERY_ALL_DELEGATOR_R,
+  ADD_DELEGATOR,
+  ADD_DELEGATOR_R,
+  DELETE_DELEGATOR,
+  DELETE_DELEGATOR_R,
   CDS_OPERATOR_LOGIN_R,
   CDS_OPERATOR_LOGOUT,
   CDS_CLIENT_LIST,
@@ -127,7 +134,8 @@ class App extends React.Component {
         isAnswerCall,
         data: dataSocket,
         setUserLevel,
-        setIsUserAuthenticated
+        setIsUserAuthenticated,
+        setDelegatorList
       } = this.props;
 
       switch(evt.data.respId) {
@@ -142,6 +150,7 @@ class App extends React.Component {
               this.getAnchorList();
               this.getAnchorsDutyList();
               this.getManagerList();
+              this.getDelegatorList();
               setUserLevel(evt.data.level);
 
               await dataSocket.autoConnect();
@@ -175,7 +184,7 @@ class App extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "[VoiceServer] 無法登入, 請聯絡管理員"
+              message: `[VoiceServer] 無法登入, 請聯絡管理員 (code: ${loginStatus})`
             });
 
             this.reset();
@@ -324,6 +333,36 @@ class App extends React.Component {
           }
         break;
 
+        case QUERY_ALL_DELEGATOR_R:
+          setDelegatorList(evt.data.delegatorList);
+        break;
+
+        case ADD_DELEGATOR_R:
+          const { code: addDelegatorStatus } = evt.data;
+
+          if (addDelegatorStatus !== SUCCESS) {
+            setToastMessage(`無法加入代理!`);
+            setToastVariant('error');
+            toggleToast(true);
+          } else {
+            this.getDelegatorList();
+          }
+        break;
+
+        case DELETE_DELEGATOR_R:
+          const { code: deleteDelegatorStatus } = evt.data;
+
+          if (deleteDelegatorStatus !== SUCCESS) {
+            toggleDialog(false);
+            setToastMessage('無法刪除代理!');
+            setToastVariant('error');
+            toggleToast(true);
+          } else {
+            toggleDialog(false);
+            this.getDelegatorList();
+          }
+        break;
+
         default:
         break;
       }
@@ -440,7 +479,7 @@ class App extends React.Component {
             setToastVariant,
             setToastDuration,
             toggleToast,
-            message: "[DataServer] 無法登入, 請聯絡管理員"
+            message: `[DataServer] 無法登入, 請聯絡管理員 (code: ${loginStatus})`
           });
 
           this.reset();
@@ -453,7 +492,7 @@ class App extends React.Component {
         if (assignTableStatus === SUCCESS) {
           this.assignTableToChannel(currentChannelId, evt.data.vid);
         } else {
-          setToastMessage('無法將玩家配對到桌枱!');
+          setToastMessage(`無法將玩家配對到桌枱! (code: ${assignTableStatus})`);
           setToastVariant('error');
           toggleToast(true);
         }
@@ -699,6 +738,29 @@ class App extends React.Component {
     }));
   }
 
+  getDelegatorList = () => {
+    const { voice: voiceSocket } = this.props;
+    voiceSocket.writeBytes(Socket.createCMD(QUERY_ALL_DELEGATOR));
+  }
+
+  addDelegator = (loginName, password, tel) => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(ADD_DELEGATOR, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, VALUE_LENGTH.PASSWORD));
+      bytes.writeBytes(Socket.stringToBytes(tel, VALUE_LENGTH.TEL));
+    }));
+  }
+
+  deleteDelegator = loginName => {
+    const { voice: voiceSocket } = this.props;
+
+    voiceSocket.writeBytes(Socket.createCMD(DELETE_DELEGATOR, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+    }));
+  }
+
   logout = () => {
     const { voice: voiceSocket, data: dataSocket, resetAction } = this.props;
 
@@ -765,6 +827,9 @@ class App extends React.Component {
           toggleLoading={toggleLoading}
           assignTokenToDelegator={this.assignTokenToDelegator}
           kickDelegator={this.kickDelegator}
+          getDelegatorList={this.getDelegatorList}
+          addDelegator={this.addDelegator}
+          deleteDelegator={this.deleteDelegator}
         />
         <MessageBar
           variant={variant}
@@ -823,7 +888,8 @@ const mapDispatchToProps = dispatch => ({
   setBetHistory: (keyField, payload) => dispatch(setBetHistory(keyField, payload)),
   resetAction: () => dispatch(resetAction()),
   toggleLoading: toggle => dispatch(toggleLoading(toggle)),
-  setTableLimit: (vid, data) => dispatch(setTableLimit(vid, data))
+  setTableLimit: (vid, data) => dispatch(setTableLimit(vid, data)),
+  setDelegatorList: list => dispatch(setDelegatorList(list))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

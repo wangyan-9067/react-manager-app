@@ -14,19 +14,26 @@ const styles = theme => ({
 		marginLeft: '10px'
 	},
 	listRoot: {
-		width: '115%',
+		width: '100%',
     backgroundColor: '#F5F5F5',
-    marginLeft: '-10px',
-		marginRight: '-10px',
     top: '0',
     left: '0',
     height: '100%',
     minHeight: '140px'
+	},
+	gridListRoot: {
+		flexWrap: 'nowrap',
+		transform: 'translateZ(0)',
+    display: 'flex',
+    padding: 0,
+    overflowY: 'auto',
+		listStyle: 'none',
+		width: '100%'
 	}
 });
 
 const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegator }) => {
-	const { title, listRoot } = classes;
+	const { title, listRoot, gridListRoot } = classes;
 
 	return (
 		<div style={{ width: '100%' }}>
@@ -34,7 +41,7 @@ const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegat
 				輪候中代理
 			</Typography>
 			<div className={listRoot}>
-				<GridListBase list={waitingList} bgColor="#F5F5F5" customCols={6}>
+				<GridListBase list={waitingList} bgColor="#F5F5F5" customCols={6} gridListRootClass={gridListRoot}>
 					<WaitingUserTile assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
 				</GridListBase>
 			</div>

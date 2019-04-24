@@ -11,7 +11,8 @@ import {
 	SET_ANCHORS_ON_DUTY_LIST,
 	SET_MANAGER_LIST,
 	SET_MANAGER_LEVEL,
-	RESET_ACTION
+	RESET_ACTION,
+	SET_DELEGATOR_LIST
 } from '../types';
 
 const initialState = {
@@ -26,7 +27,8 @@ const initialState = {
 	managerAction: '',
 	anchorsOnDutyList: [],
 	managerList: [],
-	managerLevel: 1
+	managerLevel: 1,
+	delegatorList: []
 };
 
 export default function voice(state = initialState, action) {
@@ -79,7 +81,11 @@ export default function voice(state = initialState, action) {
 			return { ...state, managerLevel: action.level };
 
 		case RESET_ACTION:
-      return initialState;
+			return initialState;
+			
+		case SET_DELEGATOR_LIST:
+			const delegatorList = action.list;
+			return { ...state, delegatorList };
 
     default:
     	return state;

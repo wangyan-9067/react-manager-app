@@ -31,7 +31,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    padding: '5px',
+    // padding: '5px',
 		backgroundColor: '#FFFFFF',
 		borderRadius: '10px'
 	},

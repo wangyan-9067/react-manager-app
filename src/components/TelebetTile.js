@@ -14,6 +14,9 @@ import { USER_STATE } from '../constants';
 import { formatAmount, isObject } from '../helpers/utils';
 
 const styles = {
+	cardBase: {
+		minHeight: '200px'
+	},
 	emptyCard: {
 		borderRadius: '16px',
 		border: '3px solid #F5F5F5',
@@ -80,8 +83,10 @@ const joinRoom = (channelId, joinChannel, isAnchor, setIsAnchorCall) => {
 };
 
 const EmptyCard = ({classes}) => {
+	const { cardBase, emptyCard } = classes;
+
 	return (
-    <Card className={classes.emptyCard} />
+    <Card className={classNames(cardBase, emptyCard)} />
 	);
 };
 
@@ -90,10 +95,10 @@ EmptyCard.propTypes = {
 };
 
 const DisabledCard = ({ classes, item, role, roleName, voiceAppId, currentTable }) => {
-	const { disabledCard, cardContent, cardContentText, client, cardActionButton } = classes;
+	const { cardBase, disabledCard, cardContent, cardContentText, client, cardActionButton } = classes;
 
 	return (
-    <Card className={disabledCard}>
+    <Card className={classNames(cardBase, disabledCard)}>
       <CardContent className={cardContent}>
 				<Typography color="inherit" className={classNames(cardContentText)}>{role} <span className={client}>{roleName}</span> 接入中</Typography>
 				<Typography color="inherit" className={cardContentText}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</Typography>
@@ -114,7 +119,7 @@ DisabledCard.propTypes = {
 };
 
 const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, currentTable }) => {
-	const { cardContent, cardContentText, client, cardActionButton } = classes;
+	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { channelId, anchorState } = item;
 	const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;
 	let anchorStateText = '';
@@ -145,7 +150,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 	}
 
 	return (
-    <Card className={classes[cardClass]}>
+    <Card className={classNames(cardBase, classes[cardClass])}>
       <CardContent className={cardContent}>
 				<Typography color="inherit" className={classNames(cardContentText, classes[roleClass])}>{role} <span className={client}>{roleName}</span> 接入中</Typography>
 				{ isAnchor && anchorStateText ? (
@@ -173,11 +178,11 @@ CallInfoCard.propTypes = {
 };
 
 const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable }) => {
-	const { cardContent, cardContentText, client, cardActionButton } = classes;
+	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientName, anchorName, channelId, managerName } = item;
 
 	return (
-    <Card className={classes[cardClass]}>
+    <Card className={classNames(cardBase, classes[cardClass])}>
       <CardContent className={cardContent}>
 				<Typography color="inherit" className={cardContentText}>主播<span className={client}>{anchorName}</span></Typography>
 				<Typography color="inherit" className={cardContentText}>玩家<span className={client}>{clientName}</span>遊戲中</Typography>

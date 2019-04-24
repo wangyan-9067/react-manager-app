@@ -134,7 +134,7 @@ const ManagerList = props => {
   let selectedManager;
 
   if (selected && !Array.isArray(selected)) {
-    selectedManager = managerList.find(anchor => anchor.value === selected);
+    selectedManager = managerList.find(manager => manager.value === selected);
   }
 
   if (Array.isArray(managerList) && managerList.length === 0) {
@@ -183,11 +183,11 @@ const ManagerList = props => {
 				<DialogContent>
 					<DialogContentText>
             <UserForm
-              selectedAnchor={selectedManager}
-              addAnchor={addManager}
-              deleteAnchor={deleteManager}
-              setOpenAddManagerDialog={setOpenAddManagerDialog}
-              anchorList={managerList}
+              selectedUser={selectedManager}
+              addUser={addManager}
+              deleteUser={deleteManager}
+              setOpenAddDialog={setOpenAddManagerDialog}
+              userList={managerList}
               isEdit={isEdit}
               openDialog={openDialog}
               toggleDialog={toggleDialog}
@@ -212,7 +212,7 @@ const ManagerList = props => {
         onClickHandler={onClickHandler}
       />
       <div>
-        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} disabled={isEdit} onClick={() => { setSelected(); }}>取消選取</Button>
+        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} onClick={() => { setSelected(); }}>取消選取</Button>
       </div>
 		</div>
 	);

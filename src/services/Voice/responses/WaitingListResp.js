@@ -12,7 +12,7 @@ export default class WaitingListResp extends Socket.ResponseBase {
 				name: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),
 				tel: bytes.readUTFBytes(VALUE_LENGTH.TEL),
 				waitingStartTime: bytes.readUnsignedInt(),
-				token: bytes.readUTFBytes(VALUE_LENGTH.TOKEN)
+				token: bytes.readByte()
 			});
 		}
 	}

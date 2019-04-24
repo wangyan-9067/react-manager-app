@@ -31,8 +31,8 @@ const styles = () => ({
 	}
 });
 
-const GridListBase = ({ classes, children, width, bgColor, customCols, list, tileClass }) => {
-	const { root, gridListRoot, GridListBase, tile } = classes;
+const GridListBase = ({ classes, children, width, bgColor, customCols, list, tileClass, gridListRootClass }) => {
+	const { root, gridListRoot, tile } = classes;
 	const data = list;
 	let cols;
 	
@@ -58,8 +58,7 @@ const GridListBase = ({ classes, children, width, bgColor, customCols, list, til
     <div className={root}>
 			<GridList 
 				cellHeight="auto"
-				classes={{ root: gridListRoot }}
-				className={GridListBase}
+				classes={{ root: gridListRootClass || gridListRoot }}
 				cols={customCols || cols}
 				spacing={16}
 				style={{ backgroundColor: bgColor }}

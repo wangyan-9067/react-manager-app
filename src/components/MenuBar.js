@@ -26,6 +26,7 @@ import AnchorStatusList from './AnchorStatusList';
 import ManagerList from './ManagerList';
 import SearchForm from './SearchForm';
 import BetHistory from './BetHistory';
+import DelegatorList from './DelegatorList';
 
 const styles = theme => ({
   appBar: {
@@ -179,7 +180,10 @@ class MenuBar extends React.Component {
       getBetHistory,
       toggleLoading,
       assignTokenToDelegator,
-      kickDelegator
+      kickDelegator,
+      getDelegatorList,
+      addDelegator,
+      deleteDelegator
     } = this.props;
     const { value } = this.state;
     const {
@@ -238,6 +242,7 @@ class MenuBar extends React.Component {
               </ListItem>
             </List>
             <div className={grow} />
+            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.handleChange.bind(null, null, 4)}>管理代理</Button>
             <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.handleChange.bind(null, null, 3)}>管理經理</Button>
             <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={logout}>登出</Button>
           </Toolbar>
@@ -278,11 +283,12 @@ class MenuBar extends React.Component {
             )}
             {value === 3 && (
               <TabContainer classes={classes}>
-                <ManagerList
-                  getManagerList={getManagerList}
-                  addManager={addManager}
-                  deleteManager={deleteManager}
-                />
+                <ManagerList getManagerList={getManagerList} addManager={addManager} deleteManager={deleteManager} />
+              </TabContainer>
+            )}
+            {value === 4 && (
+              <TabContainer classes={classes}>
+                <DelegatorList getDelegatorList={getDelegatorList} addDelegator={addDelegator} deleteDelegator={deleteDelegator} />
               </TabContainer>
             )}
           </Grid>

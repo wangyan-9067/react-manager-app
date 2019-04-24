@@ -18,15 +18,18 @@ const AnchorTile = props => {
   const { classes, item } = props;
   const { label } = classes;
   const { loginname, nickname, url } = item;
+  // TODO: move to separate file
+  const defaultIconUrl = 'account-circle.svg';
+  const defaultTitle = loginname;
 
   return (
     <Fragment>
       <CustomAvatar 
-        imgUrl={url}
+        imgUrl={url || defaultIconUrl}
         label={loginname}
       />
-      <Tooltip title={nickname}>
-        <Typography color="inherit" align="center" className={label} noWrap={true}>{nickname}</Typography>
+      <Tooltip title={nickname || defaultTitle}>
+        <Typography color="inherit" align="center" className={label} noWrap={true}>{nickname || defaultTitle}</Typography>
       </Tooltip>
     </Fragment>
   );

@@ -30,7 +30,7 @@ const styles = () => ({
   },
   listRoot: {
     width: '100%',
-    height: '522px',
+    // height: '522px',
     overflow: 'auto'
   },
   primary: {
