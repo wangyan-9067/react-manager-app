@@ -85,7 +85,13 @@ const styles = theme => ({
   dialogPaper: {
     maxWidth: '100%',
     height: '100%'
-	}
+  },
+  show: {
+    display: 'block'
+  },
+  hide: {
+    display: 'none'
+  }
 });
 
 const DialogTitle = withStyles(theme => ({
@@ -174,6 +180,7 @@ class MenuBar extends React.Component {
       getAnchorsDutyList,
       logout,
       managerLoginname,
+      managerLevel,
       getManagerList,
       addManager,
       deleteManager,
@@ -199,7 +206,9 @@ class MenuBar extends React.Component {
       secondary,
       bold,
       managerName,
-      dialogPaper
+      dialogPaper,
+      show,
+      hide
     } = classes;
 
     return (
@@ -243,7 +252,7 @@ class MenuBar extends React.Component {
             </List>
             <div className={grow} />
             <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.handleChange.bind(null, null, 4)}>管理代理</Button>
-            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.handleChange.bind(null, null, 3)}>管理經理</Button>
+            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold, managerLevel === 1 ? show : hide)} onClick={this.handleChange.bind(null, null, 3)}>管理經理</Button>
             <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={logout}>登出</Button>
           </Toolbar>
         </AppBar>
