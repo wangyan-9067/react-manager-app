@@ -14,7 +14,9 @@ import Typography from '@material-ui/core/Typography';
 import UserForm from './UserForm';
 import ToggleButtonGridList from './ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
+import { setManagerAction, setFormValues } from '../actions/voice';
 import { compareArray } from '../helpers/utils';
+import { MANAGER_ACTION_TYPE } from '../constants';
 
 const styles = () => ({
   root: {
@@ -104,21 +106,23 @@ const usePrevious = value => {
   return ref.current;
 }
 
-const AnchorList = props => {
+const AnchorList = ({
+  classes,
+  anchorList,
+  addAnchor,
+  deleteAnchor,
+  setAnchorsDuty,
+  getAnchorsDutyList,
+  openDialog,
+  toggleDialog,
+  anchorsOnDutyList,
+  setManagerAction,
+  setFormValues
+}) => {
+  const firstUpdate = useRef(true);
   const [openAddAnchorDialog, setOpenAddAnchorDialog] = useState(false);
   const [selected, setSelected] = useState();
   const [isEdit, setIsEdit] = useState(false);
-  const {
-    classes,
-    anchorList,
-    addAnchor,
-    deleteAnchor,
-    setAnchorsDuty,
-    getAnchorsDutyList,
-    openDialog,
-    toggleDialog,
-    anchorsOnDutyList
-  } = props;
   const {
     root,
     grow,
@@ -133,6 +137,7 @@ const AnchorList = props => {
     tileClass
   } = classes;
   const prevAnchorsOnDutyList = usePrevious(anchorsOnDutyList);
+  const { ADD_ANCHOR, EDIT_ANCHOR } = MANAGER_ACTION_TYPE;
 
   const onClickHandler = () => {
     if (isEdit) {
@@ -173,11 +178,24 @@ const AnchorList = props => {
     }
   });
 
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+
+    setManagerAction(isEdit ? EDIT_ANCHOR : ADD_ANCHOR);
+
+    return () => {
+      setManagerAction("");
+    }
+  }, [isEdit]);
+
 	return (
 		<div className={root}>
       <Typography color="inherit" align="left" className={headerText}>請選取值班主播</Typography>
       <div className={grow} />
-      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddAnchorDialog(true); }}>新增主播</Button>
+      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddAnchorDialog(true); setManagerAction(ADD_ANCHOR); }}>新增主播</Button>
       <Button
         variant="contained"
         size="medium"
@@ -210,6 +228,7 @@ const AnchorList = props => {
               openDialog={openDialog}
               toggleDialog={toggleDialog}
               isManager={false}
+              setFormValues={setFormValues}
             />
           </DialogContentText>
 				</DialogContent>
@@ -250,7 +269,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-	toggleDialog: toggle => dispatch(toggleDialog(toggle))
+  toggleDialog: toggle => dispatch(toggleDialog(toggle)),
+  setManagerAction: action => dispatch(setManagerAction(action)),
+  setFormValues: values => dispatch(setFormValues(values))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledAnchorList);

@@ -18,7 +18,8 @@ import {
   setManagerList,
   setIsAnchorCall,
   setUserLevel,
-  setDelegatorList
+  setDelegatorList,
+  setFormValues
 } from './actions/voice';
 import {
   setTableList,
@@ -85,7 +86,14 @@ import {
   CDS_VIDEO_STATUS,
   CDS_CLIENT_ENTER_TABLE_NOTIFY,
   CDS_CLIENT_LEAVE_TABLE_NOTIFY,
-  CDS_TABLE_LIMIT
+  CDS_TABLE_LIMIT,
+  CDS_ADD_MANAGER,
+  CDS_REMOVE_MANAGER,
+  CDS_UPDATE_MANAGER,
+  CDS_ADD_ANCHOR,
+  CDS_REMOVE_ANCHOR,
+  CDS_UPDATE_ANCHOR,
+  CDS_ACTION_R
 } from './protocols';
 import {
   VALUE_LENGTH,
@@ -114,7 +122,8 @@ class App extends React.Component {
     if (evt.$type === Socket.EVENT_PACKET) {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
-      const { SUCCESS, REPEAT_LOGIN, DELEGATOR_NOT_IN_LINE } = RESPONSE_CODES;
+      const { SUCCESS, REPEAT_LOGIN, DELEGATOR_NOT_IN_LINE, ERR_PWD_ERROR, ERR_NO_USER, DELEGATOR_HAS_TOKEN } = RESPONSE_CODES;
+      const { ADD_ANCHOR, ADD_MANAGER } = MANAGER_ACTION_TYPE;
       const {
         voiceAppId,
         setVoiceAppId,
@@ -135,7 +144,9 @@ class App extends React.Component {
         data: dataSocket,
         setUserLevel,
         setIsUserAuthenticated,
-        setDelegatorList
+        setDelegatorList,
+        managerAction,
+        formValues
       } = this.props;
 
       switch(evt.data.respId) {
@@ -161,7 +172,7 @@ class App extends React.Component {
                 setToastVariant,
                 setToastDuration,
                 toggleToast,
-                message: "[VoiceServer] 沒有AppId, 請聯絡管理員"
+                message: "沒有AppId, 請聯絡管理員!"
               });
 
               this.reset();
@@ -173,7 +184,29 @@ class App extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "經理重覆登入"
+              message: "經理重覆登入!"
+            });
+
+            this.reset();
+          } else if (loginStatus === ERR_PWD_ERROR) {
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "用戶名/密碼錯誤!"
+            });
+            
+            this.reset();
+          } else if (loginStatus === ERR_NO_USER) {
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "沒有此用戶!"
             });
 
             this.reset();
@@ -184,7 +217,7 @@ class App extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: `[VoiceServer] 無法登入, 請聯絡管理員 (code: ${loginStatus})`
+              message: `[VoiceServer] 無法登入, 請聯絡管理員! (code: ${loginStatus})`
             });
 
             this.reset();
@@ -251,13 +284,16 @@ class App extends React.Component {
 
         case ANCHOR_ADD_R:
           const { code: anchorAddStatus } = evt.data;
+          let functionToExecute;
 
           if (anchorAddStatus !== SUCCESS) {
-            setToastMessage('無法加入主播!');
+            setToastMessage(`[VoiceServer] 無法${managerAction === ADD_ANCHOR ? "加入" : "編輯"}主播! (code: ${anchorAddStatus})`);
             setToastVariant('error');
             toggleToast(true);
           } else {
-            this.getAnchorList();
+            functionToExecute = managerAction === ADD_ANCHOR ? this.addAnchorToDataServer : this.updateAnchorToDataServer;
+            functionToExecute(formValues.loginname, formValues.password, formValues.nickname, formValues.iconUrl, 0);
+            // this.getAnchorList();
           }
         break;
 
@@ -266,12 +302,13 @@ class App extends React.Component {
 
           if (anchorDeleteStatus !== SUCCESS) {
             toggleDialog(false);
-            setToastMessage('無法刪除主播!');
+            setToastMessage(`[VoiceServer] 無法刪除主播! (code: ${anchorDeleteStatus})`);
             setToastVariant('error');
             toggleToast(true);
           } else {
             toggleDialog(false);
-            this.getAnchorList();
+            this.deleteAnchorFromDataServer(formValues.loginname);
+            // this.getAnchorList();
           }
         break;
 
@@ -287,10 +324,12 @@ class App extends React.Component {
           const { code: managerAddStatus } = evt.data;
 
           if (managerAddStatus !== SUCCESS) {
-            setToastMessage('無法加入經理!');
+            setToastMessage(`[VoiceServer] 無法${managerAction === ADD_MANAGER ? "加入" : "編輯"}經理! (code: ${managerAddStatus})`);
             setToastVariant('error');
             toggleToast(true);
           } else {
+            functionToExecute = managerAction === ADD_MANAGER ? this.addManagerToDataServer : this.updateManagerToDataServer;
+            functionToExecute(formValues.loginname, formValues.password, formValues.nickname, formValues.iconUrl, formValues.level);
             this.getManagerList();
           }
         break;
@@ -300,12 +339,13 @@ class App extends React.Component {
 
           if (managerDeleteStatus !== SUCCESS) {
             toggleDialog(false);
-            setToastMessage('無法刪除經理!');
+            setToastMessage(`[VoiceServer] 無法刪除經理! (code: ${managerDeleteStatus})`);
             setToastVariant('error');
             toggleToast(true);
           } else {
             toggleDialog(false);
-            this.getManagerList();
+            this.deleteManagerFromDataServer(formValues.loginname);
+            // this.getManagerList();
           }
         break;
 
@@ -341,7 +381,7 @@ class App extends React.Component {
           const { code: addDelegatorStatus } = evt.data;
 
           if (addDelegatorStatus !== SUCCESS) {
-            setToastMessage(`無法加入代理!`);
+            setToastMessage(`無法加入代理! (code: ${addDelegatorStatus})`);
             setToastVariant('error');
             toggleToast(true);
           } else {
@@ -352,9 +392,14 @@ class App extends React.Component {
         case DELETE_DELEGATOR_R:
           const { code: deleteDelegatorStatus } = evt.data;
 
-          if (deleteDelegatorStatus !== SUCCESS) {
+          if (deleteDelegatorStatus === DELEGATOR_HAS_TOKEN) {
             toggleDialog(false);
-            setToastMessage('無法刪除代理!');
+            setToastMessage("代理已拿籌, 不能刪除此代理記錄!");
+            setToastVariant('error');
+            toggleToast(true);
+          } else if (deleteDelegatorStatus !== SUCCESS) {
+            toggleDialog(false);
+            setToastMessage(`無法刪除代理! (code: ${deleteDelegatorStatus})`);
             setToastVariant('error');
             toggleToast(true);
           } else {
@@ -528,6 +573,87 @@ class App extends React.Component {
       case CDS_BET_HIST_R:
         setBetHistory('billno', evt.data.betHistList);
         toggleLoading(false);
+      break;
+
+      case CDS_ACTION_R:
+        const { code: cdsActionStatus } = evt.data;
+        let message = '';
+
+        if (cdsActionStatus !== SUCCESS) {
+          // rollback record from Voice Server
+          // switch(evt.data.reqCmd) {
+          //   case CDS_ADD_ANCHOR:
+          //   case CDS_UPDATE_ANCHOR:
+          //   case CDS_REMOVE_ANCHOR:
+          //     this.deleteAnchor(formValues.loginname);
+          //   break;
+
+          //   case CDS_ADD_MANAGER:
+          //   case CDS_UPDATE_MANAGER:
+          //   case CDS_REMOVE_MANAGER:
+          //     this.deleteManager(formValues.loginname);
+          //   break;
+
+          //   default:
+          //   break;
+          // }
+
+          // display error message
+          switch(evt.data.reqCmd) {
+            case CDS_ADD_ANCHOR:
+              message = "加入主播";
+            break;
+
+            case CDS_UPDATE_ANCHOR:
+              message = "編輯主播";
+            break;
+
+            case CDS_REMOVE_ANCHOR:
+              message = "刪除主播";
+            break;
+
+            case CDS_ADD_MANAGER:
+              message = "加入經理";
+            break;
+
+            case CDS_UPDATE_MANAGER:
+              message = "編輯經理";
+            break;
+
+            case CDS_REMOVE_MANAGER:
+              message = "刪除經理";
+            break;
+
+            default:
+            break;
+          }
+
+          if (message) {
+            setToastMessage(`[DataServer] 無法${message}! (code: ${cdsActionStatus})`);
+            setToastVariant('error');
+            toggleToast(true);
+          }
+        } else {
+          // retrieve latest list
+          switch(evt.data.reqCmd) {
+            case CDS_ADD_ANCHOR:
+            case CDS_UPDATE_ANCHOR:
+            case CDS_REMOVE_ANCHOR:
+              this.getAnchorList();
+            break;
+
+            case CDS_ADD_MANAGER:
+            case CDS_UPDATE_MANAGER:
+            case CDS_REMOVE_MANAGER:
+              this.getManagerList();
+            break;
+
+            default:
+            break;
+          }
+        }
+
+        this.resetFormValues();
       break;
 
       default:
@@ -717,7 +843,7 @@ class App extends React.Component {
     voiceSocket.writeBytes(Socket.createCMD(MANAGER_ALL_QUERY_REQ));
   }
 
-  addManager = (loginName, password, nickName, url, flag = 1) => {
+  addManager = (loginName, password, nickName, url, flag) => {
     const { voice: voiceSocket } = this.props;
 
     voiceSocket.writeBytes(Socket.createCMD(MANAGER_ADD_REQ, bytes => {
@@ -735,6 +861,82 @@ class App extends React.Component {
 
     voiceSocket.writeBytes(Socket.createCMD(MANAGER_DELETE, bytes => {
       bytes.writeBytes(Socket.stringToBytes(loginName, VALUE_LENGTH.LOGIN_NAME));
+    }));
+  }
+
+  addAnchorToDataServer = (loginName, password, nickName, url, flag) => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_ADD_ANCHOR, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes(loginName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+      bytes.writeBytes(Socket.stringToBytes(nickName, DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, DATA_SERVER_VALUE_LENGTH.VL_PSW));
+      bytes.writeByte(flag);
+      bytes.writeBytes(Socket.stringToBytes(url, DATA_SERVER_VALUE_LENGTH.VL_URL));
+    }));
+  }
+
+  deleteAnchorFromDataServer = loginName => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_REMOVE_ANCHOR, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes(loginName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+    }));
+  }
+
+  updateAnchorToDataServer = (loginName, password, nickName, url, flag) => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_UPDATE_ANCHOR, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes(loginName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+      bytes.writeBytes(Socket.stringToBytes(nickName, DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, DATA_SERVER_VALUE_LENGTH.VL_PSW));
+      bytes.writeByte(flag);
+      bytes.writeBytes(Socket.stringToBytes(url, DATA_SERVER_VALUE_LENGTH.VL_URL));
+    }));
+  }
+
+  addManagerToDataServer = (loginName, password, nickName, url, flag) => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_ADD_MANAGER, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes(loginName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+      bytes.writeBytes(Socket.stringToBytes(nickName, DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, DATA_SERVER_VALUE_LENGTH.VL_PSW));
+      bytes.writeByte(flag);
+      bytes.writeBytes(Socket.stringToBytes(url, DATA_SERVER_VALUE_LENGTH.VL_URL));
+    }));
+  }
+
+  deleteManagerFromDataServer = loginName => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_REMOVE_MANAGER, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes(loginName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+    }));
+  }
+
+  updateManagerToDataServer = (loginName, password, nickName, url, flag) => {
+    const { data: dataSocket } = this.props;
+
+    dataSocket.writeBytes(Socket.createCMD(CDS_UPDATE_MANAGER, bytes => {
+      bytes.writeUnsignedShort();
+      bytes.writeUnsignedShort();
+      bytes.writeBytes(Socket.stringToBytes(loginName, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+      bytes.writeBytes(Socket.stringToBytes(nickName, DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
+      bytes.writeBytes(Socket.stringToBytes(password, DATA_SERVER_VALUE_LENGTH.VL_PSW));
+      bytes.writeByte(flag);
+      bytes.writeBytes(Socket.stringToBytes(url, DATA_SERVER_VALUE_LENGTH.VL_URL));
     }));
   }
 
@@ -798,6 +1000,17 @@ class App extends React.Component {
     this.props.toggleToast(false);
   }
 
+  resetFormValues = () => {
+    this.props.setFormValues({
+      loginname: '',
+      nickname: '',
+      password: '',
+      iconUrl: '',
+      level: '',
+      tel: ''
+    });
+  }
+
   render() {
     const { open, variant, message, duration, managerCredential: { managerLoginname }, managerLevel, toggleLoading, showLoading } = this.props;
 
@@ -845,7 +1058,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall } = state.voice;
+  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall, formValues } = state.voice;
   const { tableList } = state.data;
   const { variant, message, duration, open, managerCredential, showLoading } = state.app;
   return ({
@@ -861,7 +1074,8 @@ const mapStateToProps = state => {
     managerLevel,
     tableList,
     isAnswerCall,
-    showLoading
+    showLoading,
+    formValues
   });
 };
 
@@ -889,7 +1103,8 @@ const mapDispatchToProps = dispatch => ({
   resetAction: () => dispatch(resetAction()),
   toggleLoading: toggle => dispatch(toggleLoading(toggle)),
   setTableLimit: (vid, data) => dispatch(setTableLimit(vid, data)),
-  setDelegatorList: list => dispatch(setDelegatorList(list))
+  setDelegatorList: list => dispatch(setDelegatorList(list)),
+  setFormValues: values => dispatch(setFormValues(values))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

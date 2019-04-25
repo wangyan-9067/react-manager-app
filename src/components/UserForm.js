@@ -124,6 +124,21 @@ class UserForm extends React.Component {
     this.setState(state);
   }
 
+  setFormValues = form => {
+    const fn = this.props.setFormValues;
+    
+    if (fn instanceof Function) {
+      fn({
+        loginname: form.loginname,
+        nickname: form.nickname,
+        password: form.password,
+        iconUrl: form.iconUrl,
+        level: form.level,
+        tel: form.tel
+      });
+    }
+  }
+
   onSubmit = e => {
     e.preventDefault();
     this.resetValidationStates();
@@ -131,6 +146,15 @@ class UserForm extends React.Component {
     if (this.formIsValid()) {
       const { loginname, nickname, password, iconUrl, level, tel } = this.state;
       const { addUser, setOpenAddDialog, isManager, isDelegator } = this.props;
+
+      this.setFormValues({
+        loginname: loginname.value,
+        nickname: nickname.value,
+        password: password.value,
+        iconUrl: iconUrl.value,
+        level: level.value,
+        tel: tel.value
+      });
 
       if (isManager) {
         addUser(loginname.value, password.value, nickname.value, iconUrl.value, level.value);
@@ -250,7 +274,7 @@ class UserForm extends React.Component {
         }
       }
     }
-    
+
     if (!isGood) {
       this.setState({
         loginname,
@@ -450,6 +474,14 @@ class UserForm extends React.Component {
             toggleDialog(false);
           }}
           actionHandler={() => {
+            this.setFormValues({
+              loginname: loginname.value,
+              nickname: nickname.value,
+              password: password.value,
+              iconUrl: iconUrl.value,
+              level: level.value,
+              tel: tel.value
+            });
             deleteUser(loginname.value);
             setOpenAddDialog(false);
           }}

@@ -233,6 +233,8 @@ const AnswerCallPanel = ({
 	const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
 	const [openBlacklistDialog, setOpenBlacklistDialog] = useState(false);
 
+	const { KICKOUT_CLIENT, BLACKLIST_CLIENT } = MANAGER_ACTION_TYPE;
+
 	let line1Text;
 	let line2Text;
 	let clientMuteStatusTextDisplay;
@@ -343,7 +345,7 @@ const AnswerCallPanel = ({
 						color="inherit"
 						className={classNames(actionButton, dialogActionButton)}
 						onClick={() => {
-							setManagerAction(MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
+							setManagerAction(KICKOUT_CLIENT);
 
 							if (!tableAssigned) {
 								kickoutClient(currentChannelId);
@@ -376,7 +378,7 @@ const AnswerCallPanel = ({
 						color="inherit"
 						className={classNames(actionButton, dialogActionButton)}
 						onClick={() => {
-							setManagerAction(MANAGER_ACTION_TYPE.BLACKLIST_CLIENT);
+							setManagerAction(BLACKLIST_CLIENT);
 
 							if (!tableAssigned) {
 								blacklistClient(currentChannelId);

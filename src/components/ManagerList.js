@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -14,6 +14,8 @@ import Typography from '@material-ui/core/Typography';
 import UserForm from './UserForm';
 import ToggleButtonGridList from './ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
+import { setManagerAction, setFormValues } from '../actions/voice';
+import { MANAGER_ACTION_TYPE } from '../constants';
 
 const styles = () => ({
   root: {
@@ -93,18 +95,20 @@ const styles = () => ({
   }
 });
 
-const ManagerList = props => {
+const ManagerList = ({
+  classes,
+  managerList,
+  addManager,
+  deleteManager,
+  openDialog,
+  toggleDialog,
+  setManagerAction,
+  setFormValues
+}) => {
+  const firstUpdate = useRef(true);
   const [openAddManagerDialog, setOpenAddManagerDialog] = useState(false);
   const [selected, setSelected] = useState();
   const [isEdit, setIsEdit] = useState(false);
-  const {
-    classes,
-    managerList,
-    addManager,
-    deleteManager,
-    openDialog,
-    toggleDialog
-  } = props;
   const {
     root,
     grow,
@@ -118,6 +122,7 @@ const ManagerList = props => {
     dialogTitle,
     tileClass
   } = classes;
+  const { ADD_MANAGER, EDIT_MANAGER } = MANAGER_ACTION_TYPE;
 
   const onClickHandler = () => {
     if (isEdit) {
@@ -136,6 +141,19 @@ const ManagerList = props => {
   if (selected && !Array.isArray(selected)) {
     selectedManager = managerList.find(manager => manager.value === selected);
   }
+
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+
+    setManagerAction(isEdit ? EDIT_MANAGER : ADD_MANAGER);
+
+    return () => {
+      setManagerAction("");
+    }
+  }, [isEdit]);
 
   if (Array.isArray(managerList) && managerList.length === 0) {
     panel = (
@@ -166,6 +184,7 @@ const ManagerList = props => {
           setSelected();
           setIsEdit(false);
           setOpenAddManagerDialog(true);
+          setManagerAction(ADD_MANAGER);
         }}>
           新增經理
         </Button>
@@ -192,6 +211,7 @@ const ManagerList = props => {
               openDialog={openDialog}
               toggleDialog={toggleDialog}
               isManager={true}
+              setFormValues={setFormValues}
             />
           </DialogContentText>
 				</DialogContent>
@@ -231,7 +251,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-	toggleDialog: toggle => dispatch(toggleDialog(toggle))
+  toggleDialog: toggle => dispatch(toggleDialog(toggle)),
+  setManagerAction: action => dispatch(setManagerAction(action)),
+  setFormValues: values => dispatch(setFormValues(values))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledManagerList);

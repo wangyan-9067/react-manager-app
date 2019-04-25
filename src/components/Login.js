@@ -129,7 +129,7 @@ class Login extends React.Component {
         setToastDuration,
         toggleToast
       } = this.props;
-      const { SUCCESS, REPEAT_LOGIN } = RESPONSE_CODES;
+      const { SUCCESS, REPEAT_LOGIN, ERR_PWD_ERROR, ERR_NO_USER } = RESPONSE_CODES;
 
       switch(evt.data.respId) {
         case MANAGER_LOGIN_R:
@@ -166,6 +166,28 @@ class Login extends React.Component {
               setToastDuration,
               toggleToast,
               message: "經理重覆登入"
+            });
+
+            this.reset();
+          } else if (loginStatus === ERR_PWD_ERROR) {
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "用戶名/密碼錯誤!"
+            });
+            
+            this.reset();
+          } else if (loginStatus === ERR_NO_USER) {
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "沒有此用戶!"
             });
 
             this.reset();

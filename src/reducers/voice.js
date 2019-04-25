@@ -12,7 +12,8 @@ import {
 	SET_MANAGER_LIST,
 	SET_MANAGER_LEVEL,
 	RESET_ACTION,
-	SET_DELEGATOR_LIST
+	SET_DELEGATOR_LIST,
+	SET_FORM_VALUES
 } from '../types';
 
 const initialState = {
@@ -28,7 +29,15 @@ const initialState = {
 	anchorsOnDutyList: [],
 	managerList: [],
 	managerLevel: 1,
-	delegatorList: []
+	delegatorList: [],
+	formValues: {
+		loginname: '',
+		nickname: '',
+		password: '',
+		iconUrl: '',
+		level: '',
+		tel: ''
+	}
 };
 
 export default function voice(state = initialState, action) {
@@ -86,6 +95,19 @@ export default function voice(state = initialState, action) {
 		case SET_DELEGATOR_LIST:
 			const delegatorList = action.list;
 			return { ...state, delegatorList };
+
+		case SET_FORM_VALUES:
+			const { loginname, nickname, password, iconUrl, level, tel } = action.values;
+			const formValues = {
+				loginname,
+				nickname,
+				password,
+				iconUrl,
+				level,
+				tel
+			};
+
+			return { ...state, formValues };
 
     default:
     	return state;

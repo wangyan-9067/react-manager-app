@@ -16,6 +16,7 @@ export const RESPONSE_CODES = {
 	INVALID_DATA: 305,
 	DELEGATOR_NOT_IN_LINE: 306,
 	NO_FREE_CHANNELS: 307,
+	DELEGATOR_HAS_TOKEN: 308,
 	ERR_INVL_PARAM: 401,
 	ERR_DB: 402,
 	ERR_PWD_ERROR: 403,
@@ -67,7 +68,8 @@ export const DATA_SERVER_VALUE_LENGTH = {
 	VL_BILL_NO: 16,
 	VL_TBL_CODE: 4,
 	VL_BANKER: 3,
-	VL_PLAYER: 3
+	VL_PLAYER: 3,
+	VL_URL: 200
 };
 
 export const ROLE = {
@@ -82,7 +84,11 @@ export const CONTRACT_MODE = {
 
 export const MANAGER_ACTION_TYPE = {
 	KICKOUT_CLIENT: 'kickout',
-	BLACKLIST_CLIENT: 'blacklist'
+	BLACKLIST_CLIENT: 'blacklist',
+	ADD_ANCHOR: 'addAnchor',
+	EDIT_ANCHOR: 'editAnchor',
+	ADD_MANAGER: 'addManager',
+	EDIT_MANAGER: 'editManager'
 }
 
 export const DATA_SERVER_VIDEO_STATUS = {
