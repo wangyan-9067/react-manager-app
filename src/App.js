@@ -39,6 +39,7 @@ import {
 } from './actions/app';
 import {
   MANAGER_LOGIN_R,
+  MANAGER_KICKOUT_R,
   CHANNEL_LIST_R,
   CHANNEL_JOIN,
   CHANNEL_JOIN_R,
@@ -112,6 +113,8 @@ import './App.css';
 
 class App extends React.Component {
   onVoiceSocketOpen = evt => {
+    this.props.toggleToast(false);
+
     if (isObject(this.props.managerCredential)) {
       const { voice: voiceSocket, managerCredential: { managerLoginname, managerPassword } } = this.props;
       voiceServerLoginCMD(managerLoginname, managerPassword, voiceSocket);
@@ -221,6 +224,21 @@ class App extends React.Component {
             });
 
             this.reset();
+          }
+        break;
+
+        case MANAGER_KICKOUT_R:
+          const { code: kickoutStatus } = evt.data;
+
+          if (kickoutStatus === REPEAT_LOGIN) {
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "經理重覆登入!"
+            });
           }
         break;
 
@@ -423,6 +441,8 @@ class App extends React.Component {
   }
 
   onDataSocketOpen = evt => {
+    this.props.toggleToast(false);
+    
     if (isObject(this.props.managerCredential)) {
       const { data: dataSocket, managerCredential: { managerLoginname, managerPassword } } = this.props;
       dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);

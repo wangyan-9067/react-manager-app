@@ -27,6 +27,7 @@ import {
 } from '../actions/app';
 import {
   MANAGER_LOGIN_R,
+  MANAGER_KICKOUT_R,
   MANAGER_LOGOUT,
   ANCHOR_ALL_QUERY_REQ,
   ANCHORS_ON_DUTY_REQUEST,
@@ -108,13 +109,13 @@ class Login extends React.Component {
     ...this.formDefaults
   };
 
-  onVoiceSocketOpen = () => {
-    this.props.toggleToast(false);
-  }
+  // onVoiceSocketOpen = () => {
+  //   this.props.toggleToast(false);
+  // }
 
-  onDataSocketOpen = () => {
-    this.props.toggleToast(false);
-  }
+  // onDataSocketOpen = () => {
+  //   this.props.toggleToast(false);
+  // }
 
   onVoiceSocketPacket = async (evt) => {
     if (evt.$type === Socket.EVENT_PACKET) {
@@ -205,6 +206,21 @@ class Login extends React.Component {
           }
         break;
 
+        case MANAGER_KICKOUT_R:
+          const { code: kickoutStatus } = evt.data;
+
+          if (kickoutStatus === REPEAT_LOGIN) {
+            handleLoginFailure({
+              setIsUserAuthenticated,
+              setToastMessage,
+              setToastVariant,
+              setToastDuration,
+              toggleToast,
+              message: "經理重覆登入!"
+            });
+          }
+        break;
+
         default:
         break;
       }
@@ -262,9 +278,9 @@ class Login extends React.Component {
       data: dataSocket
     } = this.props;
 
-    voiceSocket.addEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
+    // voiceSocket.addEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
     voiceSocket.addEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
-    dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketOpen);
+    // dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketOpen);
     dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
 
     await voiceSocket.autoConnect();
@@ -274,9 +290,9 @@ class Login extends React.Component {
   componentWillUnmount() {
     const { voice: voiceSocket, data: dataSocket } = this.props;
 
-    voiceSocket.removeEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
+    // voiceSocket.removeEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
     voiceSocket.removeEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
-    dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
+    // dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
     
     voiceSocket.close();
