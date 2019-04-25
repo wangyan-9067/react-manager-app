@@ -199,8 +199,15 @@ FullChatroomCard.propTypes = {
 	classes: PropTypes.object.isRequired
 };
 
-const TelebetTile = props => {
-	const { classes, voiceAppId, setIsAnchorCall, item, joinChannel, managerCredential, tableList } = props;
+const TelebetTile = ({
+	classes,
+	voiceAppId,
+	setIsAnchorCall,
+	item,
+	joinChannel,
+	managerCredential,
+	tableList
+}) => {
 	const { anchorName, clientName, managerName, anchorState, clientState, vid } = item;
 	const { WAITING_MANAGER, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CONNECTED, CONNECTING } = USER_STATE;
 	const currentManagerName = isObject(managerCredential) ? managerCredential.managerLoginname: '';

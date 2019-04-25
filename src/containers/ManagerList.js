@@ -11,8 +11,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 
-import UserForm from './UserForm';
-import ToggleButtonGridList from './ToggleButtonGridList';
+import UserForm from '../components/UserForm';
+import ToggleButtonGridList from '../components/ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 import { setManagerAction, setFormValues } from '../actions/voice';
 import { MANAGER_ACTION_TYPE } from '../constants';

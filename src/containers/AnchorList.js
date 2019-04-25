@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -11,9 +11,12 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 
-import UserForm from './UserForm';
-import ToggleButtonGridList from './ToggleButtonGridList';
+import UserForm from '../components/UserForm';
+import ToggleButtonGridList from '../components/ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
+import { setManagerAction, setFormValues } from '../actions/voice';
+import { compareArray } from '../helpers/utils';
+import { MANAGER_ACTION_TYPE } from '../constants';
 
 const styles = () => ({
   root: {
@@ -93,18 +96,33 @@ const styles = () => ({
   }
 });
 
-const DelegatorList = props => {
-  const [openAddDelegatorDialog, setOpenAddDelegatorDialog] = useState(false);
+const usePrevious = value => {
+  const ref = useRef();
+
+  useEffect(() => {
+    ref.current = value;
+  });
+
+  return ref.current;
+}
+
+const AnchorList = ({
+  classes,
+  anchorList,
+  addAnchor,
+  deleteAnchor,
+  setAnchorsDuty,
+  getAnchorsDutyList,
+  openDialog,
+  toggleDialog,
+  anchorsOnDutyList,
+  setManagerAction,
+  setFormValues
+}) => {
+  const firstUpdate = useRef(true);
+  const [openAddAnchorDialog, setOpenAddAnchorDialog] = useState(false);
   const [selected, setSelected] = useState();
   const [isEdit, setIsEdit] = useState(false);
-  const {
-    classes,
-    delegatorList,
-    addDelegator,
-    deleteDelegator,
-    openDialog,
-    toggleDialog
-  } = props;
   const {
     root,
     grow,
@@ -118,45 +136,66 @@ const DelegatorList = props => {
     dialogTitle,
     tileClass
   } = classes;
+  const prevAnchorsOnDutyList = usePrevious(anchorsOnDutyList);
+  const { ADD_ANCHOR, EDIT_ANCHOR } = MANAGER_ACTION_TYPE;
 
   const onClickHandler = () => {
     if (isEdit) {
-      setOpenAddDelegatorDialog(true);
+      setOpenAddAnchorDialog(true);
     }
   };
 
-  delegatorList.map(delegator => {
-    delegator.value = delegator.loginname;
-    return delegator;
+  anchorList.map(anchor => {
+    anchor.value = anchor.loginname;
+    return anchor;
   });
 
   let panel;
-  let selectedDelegator;
+  let selectedAnchor;
 
   if (selected && !Array.isArray(selected)) {
-    selectedDelegator = delegatorList.find(delegator => delegator.value === selected);
+    selectedAnchor = anchorList.find(anchor => anchor.value === selected);
   }
 
-  if (Array.isArray(delegatorList) && delegatorList.length === 0) {
+  if (Array.isArray(anchorList) && anchorList.length === 0) {
     panel = (
       <Card className={emptyAnchorCardRoot}>
         <CardContent>
-          <Typography color="inherit" className={emptyText}>沒有代理記錄!</Typography>
+          <Typography color="inherit" className={emptyText}>沒有主播記錄!</Typography>
         </CardContent>
       </Card>
     );
   }
 
   useEffect(() => {
-    if (selected && isEdit) {
-      setOpenAddDelegatorDialog(true);
+    const flattenArrays = {
+      prev: prevAnchorsOnDutyList && prevAnchorsOnDutyList.map(anchor => anchor.anchorName),
+      current: anchorsOnDutyList && anchorsOnDutyList.map(anchor => anchor.anchorName)
     }
-  }, [selected, isEdit]);
+
+    if (!compareArray(flattenArrays.prev, flattenArrays.current)) {
+      setSelected(flattenArrays.current);
+    }
+  });
+
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+
+    setManagerAction(isEdit ? EDIT_ANCHOR : ADD_ANCHOR);
+
+    return () => {
+      setManagerAction("");
+    }
+  }, [isEdit]);
 
 	return (
 		<div className={root}>
-      <Typography color="inherit" align="left" className={headerText}>請選取需要編輯的代理</Typography>
+      <Typography color="inherit" align="left" className={headerText}>請選取值班主播</Typography>
       <div className={grow} />
+      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddAnchorDialog(true); setManagerAction(ADD_ANCHOR); }}>新增主播</Button>
       <Button
         variant="contained"
         size="medium"
@@ -164,74 +203,75 @@ const DelegatorList = props => {
         className={operationButton}
         onClick={() => {
           setSelected();
-          setIsEdit(false);
-          setOpenAddDelegatorDialog(true);
-        }}>
-          新增代理
-        </Button>
+          setIsEdit(!isEdit);
+        }}>編輯</Button>
       {panel}
 			<Dialog
-				open={openAddDelegatorDialog}
-				onClose={() => { setOpenAddDelegatorDialog(false) }}
+				open={openAddAnchorDialog}
+				onClose={() => { setOpenAddAnchorDialog(false) }}
 				aria-labelledby="responsive-dialog-title"
         classes={{ paper: dialogPaper }}
         disableBackdropClick
 			>
 				<DialogTitle id="responsive-dialog-title">
-					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}代理資料</Typography>
+					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}主播資料</Typography>
 				</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
             <UserForm
-              selectedUser={selectedDelegator}
-              addUser={addDelegator}
-              deleteUser={deleteDelegator}
-              setOpenAddDialog={setOpenAddDelegatorDialog}
-              userList={delegatorList}
+              selectedUser={selectedAnchor}
+              addUser={addAnchor}
+              deleteUser={deleteAnchor}
+              setOpenAddDialog={setOpenAddAnchorDialog}
+              userList={anchorList}
               isEdit={isEdit}
               openDialog={openDialog}
               toggleDialog={toggleDialog}
-              isDelegator={true}
+              isManager={false}
+              setFormValues={setFormValues}
             />
           </DialogContentText>
 				</DialogContent>
 			</Dialog>
       <ToggleButtonGridList
-        list={delegatorList}
+        list={anchorList}
         tileClass={tileClass}
         customCols={6}
-        exclusive={true}
+        exclusive={isEdit}
         selectedValue={selected}
         onChangeHandler={value => {
           if (!value) {
             return;
           }
           setSelected(value);
-          setIsEdit(true);
         }}
         onClickHandler={onClickHandler}
       />
       <div>
-        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} onClick={() => { setSelected(); }}>取消選取</Button>
+        <Button variant="contained" size="medium" color="inherit" className={dutyButton} disabled={isEdit} onClick={() => { setAnchorsDuty(selected); getAnchorsDutyList(); }}>確定</Button>
+        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} disabled={isEdit} onClick={() => { setSelected(); }}>取消選取</Button>
       </div>
 		</div>
 	);
 }
 
-const StyledDelegatorList = withStyles(styles)(DelegatorList);
+const StyledAnchorList = withStyles(styles)(AnchorList);
 
 const mapStateToProps = state => {
-  const { delegatorList } = state.voice;
+  const { anchorList, anchorsOnDutyList } = state.voice;
   const { openDialog } = state.app;
 
   return ({
-    delegatorList,
+    anchorList,
+    anchorsOnDutyList,
     openDialog
   });
 };
 
 const mapDispatchToProps = dispatch => ({
-	toggleDialog: toggle => dispatch(toggleDialog(toggle))
+  toggleDialog: toggle => dispatch(toggleDialog(toggle)),
+  setManagerAction: action => dispatch(setManagerAction(action)),
+  setFormValues: values => dispatch(setFormValues(values))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(StyledDelegatorList);
+export default connect(mapStateToProps, mapDispatchToProps)(StyledAnchorList);

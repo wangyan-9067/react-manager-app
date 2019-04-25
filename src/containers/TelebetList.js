@@ -17,11 +17,11 @@ import CallEndIcon from '@material-ui/icons/CallEnd';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
+import GridListBase from '../components/GridListBase';
+import WaitingUser from '../components/WaitingUser';
+import TelebetTile from './TelebetTile';
 import { setToastMessage, setToastVariant, toggleToast } from '../actions/app';
 import { setManagerAction, setIsAnswerCall } from '../actions/voice';
-import GridListBase from './GridListBase';
-import TelebetTile from './TelebetTile';
-import WaitingUser from './WaitingUser';
 import { MUTE_STATE, MANAGER_ACTION_TYPE, DATA_SERVER_VIDEO_STATUS } from '../constants';
 import { formatAmount, isObject } from '../helpers/utils';
 

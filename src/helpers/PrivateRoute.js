@@ -2,7 +2,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ContextConsumer } from './SocketContext';
-import Login from '../components/Login';
+import Login from '../containers/Login';
 
 const PrivateRoute = ({ contextComponent, component: Component, isUserAuthenticated, ...rest }) => {
   return (

@@ -8,7 +8,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'typeface-roboto';
 
 import App from './App';
-// import Login from './components/Login';
+// import Login from './containers/Login';
 // import ContextRoute from './helpers/ContextRoute';
 import PrivateRoute from './helpers/PrivateRoute';
 import { ContextProvider } from './helpers/SocketContext';

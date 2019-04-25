@@ -18,8 +18,8 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 
+import AudioButton from '../components/AudioButton';
 import { toggleToast, setToastMessage, setToastVariant } from '../actions/app';
-import AudioButton from './AudioButton';
 import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
 import { PLAYTYPE } from '../constants';
 

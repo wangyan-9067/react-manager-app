@@ -18,15 +18,16 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
 
+import AnchorList from '../containers/AnchorList';
+import TelebetList from '../containers/TelebetList';
+import TableList from '../containers/TableList';
+import AnchorStatusList from '../containers/AnchorStatusList';
+import ManagerList from '../containers/ManagerList';
+import BetHistory from '../containers/BetHistory';
+import DelegatorList from '../containers/DelegatorList';
+
 import DateTimeBadge from './DateTimeBadge';
-import AnchorList from './AnchorList';
-import TelebetList from './TelebetList';
-import TableList from './TableList';
-import AnchorStatusList from './AnchorStatusList';
-import ManagerList from './ManagerList';
 import SearchForm from './SearchForm';
-import BetHistory from './BetHistory';
-import DelegatorList from './DelegatorList';
 
 const styles = theme => ({
   appBar: {

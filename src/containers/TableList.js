@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 
+import GridListBase from '../components/GridListBase';
+import TableTile from '../components/TableTile';
+import DialogWrapper from '../components/DialogWrapper';
 import { toggleDialog } from '../actions/app';
 import { setKickoutClient } from '../actions/data';
 import { setManagerAction } from '../actions/voice';
-import GridListBase from './GridListBase';
-import TableTile from './TableTile';
-import DialogWrapper from './DialogWrapper';
 import { MANAGER_ACTION_TYPE } from '../constants';
 import { isNonEmptyArray } from '../helpers/utils';
 

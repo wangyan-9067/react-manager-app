@@ -7,8 +7,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Typography from '@material-ui/core/Typography';
 
-import CustomAvatar from './CustomAvatar';
-import AnchorStatus from './AnchorStatus';
+import CustomAvatar from '../components/CustomAvatar';
+import AnchorStatus from '../components/AnchorStatus';
 
 const styles = () => ({
   root: {

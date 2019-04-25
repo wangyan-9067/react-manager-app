@@ -6,7 +6,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import NullGateSocket from './services/NullGate/NullGateSocket';
-import { MenuBar, MessageBar, LoadingIndicator } from './components';
+import MenuBar from './components/MenuBar';
+import MessageBar from './components/MessageBar';
+import LoadingIndicator from './components/LoadingIndicator';
 import {
   setVoiceAppId,
   setChannelList,
