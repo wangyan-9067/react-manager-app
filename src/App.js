@@ -5,6 +5,7 @@ import * as RTC from 'cube-rtc';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import NullGateSocket from './services/NullGate/NullGateSocket';
 import { MenuBar, MessageBar, LoadingIndicator } from './components';
 import {
   setVoiceAppId,
@@ -94,7 +95,9 @@ import {
   CDS_ADD_ANCHOR,
   CDS_REMOVE_ANCHOR,
   CDS_UPDATE_ANCHOR,
-  CDS_ACTION_R
+  CDS_ACTION_R,
+  GATE_REQUEST_CACHE,
+  GATE_FORWARD_MSG
 } from './protocols';
 import {
   VALUE_LENGTH,
@@ -110,6 +113,18 @@ import {
 import { isObject } from './helpers/utils';
 import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure } from './helpers/appUtils';
 import './App.css';
+
+const nullGate = new NullGateSocket();
+
+const nullGateLoginCMD = () => {
+  nullGate.writeBytes(Socket.createCMD(GATE_REQUEST_CACHE));
+};
+
+const nullGateForwardMsgCMD = () => {
+  nullGate.writeBytes(Socket.createCMD(GATE_FORWARD_MSG, bytes => {
+    bytes.writeBytes(Socket.stringToBytes('TSTHK123', DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+  }));
+}
 
 class App extends React.Component {
   onVoiceSocketOpen = evt => {
@@ -442,7 +457,7 @@ class App extends React.Component {
 
   onDataSocketOpen = evt => {
     this.props.toggleToast(false);
-    
+
     if (isObject(this.props.managerCredential)) {
       const { data: dataSocket, managerCredential: { managerLoginname, managerPassword } } = this.props;
       dataServerLoginCMD(managerLoginname, managerPassword, dataSocket);
@@ -681,6 +696,21 @@ class App extends React.Component {
     }
   }
 
+  onNullGateSocketOpen = evt => {
+    nullGateLoginCMD();
+  }
+
+  onNullGateSocketPacket = evt => {
+    if (evt.$type === Socket.EVENT_PACKET) {
+      console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
+    }
+
+    switch(evt.data.respId) {
+      default:
+      break;
+    }
+  }
+
   // TODO: move to appUtils
   reset = () => {
     const { voice: voiceSocket, data: dataSocket, setManagerCredential, setIsUserAuthenticated } = this.props;
@@ -705,8 +735,12 @@ class App extends React.Component {
     dataSocket.addEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
 
+    nullGate.addEventListener(Socket.EVENT_OPEN, this.onNullGateSocketOpen);
+    nullGate.addEventListener(Socket.EVENT_PACKET, this.onNullGateSocketPacket);
+
     await voiceSocket.autoConnect();
     // await dataSocket.autoConnect();
+    await nullGate.autoConnect();
   }
 
   componentWillUnmount() {
@@ -719,6 +753,9 @@ class App extends React.Component {
 
     dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
+
+    nullGate.removeEventListener(Socket.EVENT_OPEN, this.onNullGateSocketOpen);
+    nullGate.removeEventListener(Socket.EVENT_PACKET, this.onNullGateSocketPacket);
   }
 
   joinChannel = channelId => {
