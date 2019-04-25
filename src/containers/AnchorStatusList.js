@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -96,6 +97,12 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
     </div>
 	);
 }
+
+AnchorStatusList.proptype = {
+  classes: PropTypes.object.isRequired,
+  anchorList: PropTypes.array,
+  anchorsOnDutyList: PropTypes.array
+};
 
 const StyledAnchorStatusList = withStyles(styles)(AnchorStatusList);
 

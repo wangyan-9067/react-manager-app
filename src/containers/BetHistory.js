@@ -91,7 +91,7 @@ TablePaginationActions.propTypes = {
   onChangePage: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
-  theme: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired
 };
 
 const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: true })(
@@ -282,7 +282,11 @@ const BetHistory = ({ classes, betHistory, toggleToast, setToastMessage, setToas
 };
 
 BetHistory.prototype = {
-	classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  betHistory: PropTypes.array,
+  toggleToast: PropTypes.func,
+  setToastMessage: PropTypes.func,
+  setToastVariant: PropTypes.func
 };
 
 const StyledBetHistory = withStyles(styles)(BetHistory);

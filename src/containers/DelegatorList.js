@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -7,7 +8,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 
@@ -93,18 +93,17 @@ const styles = () => ({
   }
 });
 
-const DelegatorList = props => {
+const DelegatorList = ({
+  classes,
+  delegatorList,
+  addDelegator,
+  deleteDelegator,
+  openDialog,
+  toggleDialog
+}) => {
   const [openAddDelegatorDialog, setOpenAddDelegatorDialog] = useState(false);
   const [selected, setSelected] = useState();
   const [isEdit, setIsEdit] = useState(false);
-  const {
-    classes,
-    delegatorList,
-    addDelegator,
-    deleteDelegator,
-    openDialog,
-    toggleDialog
-  } = props;
   const {
     root,
     grow,
@@ -181,19 +180,17 @@ const DelegatorList = props => {
 					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}代理資料</Typography>
 				</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
-            <UserForm
-              selectedUser={selectedDelegator}
-              addUser={addDelegator}
-              deleteUser={deleteDelegator}
-              setOpenAddDialog={setOpenAddDelegatorDialog}
-              userList={delegatorList}
-              isEdit={isEdit}
-              openDialog={openDialog}
-              toggleDialog={toggleDialog}
-              isDelegator={true}
-            />
-          </DialogContentText>
+          <UserForm
+            selectedUser={selectedDelegator}
+            addUser={addDelegator}
+            deleteUser={deleteDelegator}
+            setOpenAddDialog={setOpenAddDelegatorDialog}
+            userList={delegatorList}
+            isEdit={isEdit}
+            openDialog={openDialog}
+            toggleDialog={toggleDialog}
+            isDelegator={true}
+          />
 				</DialogContent>
 			</Dialog>
       <ToggleButtonGridList
@@ -217,6 +214,15 @@ const DelegatorList = props => {
 		</div>
 	);
 }
+
+DelegatorList.proptype = {
+  classes: PropTypes.object.isRequired,
+  delegatorList: PropTypes.array,
+  addDelegator: PropTypes.func,
+  deleteDelegator: PropTypes.func,
+  openDialog: PropTypes.bool,
+  toggleDialog: PropTypes.func
+};
 
 const StyledDelegatorList = withStyles(styles)(DelegatorList);
 

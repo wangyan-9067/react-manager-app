@@ -56,6 +56,10 @@ const AudioButton = ({ classes, gmcode, toggleToast, setToastMessage, setToastVa
 
 AudioButton.propTypes = {
   classes: PropTypes.object.isRequired,
+  gmcode: PropTypes.string.isRequired,
+  toggleToast: PropTypes.func.isRequired,
+  setToastMessage: PropTypes.func.isRequired,
+  setToastVariant: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(AudioButton);

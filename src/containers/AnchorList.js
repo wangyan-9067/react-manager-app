@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -7,7 +8,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 
@@ -217,20 +217,18 @@ const AnchorList = ({
 					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}主播資料</Typography>
 				</DialogTitle>
 				<DialogContent>
-					<DialogContentText>
-            <UserForm
-              selectedUser={selectedAnchor}
-              addUser={addAnchor}
-              deleteUser={deleteAnchor}
-              setOpenAddDialog={setOpenAddAnchorDialog}
-              userList={anchorList}
-              isEdit={isEdit}
-              openDialog={openDialog}
-              toggleDialog={toggleDialog}
-              isManager={false}
-              setFormValues={setFormValues}
-            />
-          </DialogContentText>
+          <UserForm
+            selectedUser={selectedAnchor}
+            addUser={addAnchor}
+            deleteUser={deleteAnchor}
+            setOpenAddDialog={setOpenAddAnchorDialog}
+            userList={anchorList}
+            isEdit={isEdit}
+            openDialog={openDialog}
+            toggleDialog={toggleDialog}
+            isManager={false}
+            setFormValues={setFormValues}
+          />
 				</DialogContent>
 			</Dialog>
       <ToggleButtonGridList
@@ -254,6 +252,20 @@ const AnchorList = ({
 		</div>
 	);
 }
+
+AnchorList.proptype = {
+  classes: PropTypes.object.isRequired,
+  anchorList: PropTypes.array,
+  addAnchor: PropTypes.func,
+  deleteAnchor: PropTypes.func,
+  setAnchorsDuty: PropTypes.func,
+  getAnchorsDutyList: PropTypes.func,
+  openDialog: PropTypes.bool,
+  toggleDialog: PropTypes.func,
+  anchorsOnDutyList: PropTypes.array,
+  setManagerAction: PropTypes.func,
+  setFormValues: PropTypes.func
+};
 
 const StyledAnchorList = withStyles(styles)(AnchorList);
 

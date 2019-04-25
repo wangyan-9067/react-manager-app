@@ -502,7 +502,20 @@ class Login extends React.Component {
 };
 
 Login.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  variant: PropTypes.string,
+  message: PropTypes.string,
+  duration: PropTypes.number,
+  open: PropTypes.bool,
+  voice: PropTypes.object.isRequired,
+  setManagerCredential: PropTypes.func,
+  setToastMessage: PropTypes.func,
+  setToastVariant: PropTypes.func,
+  setToastDuration: PropTypes.func,
+  toggleToast: PropTypes.func,
+  setIsUserAuthenticated: PropTypes.func,
+  data: PropTypes.object.isRequired,
+  managerCredential: PropTypes.object
 };
 
 const RoutedLogin = withRouter(withStyles(styles)(Login));

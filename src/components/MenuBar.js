@@ -128,15 +128,14 @@ const DialogContent = withStyles(theme => ({
   },
 }))(MuiDialogContent);
 
-const TabContainer = props => {
-  const { classes } = props;
-
+const TabContainer = ({ classes, children }) => {
   return (
-    <div className={classes.tabContainer}>{props.children}</div>
+    <div className={classes.tabContainer}>{children}</div>
   );
 };
 
 TabContainer.propTypes = {
+  classes: PropTypes.object.isRequired,
   children: PropTypes.node.isRequired,
 };
 
@@ -222,6 +221,9 @@ class MenuBar extends React.Component {
               <Tab label="主播排班" classes={{ root: tabRoot, selected: tabSelected }} />
               <Tab label="經理操作" classes={{ root: tabRoot, selected: tabSelected }} />
               <Tab label="桌台狀態" classes={{ root: tabRoot, selected: tabSelected }} />
+              {/* To suppress material-ui error */}
+              <Tab label="管理經理" style={{ display: 'none' }} />
+              <Tab label="管理代理" style={{ display: 'none' }} />
             </Tabs>
             <div className={grow1} />
             <Button
@@ -330,11 +332,30 @@ MenuBar.propTypes = {
   classes: PropTypes.object.isRequired,
   joinChannel: PropTypes.func,
   leaveChannel: PropTypes.func,
+  assignTable: PropTypes.func,
   assignTableToChannel: PropTypes.func,
   toggleMuteChannel: PropTypes.func,
+  kickoutClientFromDataServer: PropTypes.func,
   kickoutClient: PropTypes.func,
   blacklistClient: PropTypes.func,
-  logout: PropTypes.func
+  getAnchorList: PropTypes.func,
+  addAnchor: PropTypes.func,
+  deleteAnchor: PropTypes.func,
+  setAnchorsDuty: PropTypes.func,
+  getAnchorsDutyList: PropTypes.func,
+  logout: PropTypes.func,
+  managerLoginname: PropTypes.string,
+  managerLevel: PropTypes.number,
+  getManagerList: PropTypes.func,
+  addManager: PropTypes.func,
+  deleteManager: PropTypes.func,
+  getBetHistory: PropTypes.func,
+  toggleLoading: PropTypes.func,
+  assignTokenToDelegator: PropTypes.func,
+  kickDelegator: PropTypes.func,
+  getDelegatorList: PropTypes.func,
+  addDelegator: PropTypes.func,
+  deleteDelegator: PropTypes.func
 };
 
 export default withStyles(styles)(MenuBar);

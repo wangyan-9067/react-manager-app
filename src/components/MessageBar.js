@@ -46,8 +46,7 @@ const styles = theme => ({
   },
 });
 
-function MySnackbarContent(props) {
-  const { classes, className, message, isOpen, onClose, variant, duration, ...other } = props;
+const MessageBarContent = ({ classes, className, message, isOpen, onClose, variant, duration, ...other }) => {
   const Icon = variantIcon[variant];
 
   return (
@@ -86,20 +85,22 @@ function MySnackbarContent(props) {
   );
 }
 
-MySnackbarContent.propTypes = {
+MessageBarContent.propTypes = {
   classes: PropTypes.object.isRequired,
   className: PropTypes.string,
-  message: PropTypes.node,
+  message: PropTypes.node.isRequired,
+  isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func,
   variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
+  duration: PropTypes.number
 };
 
-const MySnackbarContentWrapper = withStyles(styles)(MySnackbarContent);
+const MessageBarContentWrapper = withStyles(styles)(MessageBarContent);
 
-const CustomizedSnackbars = ({ className, variant, message, duration, isOpen, onClose }) => {
+const MessageBar = ({ className, variant, message, duration, isOpen, onClose }) => {
   return (
     <div>
-      <MySnackbarContentWrapper
+      <MessageBarContentWrapper
         variant={variant || 'success'}
         className={className || ''}
         message={message || ''}
@@ -111,7 +112,13 @@ const CustomizedSnackbars = ({ className, variant, message, duration, isOpen, on
   );
 }
 
-CustomizedSnackbars.propTypes = {
+MessageBar.propTypes = {
+  className: PropTypes.object,
+  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
+  message: PropTypes.string.isRequired,
+  duration: PropTypes.number,
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func
 };
 
-export default CustomizedSnackbars;
+export default MessageBar;

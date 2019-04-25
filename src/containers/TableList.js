@@ -76,6 +76,15 @@ const TableList = ({
 
 TableList.propTypes = {
   classes: PropTypes.object.isRequired,
+  tableList: PropTypes.array,
+  anchorsOnDutyList: PropTypes.array,
+  channelList: PropTypes.array,
+  openDialog: PropTypes.bool,
+  toggleDialog: PropTypes.func,
+  kickoutClientFromDataServer: PropTypes.func,
+  setKickoutClient: PropTypes.func,
+  clientToKickOut: PropTypes.object,
+  tableLimit: PropTypes.object
 };
 
 const StyledTableList = withStyles(styles)(TableList);

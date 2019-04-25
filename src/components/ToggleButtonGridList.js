@@ -74,10 +74,14 @@ const ToggleButtonGridList = ({ classes, list, exclusive, selectedValue, onChang
 
 ToggleButtonGridList.propTypes = {
 	classes: PropTypes.object.isRequired,
-	bgColor: PropTypes.string,
-	customCols: PropTypes.number,
 	list: PropTypes.array,
-	tileClass: PropTypes.string
+	exclusive: PropTypes.bool,
+	selectedValue: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.object
+  ]),
+  onChangeHandler: PropTypes.func,
+  onClickHandler: PropTypes.func
 };
 
 const StyledToggleButtonGridList = withStyles(styles)(ToggleButtonGridList);

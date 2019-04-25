@@ -85,7 +85,7 @@ const AlreadyHaveToken = ({ classes, name, waitingTime, kickDelegator }) => {
 AlreadyHaveToken.propTypes = {
   classes: PropTypes.object.isRequired,
   name: PropTypes.string,
-  waitingTime: PropTypes.number,
+  waitingTime: PropTypes.string,
   kickDelegator: PropTypes.func
 };
 
@@ -108,7 +108,7 @@ const WaitingForToken = ({ classes, name, waitingTime, assignTokenToDelegator })
 WaitingForToken.propTypes = {
   classes: PropTypes.object.isRequired,
   name: PropTypes.string,
-  waitingTime: PropTypes.number,
+  waitingTime: PropTypes.string,
   assignTokenToDelegator: PropTypes.func
 };
 

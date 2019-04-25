@@ -35,6 +35,7 @@ const AnchorStatus = ({ classes, isBusy }) => {
 
 AnchorStatus.propTypes = {
   classes: PropTypes.object.isRequired,
+  isBusy: PropTypes.bool
 };
 
 export default withStyles(styles)(AnchorStatus);

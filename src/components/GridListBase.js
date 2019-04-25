@@ -85,7 +85,8 @@ GridListBase.propTypes = {
 	bgColor: PropTypes.string,
 	customCols: PropTypes.number,
 	list: PropTypes.array, 
-	tileClass: PropTypes.string
+	tileClass: PropTypes.string,
+	gridListRootClass: PropTypes.string
 };
 
 const StyledGridListBase = withStyles(styles)(GridListBase);

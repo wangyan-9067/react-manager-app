@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -91,6 +92,14 @@ const DialogWrapper = ({ classes, isOpen, onCloseHandler, actionHandler, content
       </DialogActions>
     </Dialog>
   );
+};
+
+DialogWrapper.prototype = {
+  classes: PropTypes.object.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onCloseHandler: PropTypes.func,
+  actionHandler: PropTypes.func,
+  content: PropTypes.string
 };
 
 export default withStyles(styles)(DialogWrapper);

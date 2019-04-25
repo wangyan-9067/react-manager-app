@@ -7,6 +7,9 @@ import GridListBase from './GridListBase';
 import WaitingUserTile from './WaitingUserTile';
 
 const styles = theme => ({
+	root: {
+		width: '100%'
+	},
 	title: {
 		color: '#666666',
 		fontSize: '1.125rem',
@@ -33,10 +36,10 @@ const styles = theme => ({
 });
 
 const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegator }) => {
-	const { title, listRoot, gridListRoot } = classes;
+	const { root, title, listRoot, gridListRoot } = classes;
 
 	return (
-		<div style={{ width: '100%' }}>
+		<div className={root}>
 			<Typography color="inherit" align="left" className={title}>
 				輪候中代理
 			</Typography>

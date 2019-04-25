@@ -115,7 +115,8 @@ DisabledCard.propTypes = {
 	item: PropTypes.object,
 	role: PropTypes.string,
 	roleName: PropTypes.string,
-	voiceAppId: PropTypes.string
+	voiceAppId: PropTypes.string,
+	currentTable: PropTypes.object
 };
 
 const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, currentTable }) => {
@@ -174,7 +175,8 @@ CallInfoCard.propTypes = {
 	roleName: PropTypes.string,
 	cardClass: PropTypes.string,
 	roleClass: PropTypes.string,
-	joinChannel: PropTypes.func
+	joinChannel: PropTypes.func,
+	currentTable: PropTypes.object
 };
 
 const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable }) => {
@@ -189,14 +191,20 @@ const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChann
 				<Typography color="inherit" className={cardContentText}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall) }} disabled={managerName && !isManagerReconnect}>接聽</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall) }} disabled={managerName && !isManagerReconnect ? true : false}>接聽</Button>
       </CardActions>
     </Card>
 	);
 };
 
 FullChatroomCard.propTypes = {
-	classes: PropTypes.object.isRequired
+	classes: PropTypes.object.isRequired,
+	item: PropTypes.object,
+	setIsAnchorCall: PropTypes.func,
+	cardClass: PropTypes.string,
+	joinChannel: PropTypes.func,
+	isManagerReconnect: PropTypes.bool,
+	currentTable: PropTypes.object
 };
 
 const TelebetTile = ({
@@ -217,8 +225,8 @@ const TelebetTile = ({
 	const isCallingManager = CALLING_MANAGER_STATES.findIndex(state => state === anchorState) !== -1;
 	const isManagerReconnect = managerName === currentManagerName;
 
-	const clientDealIn = clientName && !anchorName && clientState === CONNECTED;
-	const anchorDealIn = clientName && anchorName && isCallingManager;
+	const clientDealIn = clientName && !anchorName && clientState === CONNECTED ? true : false;
+	const anchorDealIn = clientName && anchorName && isCallingManager ? true : false;
 	const clientAnchorPlaying = clientName && (clientState === CONNECTED || clientState === CONNECTING) && anchorName && (anchorState === CONNECTED || anchorState === CONNECTING);
 	const nobodyDealIn = !clientName && !anchorName && !managerName;
 	// const fullDesk = clientName && (anchorName || managerName) && clientState === CONNECTED && (anchorState === CONNECTED || managerState === CONNECTED);
@@ -303,7 +311,9 @@ TelebetTile.propTypes = {
 	voiceAppId: PropTypes.string, 
 	setIsAnchorCall: PropTypes.func, 
 	item: PropTypes.object, 
-	joinChannel: PropTypes.func
+	joinChannel: PropTypes.func,
+	managerCredential: PropTypes.object,
+	tableList: PropTypes.array
 };
 
 const StyledTelebetTile = withStyles(styles)(TelebetTile);

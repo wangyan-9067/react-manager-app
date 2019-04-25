@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import validator from 'validator';
 import { withStyles } from '@material-ui/core/styles';
@@ -341,7 +342,6 @@ class UserForm extends React.Component {
               <FormControl classes={{ root: formControlRoot }} className={formControl} error={!loginname.isValid}>
                 <div className={managerActionFormLabel}>Login名</div>
                 <Input
-                  defaultValue=""
                   classes={{underline: inputUnderline}}
                   className={input}
                   inputProps={{
@@ -359,7 +359,6 @@ class UserForm extends React.Component {
                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!nickname.isValid}>
                   <div className={managerActionFormLabel}>暱稱</div>
                   <Input
-                    defaultValue=""
                     classes={{underline: inputUnderline}}
                     className={input}
                     inputProps={{
@@ -376,7 +375,6 @@ class UserForm extends React.Component {
               <FormControl classes={{ root: formControlRoot }} className={formControl} error={!password.isValid}>
                 <div className={managerActionFormLabel}>密碼</div>
                 <Input
-                  defaultValue=""
                   classes={{underline: inputUnderline}}
                   className={input}
                   inputProps={{
@@ -392,7 +390,6 @@ class UserForm extends React.Component {
               <FormControl classes={{ root: formControlRoot }} className={formControl} error={!passwordConfirm.isValid}>
                 <div className={managerActionFormLabel}>確認密碼</div>
                 <Input
-                  defaultValue=""
                   classes={{underline: inputUnderline}}
                   className={input}
                   inputProps={{
@@ -409,7 +406,6 @@ class UserForm extends React.Component {
                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!iconUrl.isValid}>
                   <div className={managerActionFormLabel}>照片URL</div>
                   <Input
-                    defaultValue=""
                     classes={{underline: inputUnderline}}
                     className={input}
                     inputProps={{
@@ -429,7 +425,6 @@ class UserForm extends React.Component {
                   <Select
                     value={level.value}
                     onChange={this.onChange}
-                    classes={{underline: inputUnderline}}
                     className={input}
                     inputProps={{
                       name: 'level',
@@ -446,7 +441,6 @@ class UserForm extends React.Component {
                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!tel.isValid}>
                   <div className={managerActionFormLabel}>電話</div>
                   <Input
-                    defaultValue=""
                     classes={{underline: inputUnderline}}
                     className={input}
                     inputProps={{
@@ -490,6 +484,17 @@ class UserForm extends React.Component {
       </div>
     );
   }
+};
+
+UserForm.proptype = {
+  classes: PropTypes.object.isRequired,
+  setOpenAddDialog: PropTypes.func,
+  isEdit: PropTypes.bool,
+  deleteUser: PropTypes.func,
+  openDialog: PropTypes.func,
+  toggleDialog: PropTypes.func,
+  isManager: PropTypes.bool,
+  isDelegator: PropTypes.bool
 };
 
 export default withStyles(styles)(UserForm);

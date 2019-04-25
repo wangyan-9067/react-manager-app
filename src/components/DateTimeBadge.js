@@ -1,4 +1,5 @@
 import React, { Fragment }  from 'react';
+import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -11,13 +12,13 @@ const styles = {
   }
 };
 
-const DateTimeBadge = classes => {
+const DateTimeBadge = ({ classes }) => {
 	const { badgeLabel } = classes;
 	const currentDateTime = new Date();
 
 	return (
 		<Fragment>
-			<Typography variant="contained" color="inherit" className={badgeLabel} noWrap>
+			<Typography color="inherit" className={badgeLabel} noWrap>
 				<Moment format="YYYY-MM-DD">
 						{currentDateTime}
 				</Moment>
@@ -26,6 +27,10 @@ const DateTimeBadge = classes => {
 			</Typography>
 		</Fragment>
 	);
+};
+
+DateTimeBadge.prototype = {
+  classes: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(DateTimeBadge);

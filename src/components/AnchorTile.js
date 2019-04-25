@@ -14,8 +14,7 @@ const styles = {
   }
 };
 
-const AnchorTile = props => {
-  const { classes, item } = props;
+const AnchorTile = ({ classes, item }) => {
   const { label } = classes;
   const { loginname, nickname, url } = item;
   // TODO: move to separate file
@@ -37,6 +36,7 @@ const AnchorTile = props => {
 
 AnchorTile.propTypes = {
   classes: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(AnchorTile);

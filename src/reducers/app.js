@@ -12,7 +12,7 @@ import {
   
 const initialState = {
   message: '',
-  variant: '',
+  variant: 'info',
   duration: 5000,
   open: false,
   openDialog: false,

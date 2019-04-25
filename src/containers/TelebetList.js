@@ -400,40 +400,47 @@ const AnswerCallPanel = ({
 AnswerCallPanel.prototype = {
 	classes: PropTypes.object.isRequired,
 	currentChannelId: PropTypes.number,
-	channelList: PropTypes.array, 
-	isAnchorCall: PropTypes.bool, 
-	leaveChannel: PropTypes.func, 
-	assignTableToChannel: PropTypes.func, 
-	toggleMuteChannel: PropTypes.func, 
+	channelList: PropTypes.array,
+	isAnchorCall: PropTypes.bool,
+	leaveChannel: PropTypes.func,
+	assignTable: PropTypes.func,
+	assignTableToChannel: PropTypes.func,
+	toggleMuteChannel: PropTypes.func,
+	kickoutClientFromDataServer: PropTypes.func,
 	kickoutClient: PropTypes.func, 
-	blacklistClient: PropTypes.func
+	blacklistClient: PropTypes.func,
+	tableList: PropTypes.array,
+	setManagerAction: PropTypes.func,
+	setIsAnswerCall: PropTypes.func,
+	setToastMessage: PropTypes.func,
+	setToastVariant: PropTypes.func,
+	toggleToast: PropTypes.func
 };
 
-const TelebetList = props => {	
-	const { 
-		classes,
-		channelList,
-		joinChannel,
-		leaveChannel,
-		assignTable,
-		assignTableToChannel,
-		isAnswerCall,
-		isAnchorCall,
-		currentChannelId,
-		toggleMuteChannel,
-		kickoutClientFromDataServer,
-		kickoutClient,
-		blacklistClient,
-		waitingList,
-		tableList,
-		setManagerAction,
-		setIsAnswerCall,
-		setToastMessage,
-		setToastVariant,
-		toggleToast,
-		assignTokenToDelegator,
-		kickDelegator
-	} = props;
+const TelebetList = ({ 
+	classes,
+	channelList,
+	joinChannel,
+	leaveChannel,
+	assignTable,
+	assignTableToChannel,
+	isAnswerCall,
+	isAnchorCall,
+	currentChannelId,
+	toggleMuteChannel,
+	kickoutClientFromDataServer,
+	kickoutClient,
+	blacklistClient,
+	waitingList,
+	tableList,
+	setManagerAction,
+	setIsAnswerCall,
+	setToastMessage,
+	setToastVariant,
+	toggleToast,
+	assignTokenToDelegator,
+	kickDelegator
+}) => {
 	const { separator, tile } = classes;
 
 	const telebetListClasses = classNames.bind(classes);
@@ -506,14 +513,24 @@ TelebetList.prototype = {
 	channelList: PropTypes.array,
 	joinChannel: PropTypes.func,
 	leaveChannel: PropTypes.func,
+	assignTable: PropTypes.func,
 	assignTableToChannel: PropTypes.func,
 	isAnswerCall: PropTypes.bool,
 	isAnchorCall: PropTypes.bool,
 	currentChannelId: PropTypes.number,
 	toggleMuteChannel: PropTypes.func,
+	kickoutClientFromDataServer: PropTypes.func,
 	kickoutClient: PropTypes.func,
 	blacklistClient: PropTypes.func,
-	waitingList: PropTypes.func
+	waitingList: PropTypes.func,
+	tableList: PropTypes.array,
+	setManagerAction: PropTypes.func,
+	setIsAnswerCall: PropTypes.func,
+	setToastMessage: PropTypes.func,
+	setToastVariant: PropTypes.func,
+	toggleToast: PropTypes.func,
+	assignTokenToDelegator: PropTypes.func,
+	kickDelegator: PropTypes.func
 }
 
 const StyledTelebetList = withStyles(styles)(TelebetList);

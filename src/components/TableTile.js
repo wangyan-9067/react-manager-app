@@ -171,6 +171,10 @@ const DataItem = ({ item }) => {
   );
 };
 
+DataItem.proptype = {
+	item: PropTypes.object.isRequired
+};
+
 const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList, tableLimit }) => {
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
 	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
@@ -233,7 +237,13 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 }
 
 TableTile.propTypes = {
-  classes: PropTypes.object.isRequired,
+	classes: PropTypes.object.isRequired,
+	item: PropTypes.object.isRequired,
+	anchorsOnDutyList: PropTypes.array,
+	toggleDialog: PropTypes.func,
+	setKickoutClient: PropTypes.func,
+	channelList: PropTypes.array,
+	tableLimit: PropTypes.object
 };
 
 export default withStyles(styles)(TableTile);
