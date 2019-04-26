@@ -44,7 +44,7 @@ const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegat
 				輪候中代理
 			</Typography>
 			<div className={listRoot}>
-				<GridListBase list={waitingList} bgColor="#F5F5F5" customCols={6} gridListRootClass={gridListRoot}>
+				<GridListBase list={waitingList} customCols={6} gridListRootClass={gridListRoot}>
 					<WaitingUserTile assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
 				</GridListBase>
 			</div>

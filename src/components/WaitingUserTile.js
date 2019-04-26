@@ -11,12 +11,13 @@ import Typography from '@material-ui/core/Typography';
 
 const styles = {
 	card: {
-		borderRadius: '4px',
-		border: '1px solid #EDEDED',
+		borderRadius: '10px',
+		border: '3px solid #EDEDED',
 		backgroundColor: '#EDEDED',
-    padding: '0 60px 0 0',
-    width: '100%',
     minHeight: '148px'
+  },
+  tokenCard: {
+    border: '3px solid #139727',
   },
   cardContentRoot: {
     padding: '5px',
@@ -66,10 +67,10 @@ const styles = {
 };
 
 const AlreadyHaveToken = ({ classes, name, waitingTime, kickDelegator }) => {
-  const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, cardContentSubText, actionButton, kickButton } = classes;
+  const { card, tokenCard, cardContentRoot, cardContent, cardContentText, cardContentMainText, cardContentSubText, actionButton, kickButton } = classes;
 
   return (
-    <Card className={card}>
+    <Card className={classNames(card, tokenCard)}>
       <CardContent className={cardContent} classes={{ root: cardContentRoot }}>
 				<Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} noWrap={true} align="center">{name}</Typography>
         <Typography color="inherit" className={classNames(cardContentText, cardContentSubText)} noWrap={true} align="center">已接入</Typography>
