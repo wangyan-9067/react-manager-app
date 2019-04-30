@@ -3,7 +3,11 @@ import {
 	SET_KICK_OUT_CLIENT,
 	SET_BET_HISTORY,
 	RESET_ACTION,
-	SET_TABLE_LIMIT
+	SET_TABLE_LIMIT,
+	SET_BET_HISTORY_INFO,
+	SET_BET_HISTORY_USER_PID,
+	SET_BET_HISTORY_TABLE_PAGE_INDEX,
+	SET_BET_HISTORY_SEARCH_FIELDS
 } from '../types';
   
 const initialState = {
@@ -19,6 +23,16 @@ const initialState = {
 	tableLimit: {
 		byId: [],
 		byHash: {}
+	},
+	betHistoryInfo: {
+		total: 0,
+		numPerPage: 0
+	},
+	betHistoryUserPid: '',
+	betHistoryTablePageIndex: 0,
+	betHistoryTableSearchFields: {
+		loginname: '',
+		gmCode: ''
 	}
 };
 
@@ -35,7 +49,7 @@ export default function data(state = initialState, action) {
 						return { ...table, ...tableToUpdate };
 					}
 					return table;
-				})
+				});
 
 				return {
 					...state,
@@ -93,6 +107,29 @@ export default function data(state = initialState, action) {
 					byHash: tableLimitList
 				}
 			};
+
+		case SET_BET_HISTORY_INFO:
+			const betHistoryInfo = {
+				total: parseInt(action.info.total),
+				numPerPage: parseInt(action.info.numPerPage)
+			};
+
+			return { ...state, betHistoryInfo };
+
+		case SET_BET_HISTORY_USER_PID:
+			const betHistoryUserPid = action.pid;
+			return { ...state, betHistoryUserPid };
+
+		case SET_BET_HISTORY_TABLE_PAGE_INDEX:
+			const betHistoryTablePageIndex = action.index;
+			return { ...state, betHistoryTablePageIndex };
+
+		case SET_BET_HISTORY_SEARCH_FIELDS:
+			const betHistoryTableSearchFields = {
+				loginname: action.fields.loginname,
+				gmCode: action.fields.gmCode
+			};
+			return { ...state, betHistoryTableSearchFields }; 
 
 		case RESET_ACTION:
       return initialState;

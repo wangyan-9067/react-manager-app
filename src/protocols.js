@@ -54,8 +54,8 @@ export const CDS_CLIENT_LEAVE_TABLE_NOTIFY = 0x080026;
 export const CDS_VIDEO_STATUS = 0x015051;
 export const CDS_CLIENT_LIST = 0x080020;
 export const CDS_CONTROL_REQ_VIDEO_RES = 0x0d0006;
-export const CDS_BET_HIST = 0x090024;
-export const CDS_BET_HIST_R = 0x090025;
+// export const CDS_BET_HIST = 0x090024;
+// export const CDS_BET_HIST_R = 0x090025;
 export const CDS_BET_LIST = 0x080011;
 export const CDS_TABLE_LIMIT = 0x09002f;
 export const CDS_ADD_MANAGER = 0x09003a;
@@ -69,3 +69,5 @@ export const CDS_ACTION_R = 0x090040;
 // Null Gate
 export const GATE_REQUEST_CACHE = 0x4054a;
 export const GATE_FORWARD_MSG = 0x4052f;
+export const GET_BET_RECORDS = 0x40092;
+export const GET_BET_RECORDS_R = 0x40093;

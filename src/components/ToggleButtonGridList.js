@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-import AnchorTile from './AnchorTile';
+import UserTile from './UserTile';
 
 const styles = theme => ({
   root: {
@@ -64,7 +64,7 @@ const ToggleButtonGridList = ({ classes, list, exclusive, selectedValue, onChang
             classes={{ root: toggleButtonRoot, label: toggleButtonLabel }}
             value={item.value}
           >
-            <AnchorTile item={item} />
+            <UserTile item={item} />
           </ToggleButton>
         ))}
       </ToggleButtonGroup>

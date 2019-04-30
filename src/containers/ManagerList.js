@@ -23,7 +23,7 @@ const styles = () => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    padding: '20px',
+    padding: '10px',
 		backgroundColor: '#FFFFFF',
 		borderRadius: '10px'
   },
@@ -84,14 +84,6 @@ const styles = () => ({
 		color: '#656565',
 		fontSize: '1.25rem',
 		fontWeight: 'bold'
-  },
-  tileClass: {
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#FFFFFF',
-    minHeight: '76px'
   }
 });
 
@@ -119,8 +111,7 @@ const ManagerList = ({
     emptyAnchorCardRoot,
     emptyText,
     dialogPaper,
-    dialogTitle,
-    tileClass
+    dialogTitle
   } = classes;
   const { ADD_MANAGER, EDIT_MANAGER } = MANAGER_ACTION_TYPE;
 
@@ -216,8 +207,6 @@ const ManagerList = ({
 			</Dialog>
       <ToggleButtonGridList
         list={managerList}
-        tileClass={tileClass}
-        customCols={6}
         exclusive={true}
         selectedValue={selected}
         onChangeHandler={value => {

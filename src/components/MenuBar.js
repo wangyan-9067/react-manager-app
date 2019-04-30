@@ -28,6 +28,7 @@ import DelegatorList from '../containers/DelegatorList';
 
 import DateTimeBadge from './DateTimeBadge';
 import SearchForm from './SearchForm';
+import CallNotification from './CallNotification';
 
 const styles = theme => ({
   appBar: {
@@ -38,6 +39,7 @@ const styles = theme => ({
     width: '100%',
   },
   tabsRoot: {
+    width: '420px',
     borderBottom: '1px solid #E8E8E8',
   },
   tabsIndicator: {
@@ -47,8 +49,8 @@ const styles = theme => ({
     textTransform: 'initial',
     fontSize: '1.25rem',
     fontWeight: theme.typography.fontWeightRegular,
-    minWidth: 72,
-    marginRight: theme.spacing.unit * 4,
+    minWidth: 12,
+    // marginRight: theme.spacing.unit * 4,
     '&:hover': {
       color: '#40a9ff',
     },
@@ -84,14 +86,22 @@ const styles = theme => ({
     fontSize: '1rem'
   },
   dialogPaper: {
-    maxWidth: '100%',
-    height: '100%'
+    // maxWidth: '100%',
+    height: '100%',
+    minWidth: '1000px'
   },
   show: {
     display: 'block'
   },
   hide: {
     display: 'none'
+  },
+  gutters: {
+    paddingLeft: '4px',
+    paddingRight: '4px'
+  },
+  labelContainer: {
+    padding: '6px 22px'
   }
 });
 
@@ -190,7 +200,10 @@ class MenuBar extends React.Component {
       kickDelegator,
       getDelegatorList,
       addDelegator,
-      deleteDelegator
+      deleteDelegator,
+      nullGateForwardMsgCMD,
+      setBetHistorySearchFields,
+      incomingCallCount
     } = this.props;
     const { value } = this.state;
     const {
@@ -208,19 +221,21 @@ class MenuBar extends React.Component {
       managerName,
       dialogPaper,
       show,
-      hide
+      hide,
+      gutters,
+      labelContainer
     } = classes;
 
     return (
       <div className={root}>
         <AppBar position="static" color="inherit" className={appBar}>
-          <Toolbar>
+          <Toolbar classes={{ gutters }}>
             <DateTimeBadge />
             <div className={grow} />
             <Tabs value={value} onChange={this.handleChange} classes={{ root: tabsRoot, indicator: tabsIndicator }}>
-              <Tab label="主播排班" classes={{ root: tabRoot, selected: tabSelected }} />
-              <Tab label="經理操作" classes={{ root: tabRoot, selected: tabSelected }} />
-              <Tab label="桌台狀態" classes={{ root: tabRoot, selected: tabSelected }} />
+              <Tab label="主播排班" classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+              <Tab label={<CallNotification count={incomingCallCount} label="經理操作" />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+              <Tab label="桌台狀態" classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
               {/* To suppress material-ui error */}
               <Tab label="管理經理" style={{ display: 'none' }} />
               <Tab label="管理代理" style={{ display: 'none' }} />
@@ -230,7 +245,7 @@ class MenuBar extends React.Component {
               variant="contained"
               size="medium"
               color="inherit"
-              className={menuButton}
+              className={classNames(menuButton, bold)}
               onClick={() => {
                 toggleLoading(true);
                 getBetHistory();
@@ -317,10 +332,13 @@ class MenuBar extends React.Component {
           classes={{ paper: dialogPaper }}
         >
           <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
-            <SearchForm getBetHistory={getBetHistory} />
+            <SearchForm
+              nullGateForwardMsgCMD={nullGateForwardMsgCMD}
+              setBetHistorySearchFields={setBetHistorySearchFields}
+            />
           </DialogTitle>
           <DialogContent>
-            <BetHistory />
+            <BetHistory nullGateForwardMsgCMD={nullGateForwardMsgCMD} />
           </DialogContent>
         </Dialog>
       </div>
@@ -355,7 +373,10 @@ MenuBar.propTypes = {
   kickDelegator: PropTypes.func,
   getDelegatorList: PropTypes.func,
   addDelegator: PropTypes.func,
-  deleteDelegator: PropTypes.func
+  deleteDelegator: PropTypes.func,
+  nullGateForwardMsgCMD: PropTypes.func,
+  setBetHistorySearchFields: PropTypes.func,
+  incomingCallCount: PropTypes.number
 };
 
 export default withStyles(styles)(MenuBar);

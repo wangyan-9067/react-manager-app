@@ -13,7 +13,8 @@ import {
 	SET_MANAGER_LEVEL,
 	RESET_ACTION,
 	SET_DELEGATOR_LIST,
-	SET_FORM_VALUES
+	SET_FORM_VALUES,
+	SET_INCOMING_CALL_COUNT
 } from '../types';
 
 const initialState = {
@@ -37,7 +38,8 @@ const initialState = {
 		iconUrl: '',
 		level: '',
 		tel: ''
-	}
+	},
+	incomingCallCount: 0
 };
 
 export default function voice(state = initialState, action) {
@@ -108,6 +110,10 @@ export default function voice(state = initialState, action) {
 			};
 
 			return { ...state, formValues };
+
+		case SET_INCOMING_CALL_COUNT:
+			const incomingCallCount = action.count;
+			return { ...state, incomingCallCount };
 
     default:
     	return state;

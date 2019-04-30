@@ -12,7 +12,8 @@ import {
 	SET_MANAGER_LIST,
 	SET_MANAGER_LEVEL,
 	SET_DELEGATOR_LIST,
-	SET_FORM_VALUES
+	SET_FORM_VALUES,
+	SET_INCOMING_CALL_COUNT
 } from '../types';
 
 export const setVoiceAppId = id => ({ type: SET_VOICE_APP_ID, id });
@@ -29,3 +30,4 @@ export const setManagerList = list => ({ type: SET_MANAGER_LIST, list });
 export const setUserLevel = level => ({ type: SET_MANAGER_LEVEL, level });
 export const setDelegatorList = list => ({ type: SET_DELEGATOR_LIST, list });
 export const setFormValues = values => ({type: SET_FORM_VALUES, values});
+export const setIncomingCallCount = count => ({type: SET_INCOMING_CALL_COUNT, count});

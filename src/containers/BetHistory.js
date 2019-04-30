@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Moment from 'react-moment';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -17,9 +16,11 @@ import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
+import Typography from '@material-ui/core/Typography';
 
 import AudioButton from '../components/AudioButton';
 import { toggleToast, setToastMessage, setToastVariant } from '../actions/app';
+import { setBetHistoryTablePageIndex } from '../actions/data';
 import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
 import { PLAYTYPE } from '../constants';
 
@@ -47,7 +48,7 @@ const TablePaginationActions  = ({ classes, count, page, rowsPerPage, theme, onC
   const handleLastPageButtonClick = event => {
     onChangePage(
       event,
-      Math.max(0, Math.ceil(count / rowsPerPage) - 1),
+      Math.max(0, Math.ceil(count / rowsPerPage) - 1)
     );
   };
 
@@ -177,19 +178,36 @@ const usePrevious = value => {
   return ref.current;
 };
 
-const BetHistory = ({ classes, betHistory, toggleToast, setToastMessage, setToastVariant }) => {
+const BetHistory = ({
+  classes,
+  betHistory,
+  toggleToast,
+  setToastMessage,
+  setToastVariant,
+  betHistoryUserPid,
+  betHistoryInfo,
+  nullGateForwardMsgCMD,
+  setBetHistoryTablePageIndex,
+  betHistoryTablePageIndex,
+  betHistoryTableSearchFields
+}) => {
   let betHistoryList = convertObjectListToArrayList(betHistory.byHash);
 
   const { root, cellRoot, cellWidth, tableWrapper, table } = classes;
+  const { numPerPage, total } = betHistoryInfo;
   const [rows, setRows] = useState(betHistoryList);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const [page, setPage] = useState(betHistoryTablePageIndex);
+  const [rowsPerPage, setRowsPerPage] = useState(numPerPage);
+  // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   const prevRows = usePrevious(betHistoryList);
+  const noRecordDisplay = rows.length === 0;
 
   const handleChangePage = (event, page) => {
-    setPage(page);
+    const { loginname, gmCode } = betHistoryTableSearchFields;
+    nullGateForwardMsgCMD(loginname, gmCode, page + 1);
+    setBetHistoryTablePageIndex(page);
   };
+
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(event.target.value);
   };
@@ -202,6 +220,16 @@ const BetHistory = ({ classes, betHistory, toggleToast, setToastMessage, setToas
 
     if (!compareArray(flattenArrays.prev, flattenArrays.current)) {
       setRows(flattenArrays.current);
+    }
+
+    const { numPerPage } = betHistoryInfo;
+    
+    if (Number.isInteger(numPerPage) && numPerPage > 0 && rowsPerPage !== numPerPage) {
+      setRowsPerPage(numPerPage);
+    }
+
+    if (page !== betHistoryTablePageIndex) {
+      setPage(betHistoryTablePageIndex);
     }
   });
 
@@ -225,7 +253,7 @@ const BetHistory = ({ classes, betHistory, toggleToast, setToastMessage, setToas
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {rows.map(row => {
               const betHistoryClasses = classNames.bind(classes);
               const profitClasses = betHistoryClasses({
                 profitClass: row.profit > 0,
@@ -236,14 +264,10 @@ const BetHistory = ({ classes, betHistory, toggleToast, setToastMessage, setToas
                 <TableRow key={row.billno}>
                   <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.billno}</TableCell>
                   <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.gmcode}</TableCell>
-                  <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">
-                    <Moment format="YYYY-MM-DD HH:mm:ss">
-                      {row.betTime * 1000}
-                    </Moment>
-                  </TableCell>
+                  <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.betTime}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">庄 {row.bankerVal} 閑 {row.playerVal}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center"><AudioButton gmcode={row.gmcode} toggleToast={toggleToast} setToastMessage={setToastMessage} setToastVariant={setToastVariant} /></TableCell>
-                  <TableCell classes={{ root: cellRoot }} align="center">{row.name}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{betHistoryUserPid + row.name}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">-</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{formatAmount(row.amount)}</TableCell>
@@ -252,18 +276,26 @@ const BetHistory = ({ classes, betHistory, toggleToast, setToastMessage, setToas
                 </TableRow>
               );
             })}
-            {emptyRows > 0 && (
+            {/* {emptyRows > 0 && (
               <TableRow style={{ height: 48 * emptyRows }}>
                 <TableCell colSpan={6} />
+              </TableRow>
+            )} */}
+            {noRecordDisplay && (
+              <TableRow>
+                <TableCell colSpan={12}>
+                  <Typography color="inherit" align="center">沒有遊戲記錄! 請輸入玩家名搜尋!</Typography>
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
           <TableFooter>
             <TableRow>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                colSpan={3}
-                count={rows.length}
+                rowsPerPageOptions={[]}
+                colSpan={12}
+                // count={rows.length}
+                count={total}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{
@@ -286,23 +318,34 @@ BetHistory.prototype = {
   betHistory: PropTypes.array,
   toggleToast: PropTypes.func,
   setToastMessage: PropTypes.func,
-  setToastVariant: PropTypes.func
+  setToastVariant: PropTypes.func,
+  betHistoryUserPid: PropTypes.string,
+  betHistoryInfo: PropTypes.object,
+  nullGateForwardMsgCMD: PropTypes.func,
+  setBetHistoryTablePageIndex: PropTypes.func,
+  betHistoryTablePageIndex: PropTypes.number,
+  betHistoryTableSearchFields: PropTypes.object
 };
 
 const StyledBetHistory = withStyles(styles)(BetHistory);
 
 const mapStateToProps = state => {
-  const { betHistory } = state.data;
+  const { betHistory, betHistoryUserPid, betHistoryInfo, betHistoryTablePageIndex, betHistoryTableSearchFields } = state.data;
 
   return ({
-    betHistory
+    betHistory,
+    betHistoryUserPid,
+    betHistoryInfo,
+    betHistoryTablePageIndex,
+    betHistoryTableSearchFields
   });
 };
 
 const mapDispatchToProps = dispatch => ({
   toggleToast: toggle => dispatch(toggleToast(toggle)),
   setToastMessage: message => dispatch(setToastMessage(message)),
-  setToastVariant: variant => dispatch(setToastVariant(variant))
+  setToastVariant: variant => dispatch(setToastVariant(variant)),
+  setBetHistoryTablePageIndex: index => dispatch(setBetHistoryTablePageIndex(index))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledBetHistory);

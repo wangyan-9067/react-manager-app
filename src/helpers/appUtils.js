@@ -28,3 +28,26 @@ export const handleLoginFailure = ({setIsUserAuthenticated, setToastMessage, set
   setToastDuration(null);
   toggleToast(true);
 };
+
+export const mapBetHistoryResult = (loginname, result) => {
+  return result.map(item => {
+    let temp = item.$;
+
+    return {
+      name: loginname,
+      gmtype: temp.platformtype,
+      gmcode: temp.gmcode,
+      billno: temp.billno,
+      betTime: temp.billtime,
+      table: temp.tablecode,
+      playerVal: temp.playerpoint,
+      bankerVal: temp.bankerpoint,
+      amount: temp.account,
+      profit: temp.cus_account,
+      playtype: parseInt(temp.playtype),
+      cardlist: temp.cardlist,
+      flag: temp.flag,
+      remark: temp.remark
+    }
+  })
+}

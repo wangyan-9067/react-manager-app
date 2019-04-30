@@ -22,7 +22,8 @@
     "react-scripts": "2.1.8",
     "redux": "^4.0.1",
     "typeface-roboto": "0.0.54",
-    "validator": "^10.11.0"
+    "validator": "^10.11.0",
+    "xml2js": "^0.4.19"
   },
   "scripts": {
     "start": "react-scripts start",

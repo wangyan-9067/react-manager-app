@@ -22,12 +22,16 @@ import {
   setIsAnchorCall,
   setUserLevel,
   setDelegatorList,
-  setFormValues
+  setFormValues,
+  setIncomingCallCount
 } from './actions/voice';
 import {
   setTableList,
   setBetHistory,
-  setTableLimit
+  setTableLimit,
+  setBetHistoryInfo,
+  setBetHistoryUserPid,
+  setBetHistorySearchFields
 } from './actions/data';
 import {
   setToastMessage,
@@ -84,8 +88,6 @@ import {
   CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC,
   CDS_OPERATOR_CONTROL_KICKOUT_CLIENT,
   CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R,
-  CDS_BET_HIST,
-  CDS_BET_HIST_R,
   CDS_CONTROL_REQ_VIDEO_RES,
   CDS_VIDEO_STATUS,
   CDS_CLIENT_ENTER_TABLE_NOTIFY,
@@ -99,7 +101,9 @@ import {
   CDS_UPDATE_ANCHOR,
   CDS_ACTION_R,
   GATE_REQUEST_CACHE,
-  GATE_FORWARD_MSG
+  GATE_FORWARD_MSG,
+  GET_BET_RECORDS,
+  GET_BET_RECORDS_R
 } from './protocols';
 import {
   VALUE_LENGTH,
@@ -110,23 +114,15 @@ import {
   RESPONSE_CODES,
   MANAGER_ACTION_TYPE,
   GAME_SERVER_RESPONSE_CODES,
-  USER_STATE
+  USER_STATE,
+  QUERY_SERVER_VALUE_LENGTH,
+  CALLING_MANAGER_STATES
 } from './constants';
 import { isObject } from './helpers/utils';
-import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure } from './helpers/appUtils';
+import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure, mapBetHistoryResult } from './helpers/appUtils';
 import './App.css';
 
 const nullGate = new NullGateSocket();
-
-const nullGateLoginCMD = () => {
-  nullGate.writeBytes(Socket.createCMD(GATE_REQUEST_CACHE));
-};
-
-const nullGateForwardMsgCMD = () => {
-  nullGate.writeBytes(Socket.createCMD(GATE_FORWARD_MSG, bytes => {
-    bytes.writeBytes(Socket.stringToBytes('TSTHK123', DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-  }));
-}
 
 class App extends React.Component {
   onVoiceSocketOpen = evt => {
@@ -143,6 +139,7 @@ class App extends React.Component {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
 
       const { SUCCESS, REPEAT_LOGIN, DELEGATOR_NOT_IN_LINE, ERR_PWD_ERROR, ERR_NO_USER, DELEGATOR_HAS_TOKEN } = RESPONSE_CODES;
+      const { CONNECTED, CONNECTING } = USER_STATE;
       const { ADD_ANCHOR, ADD_MANAGER } = MANAGER_ACTION_TYPE;
       const {
         voiceAppId,
@@ -166,7 +163,8 @@ class App extends React.Component {
         setIsUserAuthenticated,
         setDelegatorList,
         managerAction,
-        formValues
+        formValues,
+        setIncomingCallCount
       } = this.props;
 
       switch(evt.data.respId) {
@@ -260,18 +258,37 @@ class App extends React.Component {
         break;
 
         case CHANNEL_LIST_R:
-          setChannelList(evt.data.channelList);
+          let callCnt = 0;
+          let currentChannel;
+          let channelList = evt.data.channelList;
+          
+          setChannelList(channelList);
 
           if (isAnswerCall) {
-            const currentChannel = evt.data.channelList.find(channel => channel.channelId === currentChannelId);
+            currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
             
             if (
               isObject(currentChannel) && 
               currentChannel.anchorName && 
-              (currentChannel.anchorState === USER_STATE.CONNECTING || currentChannel.anchorState === USER_STATE.CONNECTED)) {
+              (currentChannel.anchorState === CONNECTING || currentChannel.anchorState === CONNECTED)) {
                 setIsAnchorCall(true);
             }
           }
+
+          channelList.forEach(channel => {
+            const { clientName, anchorName, clientState, anchorState, managerName } = channel;
+            const isCallingManager = CALLING_MANAGER_STATES.findIndex(state => state === anchorState) !== -1;
+            const clientConnecting = clientName && !anchorName && clientState === CONNECTING && !managerName;
+            const anchorConnecting = clientName && anchorName && isCallingManager && anchorState === CONNECTING && !managerName;
+            const clientDealIn = clientName && !anchorName && clientState === CONNECTED & !managerName;
+            const anchorDealIn = clientName && anchorName && isCallingManager & !managerName;
+
+            if (clientConnecting || anchorConnecting || clientDealIn || anchorDealIn) {
+              callCnt++;
+            }
+          });
+
+          setIncomingCallCount(callCnt);
         break;
 
         case CHANNEL_JOIN_R:
@@ -480,8 +497,6 @@ class App extends React.Component {
       managerAction,
       tableList,
       setIsUserAuthenticated,
-      setBetHistory,
-      toggleLoading,
       setTableLimit
     } = this.props;
     const { SUCCESS, ERR_NO_LOGIN } = GAME_SERVER_RESPONSE_CODES;
@@ -607,11 +622,6 @@ class App extends React.Component {
         setTableLimit(evt.data.vid, evt.data.tableLimit);
       break;
 
-      case CDS_BET_HIST_R:
-        setBetHistory('billno', evt.data.betHistList);
-        toggleLoading(false);
-      break;
-
       case CDS_ACTION_R:
         const { code: cdsActionStatus } = evt.data;
         let message = '';
@@ -699,7 +709,7 @@ class App extends React.Component {
   }
 
   onNullGateSocketOpen = evt => {
-    nullGateLoginCMD();
+    this.nullGateLoginCMD();
   }
 
   onNullGateSocketPacket = evt => {
@@ -707,7 +717,29 @@ class App extends React.Component {
       console.log(`${Socket.EVENT_PACKET} data:`, evt.data);
     }
 
+    const {
+      setBetHistoryInfo,
+      setBetHistory,
+      toggleLoading,
+    } = this.props;
+
     switch(evt.data.respId) {
+      case GATE_FORWARD_MSG:
+        if (evt.data.cmd === GET_BET_RECORDS_R) {
+          const searchResult = evt.data.data.result;
+          const info = searchResult && searchResult.addition ? searchResult.addition[0] : {};
+          const rows = searchResult && searchResult.row ? searchResult.row : [];
+          const result = mapBetHistoryResult(evt.data.loginname, rows);
+
+          setBetHistoryInfo({
+            numPerPage: info['num_per_page'][0],
+            total: info.total[0]
+          });
+          setBetHistory('billno', result);
+          toggleLoading(false);
+        }
+      break;
+
       default:
       break;
     }
@@ -837,20 +869,8 @@ class App extends React.Component {
     this.sendManagerAction(MANAGER_ACTIONS.BLACKLIST_CLIENT, channelId);
   }
 
-  getBetHistory = (gmCode = '', vid = 'V010', gmType = '', beginTime = '', endTime = '') => {
-    const { data: dataSocket, managerCredential: { managerLoginname } } = this.props;
-
-    dataSocket.writeBytes(Socket.createCMD(CDS_BET_HIST, bytes => {
-      bytes.writeUnsignedShort();
-      bytes.writeUnsignedShort();
-      bytes.writeBytes(Socket.stringToBytes(vid, DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_TIMESTAMP));
-      bytes.writeBytes(Socket.stringToBytes('', DATA_SERVER_VALUE_LENGTH.VL_TIMESTAMP));
-      bytes.writeBytes(Socket.stringToBytes(gmCode, DATA_SERVER_VALUE_LENGTH.VL_GAME_CODE));
-      bytes.writeUnsignedShort(0);
-      bytes.writeBytes(Socket.stringToBytes(gmType, DATA_SERVER_VALUE_LENGTH.VL_GM_TYPE));
-      bytes.writeBytes(Socket.stringToBytes(managerLoginname, DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-    }));
+  getBetHistory = () => {
+    this.nullGateForwardMsgCMD();
   }
 
   setAnchorsDuty = (anchorList) => {
@@ -1051,6 +1071,40 @@ class App extends React.Component {
     }));
   }
 
+  nullGateLoginCMD = () => {
+    nullGate.writeBytes(Socket.createCMD(GATE_REQUEST_CACHE));
+  }
+
+  nullGateForwardMsgCMD = (fullLoginname = '', gmcode = '', pageIndex = 1, perNum = 20) => {
+    const { PRODUCT_ID, LOGIN_NAME, BEGIN_TIME, END_TIME, GM_CODE, GM_TYPE, BILL_NO, PLATFORM, REQEXT } = QUERY_SERVER_VALUE_LENGTH;
+    const productId = fullLoginname.slice(0, 3);
+    const loginname = fullLoginname.slice(3);
+  
+    this.props.setBetHistoryUserPid(productId);
+  
+    nullGate.writeBytes(Socket.createCMD(GATE_FORWARD_MSG, bytes => {
+      bytes.writeBytes(Socket.stringToBytes(loginname, LOGIN_NAME));
+  
+      bytes.writeInt(GET_BET_RECORDS);
+      bytes.writeInt(0);
+      bytes.writeInt(0);
+  
+      bytes.writeBytes(Socket.stringToBytes(productId, PRODUCT_ID));
+      bytes.writeBytes(Socket.stringToBytes(loginname, LOGIN_NAME));
+      bytes.writeBytes(Socket.stringToBytes('', BEGIN_TIME));
+      bytes.writeBytes(Socket.stringToBytes('', END_TIME));
+      bytes.writeBytes(Socket.stringToBytes(gmcode, GM_CODE));
+      bytes.writeBytes(Socket.stringToBytes('', GM_TYPE));
+      bytes.writeBytes(Socket.stringToBytes('', BILL_NO));
+      // TODO: set to EBAC
+      bytes.writeBytes(Socket.stringToBytes('', PLATFORM));
+      bytes.writeBytes(Socket.stringToBytes('', REQEXT));
+  
+      bytes.writeShort(perNum);
+      bytes.writeShort(pageIndex);
+    }));
+  }
+
   onClose = (evt, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -1071,7 +1125,18 @@ class App extends React.Component {
   }
 
   render() {
-    const { open, variant, message, duration, managerCredential: { managerLoginname }, managerLevel, toggleLoading, showLoading } = this.props;
+    const {
+      open,
+      variant,
+      message,
+      duration,
+      managerCredential: { managerLoginname },
+      managerLevel,
+      toggleLoading,
+      showLoading,
+      setBetHistorySearchFields,
+      incomingCallCount
+    } = this.props;
 
     return (
       <div className="App">
@@ -1102,6 +1167,9 @@ class App extends React.Component {
           getDelegatorList={this.getDelegatorList}
           addDelegator={this.addDelegator}
           deleteDelegator={this.deleteDelegator}
+          nullGateForwardMsgCMD={this.nullGateForwardMsgCMD}
+          setBetHistorySearchFields={setBetHistorySearchFields}
+          incomingCallCount={incomingCallCount}
         />
         <MessageBar
           variant={variant}
@@ -1117,7 +1185,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall, formValues } = state.voice;
+  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall, formValues, incomingCallCount } = state.voice;
   const { tableList } = state.data;
   const { variant, message, duration, open, managerCredential, showLoading } = state.app;
   return ({
@@ -1134,7 +1202,8 @@ const mapStateToProps = state => {
     tableList,
     isAnswerCall,
     showLoading,
-    formValues
+    formValues,
+    incomingCallCount
   });
 };
 
@@ -1163,7 +1232,11 @@ const mapDispatchToProps = dispatch => ({
   toggleLoading: toggle => dispatch(toggleLoading(toggle)),
   setTableLimit: (vid, data) => dispatch(setTableLimit(vid, data)),
   setDelegatorList: list => dispatch(setDelegatorList(list)),
-  setFormValues: values => dispatch(setFormValues(values))
+  setFormValues: values => dispatch(setFormValues(values)),
+  setBetHistoryInfo: info => dispatch(setBetHistoryInfo(info)),
+  setBetHistoryUserPid: pid => dispatch(setBetHistoryUserPid(pid)),
+  setBetHistorySearchFields: fields => dispatch(setBetHistorySearchFields(fields)),
+  setIncomingCallCount: count => dispatch(setIncomingCallCount(count))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
