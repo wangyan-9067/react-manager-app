@@ -55,7 +55,7 @@ export default class VoiceSocket extends Socket.WebSocketBase {
 	}
 
 	getUrlList() {
-		return ['wss://172.20.2.101:5547'];
+		return [process.env.REACT_APP_VOICE_SERVER_URL];
 	}
 
 	setupRespClazzMap() {

@@ -18,7 +18,7 @@ import './index.css';
 const store = createStore(
 	reducer,
 	// TODO: remove it for production deployment
-	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+	process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 const theme = createMuiTheme({
 	shadows: new Array(25),

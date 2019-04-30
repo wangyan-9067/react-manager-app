@@ -12,7 +12,7 @@ export default class NullGateSocket extends Socket.WebSocketBase {
 	}
 
 	getUrlList() {
-		return ['wss://172.20.2.204:5881'];
+		return [process.env.REACT_APP_NULL_GATE_SERVER_URL];
 	}
 
 	setupRespClazzMap() {

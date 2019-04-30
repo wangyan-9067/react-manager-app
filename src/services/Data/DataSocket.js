@@ -42,7 +42,7 @@ export default class DataSocket extends Socket.WebSocketBase {
 	}
 
 	getUrlList() {
-		return ['wss://172.20.2.101:5224'];
+		return [process.env.REACT_APP_DATA_SERVER_URL];
 	}
 
 	setupRespClazzMap() {
