@@ -275,7 +275,7 @@ const BetHistory = ({
                   <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{formatAmount(row.amount)}</TableCell>
                   <TableCell classes={{ root: cellRoot }} className={profitClasses} align="center">{row.profit > 0 ? '+' : ''}{formatAmount(row.profit)}</TableCell>
-                  <TableCell classes={{ root: cellRoot }} align="center">{row.flag === 0 ? langConfig.FLAG_STATUS.UNPAID : langConfig.FLAG_STATUS.PAID}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{row.flag === 0 ? langConfig.BET_HISTORY_LABEL.FLAG_STATUS.UNPAID : langConfig.BET_HISTORY_LABEL.FLAG_STATUS.PAID}</TableCell>
                 </TableRow>
               );
             })}
