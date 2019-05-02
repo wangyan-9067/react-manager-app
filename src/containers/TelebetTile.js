@@ -12,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import { setIsAnchorCall } from '../actions/voice';
 import { USER_STATE, CALLING_MANAGER_STATES } from '../constants';
 import { formatAmount, isObject } from '../helpers/utils';
+import { getLangConfig } from '../helpers/appUtils';
 
 const styles = {
 	cardBase: {
@@ -97,15 +98,16 @@ EmptyCard.propTypes = {
 
 const DisabledCard = ({ classes, item, role, roleName, voiceAppId, currentTable }) => {
 	const { cardBase, disabledCard, cardContent, cardContentText, client, cardActionButton } = classes;
+	const langConfig = getLangConfig();
 
 	return (
     <Card className={classNames(cardBase, disabledCard)}>
       <CardContent className={cardContent}>
-				<Typography color="inherit" className={classNames(cardContentText)}>{role} <span className={client}>{roleName}</span> 接入中</Typography>
+				<Typography color="inherit" className={classNames(cardContentText)}>{role} <span className={client}>{roleName}</span> {langConfig.TELEBET_TILE_LABEL.CONNECTED}</Typography>
 				<Typography color="inherit" className={cardContentText}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled>接聽</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled>{langConfig.BUTTON_LABEL.JOIN_CHANNEL}</Button>
       </CardActions>
     </Card>
 	);
@@ -124,27 +126,28 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { channelId, anchorState } = item;
 	const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;
+	const langConfig = getLangConfig();
 	let anchorStateText = '';
 
 	switch(anchorState) {
 		case CHANGE_ANCHOR:
-			anchorStateText = '更換主播';
+			anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.CHANGE_ANCHOR;
 		break;
 
 		case CHANGE_DEALER:
-			anchorStateText = '更換荷官';
+			anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.CHANGE_DEALER;
 		break;
 
 		case CHANGE_TABLE:
-			anchorStateText = '更換桌枱';
+			anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.CHANGE_TABLE;
 		break;
 
 		case ANNOYING:
-			anchorStateText = '騷擾';
+			anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.ANNOYING;
 		break;
 
 		case ADVERTISEMENT:
-			anchorStateText = '賣廣告';
+			anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.ADVERTISEMENT;
 		break;
 
 		default:
@@ -154,14 +157,14 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 	return (
     <Card className={classNames(cardBase, classes[cardClass])}>
       <CardContent className={cardContent}>
-				<Typography color="inherit" className={classNames(cardContentText, classes[roleClass])}>{role} <span className={client}>{roleName}</span> {isConnecting ? "連接中" : "接入中"}</Typography>
+				<Typography color="inherit" className={classNames(cardContentText, classes[roleClass])}>{role} <span className={client}>{roleName}</span> {isConnecting ? langConfig.TELEBET_TILE_LABEL.CONNECTING : langConfig.TELEBET_TILE_LABEL.CONNECTED}</Typography>
 				{ isAnchor && anchorStateText ? (
-					<Typography color="inherit" className={cardContentText}>理由: {anchorStateText}</Typography>
+					<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.REASON}: {anchorStateText}</Typography>
 				) : null }
 				<Typography color="inherit" className={cardContentText}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, isAnchor, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }}>接聽</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, isAnchor, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }}>{langConfig.BUTTON_LABEL.JOIN_CHANNEL}</Button>
       </CardActions>
     </Card>
 	);
@@ -180,19 +183,20 @@ CallInfoCard.propTypes = {
 	currentTable: PropTypes.object
 };
 
-const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable }) => {
+const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable, setIncomingCallCount, incomingCallCount }) => {
 	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientName, anchorName, channelId, managerName } = item;
+	const langConfig = getLangConfig();
 
 	return (
     <Card className={classNames(cardBase, classes[cardClass])}>
       <CardContent className={cardContent}>
-				<Typography color="inherit" className={cardContentText}>主播<span className={client}>{anchorName}</span></Typography>
-				<Typography color="inherit" className={cardContentText}>玩家<span className={client}>{clientName}</span>遊戲中</Typography>
+				<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.ANCHOR}<span className={client}>{anchorName}</span></Typography>
+				<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.PLAYER}<span className={client}>{clientName}</span>{langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography>
 				<Typography color="inherit" className={cardContentText}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall) }} disabled={managerName && !isManagerReconnect ? true : false}>接聽</Button>
+        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }} disabled={managerName && !isManagerReconnect ? true : false}>{langConfig.BUTTON_LABEL.JOIN_CHANNEL}</Button>
       </CardActions>
     </Card>
 	);
@@ -235,6 +239,8 @@ const TelebetTile = ({
 	const nobodyDealIn = !clientName && !anchorName && !managerName;
 	// const fullDesk = clientName && (anchorName || managerName) && clientState === CONNECTED && (anchorState === CONNECTED || managerState === CONNECTED);
 
+	const langConfig = getLangConfig();
+
 	let role;
 	let roleClass;
 	let roleName;
@@ -244,14 +250,14 @@ const TelebetTile = ({
 	if (clientDealIn || clientConnecting) {
 		cardClass = 'card';
 		roleClass = 'player';
-		role = '玩家';
+		role = langConfig.TELEBET_TILE_LABEL.PLAYER;
 		roleName = clientName;
 	}
 
 	if (anchorDealIn || anchorConnecting) {
 		cardClass = 'anchorCard';
 		roleClass = 'anchor';
-		role = '主播';
+		role = langConfig.TELEBET_TILE_LABEL.ANCHOR;
 		roleName = `${anchorName} ${vid}`;
 	}
 
@@ -304,6 +310,8 @@ const TelebetTile = ({
 				joinChannel={joinChannel}
 				isManagerReconnect={isManagerReconnect}
 				currentTable={currentTable}
+				setIncomingCallCount={setIncomingCallCount}
+				incomingCallCount={incomingCallCount}
 			/>
 		);
 	} else if (clientConnecting || anchorConnecting) {

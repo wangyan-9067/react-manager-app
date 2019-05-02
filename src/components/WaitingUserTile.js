@@ -9,6 +9,8 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 
+import { getLangConfig } from '../helpers/appUtils';
+
 const styles = {
 	card: {
 		borderRadius: '10px',
@@ -68,14 +70,15 @@ const styles = {
 
 const AlreadyHaveToken = ({ classes, name, waitingTime, kickDelegator }) => {
   const { card, tokenCard, cardContentRoot, cardContent, cardContentText, cardContentMainText, cardContentSubText, actionButton, kickButton } = classes;
+  const langConfig = getLangConfig();
 
   return (
     <Card className={classNames(card, tokenCard)}>
       <CardContent className={cardContent} classes={{ root: cardContentRoot }}>
 				<Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} noWrap={true} align="center">{name}</Typography>
-        <Typography color="inherit" className={classNames(cardContentText, cardContentSubText)} noWrap={true} align="center">已接入</Typography>
+        <Typography color="inherit" className={classNames(cardContentText, cardContentSubText)} noWrap={true} align="center">{langConfig.BUTTON_LABEL.DEAL_IN}</Typography>
 				<CardActions>
-          <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, kickButton)} onClick={() => { kickDelegator(name); }}>踢走</Button>
+          <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, kickButton)} onClick={() => { kickDelegator(name); }}>{langConfig.BUTTON_LABEL.KICKOUT}</Button>
 				</CardActions>
         <Typography color="inherit" className={cardContentText} noWrap={true} align="center">{waitingTime}</Typography>
       </CardContent>
@@ -92,13 +95,14 @@ AlreadyHaveToken.propTypes = {
 
 const WaitingForToken = ({ classes, name, waitingTime, assignTokenToDelegator }) => {
   const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButton } = classes;
+  const langConfig = getLangConfig();
 
   return (
     <Card className={card}>
       <CardContent className={cardContent} classes={{ root: cardContentRoot }}>
 				<Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} noWrap={true} align="center">{name}</Typography>
 				<CardActions>
-          <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { assignTokenToDelegator(name); }}>派籌</Button>
+          <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { assignTokenToDelegator(name); }}>{langConfig.BUTTON_LABEL.ASSIGN_TOKEN}</Button>
 				</CardActions>
         <Typography color="inherit" className={cardContentText} noWrap={true} align="center">{waitingTime}</Typography>
       </CardContent>

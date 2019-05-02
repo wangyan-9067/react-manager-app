@@ -16,6 +16,7 @@ import ToggleButtonGridList from '../components/ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 import { setManagerAction, setFormValues } from '../actions/voice';
 import { compareArray } from '../helpers/utils';
+import { getLangConfig } from '../helpers/appUtils';
 import { MANAGER_ACTION_TYPE } from '../constants';
 
 const styles = () => ({
@@ -129,6 +130,7 @@ const AnchorList = ({
   } = classes;
   const prevAnchorsOnDutyList = usePrevious(anchorsOnDutyList);
   const { ADD_ANCHOR, EDIT_ANCHOR } = MANAGER_ACTION_TYPE;
+  const langConfig = getLangConfig();
 
   const onClickHandler = () => {
     if (isEdit) {
@@ -152,7 +154,7 @@ const AnchorList = ({
     panel = (
       <Card className={emptyAnchorCardRoot}>
         <CardContent>
-          <Typography color="inherit" className={emptyText}>沒有主播記錄!</Typography>
+          <Typography color="inherit" className={emptyText}>{langConfig.ANCHOR_LIST_LABEL.NO_RECORD}</Typography>
         </CardContent>
       </Card>
     );
@@ -184,9 +186,9 @@ const AnchorList = ({
 
 	return (
 		<div className={root}>
-      <Typography color="inherit" align="left" className={headerText}>請選取值班主播</Typography>
+      <Typography color="inherit" align="left" className={headerText}>{langConfig.ANCHOR_LIST_LABEL.SELECT_ANCHOR}</Typography>
       <div className={grow} />
-      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddAnchorDialog(true); setManagerAction(ADD_ANCHOR); }}>新增主播</Button>
+      <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddAnchorDialog(true); setManagerAction(ADD_ANCHOR); }}>{langConfig.BUTTON_LABEL.ADD_ANCHOR}</Button>
       <Button
         variant="contained"
         size="medium"
@@ -195,7 +197,7 @@ const AnchorList = ({
         onClick={() => {
           setSelected();
           setIsEdit(!isEdit);
-        }}>編輯</Button>
+        }}>{langConfig.BUTTON_LABEL.EDIT}</Button>
       {panel}
 			<Dialog
 				open={openAddAnchorDialog}
@@ -205,7 +207,7 @@ const AnchorList = ({
         disableBackdropClick
 			>
 				<DialogTitle id="responsive-dialog-title">
-					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}主播資料</Typography>
+					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? langConfig.BUTTON_LABEL.EDIT : langConfig.BUTTON_LABEL.ADD}{langConfig.ANCHOR_LIST_LABEL.ANCHOR_INFO}</Typography>
 				</DialogTitle>
 				<DialogContent>
           <UserForm
@@ -235,8 +237,8 @@ const AnchorList = ({
         onClickHandler={onClickHandler}
       />
       <div>
-        <Button variant="contained" size="medium" color="inherit" className={dutyButton} disabled={isEdit} onClick={() => { setAnchorsDuty(selected); getAnchorsDutyList(); }}>確定</Button>
-        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} disabled={isEdit} onClick={() => { setSelected(); }}>取消選取</Button>
+        <Button variant="contained" size="medium" color="inherit" className={dutyButton} disabled={isEdit} onClick={() => { setAnchorsDuty(selected); getAnchorsDutyList(); }}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
+        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} disabled={isEdit} onClick={() => { setSelected(); }}>{langConfig.BUTTON_LABEL.CANCEL_SELECT}</Button>
       </div>
 		</div>
 	);

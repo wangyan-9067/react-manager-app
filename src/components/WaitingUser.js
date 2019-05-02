@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 
 import GridListBase from './GridListBase';
 import WaitingUserTile from './WaitingUserTile';
+import { getLangConfig } from '../helpers/appUtils';
 
 const styles = theme => ({
 	root: {
@@ -37,11 +38,12 @@ const styles = theme => ({
 
 const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegator }) => {
 	const { root, title, listRoot, gridListRoot } = classes;
+	const langConfig = getLangConfig();
 
 	return (
 		<div className={root}>
 			<Typography color="inherit" align="left" className={title}>
-				輪候中代理
+				{langConfig.WAITING_DELEGATOR}
 			</Typography>
 			<div className={listRoot}>
 				<GridListBase list={waitingList} customCols={6} gridListRootClass={gridListRoot}>

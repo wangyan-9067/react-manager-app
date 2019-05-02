@@ -10,6 +10,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 
+import { getLangConfig } from '../helpers/appUtils';
+
 const styles = theme => ({
   inputUnderline: {
     '&:after': {
@@ -51,17 +53,18 @@ class SearchForm extends React.Component {
   formIsValid = () => {
     const loginname = { ...this.state.loginname };
     const gmCode = { ...this.state.gmCode };
+    const langConfig = getLangConfig();
 
     let isGood = true;
 
     if (validator.isEmpty(loginname.value)) {
-      isGood = this.setField(loginname, false, 'Loginname is mandatory');
+      isGood = this.setField(loginname, false, langConfig.SEARCH_FORM_LABEL.LOGIN_NAME_VALIDATE);
     } else {
       this.resetField(loginname);
     }
     
     if (!validator.isEmpty(gmCode.value) && validator.isEmpty(loginname.value)) {
-      isGood = this.setField(gmCode, false, 'Please input Loginname when searching with game code');
+      isGood = this.setField(gmCode, false, langConfig.SEARCH_FORM_LABEL.GM_CODE_VALIDATE);
     } else {
       this.resetField(gmCode);
     }
@@ -99,6 +102,7 @@ class SearchForm extends React.Component {
       formControlRoot,
       formControl,
     } = classes;
+    const langConfig = getLangConfig();
 
     return (
       <div>
@@ -115,7 +119,7 @@ class SearchForm extends React.Component {
                       'aria-label': 'gmCode',
                     }}
                     name="gmCode"
-                    placeholder="輸入局號查詢"
+                    placeholder={langConfig.SEARCH_FORM_LABEL.GM_CODE_PLACEHOLDER}
                     onChange={this.onChange}
                     endAdornment={
                       <InputAdornment position="end">
@@ -152,7 +156,7 @@ class SearchForm extends React.Component {
                       'aria-label': 'loginname',
                     }}
                     name="loginname"
-                    placeholder="輸入玩家名查詢"
+                    placeholder={langConfig.SEARCH_FORM_LABEL.LOGIN_NAME_PLACEHOLDER}
                     onChange={this.onChange}
                     endAdornment={
                       <InputAdornment position="end">

@@ -9,6 +9,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Typography from '@material-ui/core/Typography';
 
+import { getLangConfig } from '../helpers/appUtils';
+
 const styles = theme => ({
 	actionButton: {
     margin: '0 5px',
@@ -43,6 +45,7 @@ const styles = theme => ({
 
 const DialogWrapper = ({ classes, isOpen, onCloseHandler, actionHandler, content }) => {
   const { actionButton, dialogPaper, dialogActionButton, dialogActionsRootNoBorder, dialogContent } = classes;
+  const langConfig = getLangConfig();
 
   return (
     <Dialog
@@ -74,7 +77,7 @@ const DialogWrapper = ({ classes, isOpen, onCloseHandler, actionHandler, content
             }
           }}
         >
-          確定
+          {langConfig.BUTTON_LABEL.CONFIRM}
         </Button>
         <Button
           variant="contained"
@@ -87,7 +90,7 @@ const DialogWrapper = ({ classes, isOpen, onCloseHandler, actionHandler, content
             }
           }}
         >
-          取消
+          {langConfig.BUTTON_LABEL.CANCEL}
         </Button>
       </DialogActions>
     </Dialog>

@@ -35,7 +35,7 @@ import {
   CDS_OPERATOR_LOGOUT
 } from '../protocols';
 import { RESPONSE_CODES } from '../constants';
-import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure } from '../helpers/appUtils';
+import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure, getLangConfig } from '../helpers/appUtils';
 
 const styles = theme => ({
   root: {
@@ -131,6 +131,7 @@ class Login extends React.Component {
         toggleToast
       } = this.props;
       const { SUCCESS, REPEAT_LOGIN, ERR_PWD_ERROR, ERR_NO_USER } = RESPONSE_CODES;
+      const langConfig = getLangConfig();
 
       switch(evt.data.respId) {
         case MANAGER_LOGIN_R:
@@ -154,7 +155,7 @@ class Login extends React.Component {
                 setToastVariant,
                 setToastDuration,
                 toggleToast,
-                message: "[VoiceServer] 沒有AppId, 請聯絡管理員"
+                message: langConfig.ERROR_MESSAGES.NO_APP_ID
               });
 
               this.reset();
@@ -166,7 +167,7 @@ class Login extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "經理重覆登入"
+              message: langConfig.ERROR_MESSAGES.REPEAT_LOGIN
             });
 
             this.reset();
@@ -177,7 +178,7 @@ class Login extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "用戶名/密碼錯誤!"
+              message: langConfig.ERROR_MESSAGES.PWD_ERROR
             });
             
             this.reset();
@@ -188,7 +189,7 @@ class Login extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "沒有此用戶!"
+              message: langConfig.ERROR_MESSAGES.NO_USER
             });
 
             this.reset();
@@ -199,7 +200,7 @@ class Login extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "[VoiceServer] 無法登入, 請聯絡管理員"
+              message: langConfig.ERROR_MESSAGES.VOICE_SERVER_LOGIN_FAIL.replace("{loginStatus}", loginStatus)
             });
 
             this.reset();
@@ -216,7 +217,7 @@ class Login extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "經理重覆登入!"
+              message: langConfig.ERROR_MESSAGES.REPEAT_LOGIN
             });
           }
         break;
@@ -233,6 +234,7 @@ class Login extends React.Component {
     }
 
     const { setIsUserAuthenticated, setToastMessage, setToastVariant, setToastDuration, toggleToast } = this.props;
+    const langConfig = getLangConfig();
 
     switch(evt.data.respId) {
       case CDS_OPERATOR_LOGIN_R:
@@ -247,7 +249,7 @@ class Login extends React.Component {
             setToastVariant,
             setToastDuration,
             toggleToast,
-            message: "[DataServer] 無法登入, 請聯絡管理員"
+            message: langConfig.ERROR_MESSAGES.DATA_SERVER_LOGIN_FAIL.replace("{loginStatus", loginStatus)
           });
 
           this.reset();
@@ -318,8 +320,9 @@ class Login extends React.Component {
     if (this.formIsValid()) {
       const { managerLoginname, managerPassword } = this.state;
       const { voice: voiceSocket, setManagerCredential, setToastMessage, setToastVariant, setToastDuration, toggleToast } = this.props;
+      const langConfig = getLangConfig();
 
-      setToastMessage("連線中......");
+      setToastMessage(langConfig.SYSTEM_MESSAGES.CONNECTING);
       setToastVariant('info');
       setToastDuration(null);
       toggleToast(true);
@@ -343,24 +346,25 @@ class Login extends React.Component {
   formIsValid = () => {
     const managerLoginname = { ...this.state.managerLoginname };
     const managerPassword = { ...this.state.managerPassword };
+    const langConfig = getLangConfig();
 
     let isGood = true;
 
     if (validator.isEmpty(managerLoginname.value)) {
       managerLoginname.isValid = false;
-      managerLoginname.message = 'Manager Loginname is required';
+      managerLoginname.message = langConfig.LOGIN_FORM_LABEL.MANAGER_LOGIN_EMPTY;
       isGood = false;
     }
 
     if (managerLoginname.isValid && !validator.isAlphanumeric(managerLoginname.value)) {
       managerLoginname.isValid = false;
-      managerLoginname.message = 'Manager Loginname must be alphanumeric';
+      managerLoginname.message = langConfig.LOGIN_FORM_LABEL.MANAGER_LOGIN_ALPHANUMERIC;
       isGood = false;
     }
 
     if (validator.isEmpty(managerPassword.value)) {
       managerPassword.isValid = false;
-      managerPassword.message = 'Manager Password is required';
+      managerPassword.message = langConfig.LOGIN_FORM_LABEL.MANAGER_PASSWORD_EMPTY;
       isGood = false;
     }
 
@@ -432,6 +436,7 @@ class Login extends React.Component {
       loginButton,
       formErrorText
     } = classes;
+    const langConfig = getLangConfig();
 
     return (
       <div>
@@ -441,7 +446,7 @@ class Login extends React.Component {
               <FormControl error={!managerLoginname.isValid}>
                 <Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
                   <Grid item>
-                    <Typography color="inherit" className={fieldLabel}>經理:</Typography>
+                    <Typography color="inherit" className={fieldLabel}>{langConfig.LOGIN_FORM_LABEL.MANAGER_LOGIN}</Typography>
                   </Grid>
                   <Grid item>
                     <Input
@@ -463,7 +468,7 @@ class Login extends React.Component {
               <FormControl error={!managerPassword.isValid}>
                 <Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
                   <Grid item>
-                    <Typography color="inherit" className={fieldLabel}>密碼:</Typography>
+                    <Typography color="inherit" className={fieldLabel}>{langConfig.LOGIN_FORM_LABEL.MANAGER_PASSWORD}</Typography>
                   </Grid>
                   <Grid item>
                     <Input
@@ -485,7 +490,7 @@ class Login extends React.Component {
               </FormControl>
             </div>
             <div className={loginButtonWrapper}>
-              <Button type="submit" variant="contained" size="medium" color="inherit" className={loginButton}>登入</Button>
+              <Button type="submit" variant="contained" size="medium" color="inherit" className={loginButton}>{langConfig.BUTTON_LABEL.LOGIN}</Button>
             </div>
           </form>
         </Paper>

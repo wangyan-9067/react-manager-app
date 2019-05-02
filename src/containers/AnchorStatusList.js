@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 
 import CustomAvatar from '../components/CustomAvatar';
 import AnchorStatus from '../components/AnchorStatus';
+import { getLangConfig } from '../helpers/appUtils';
 
 const styles = () => ({
   root: {
@@ -46,6 +47,7 @@ const styles = () => ({
 
 const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
   const { root, title, grow, listRoot, primary, secondary } = classes;
+  const langConfig = getLangConfig();
 
   let onDutyAnchors;
   
@@ -60,7 +62,7 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
 
 	return (
 		<div className={root}>
-      <Typography align="left" color="inherit" className={title}>主播列表</Typography>
+      <Typography align="left" color="inherit" className={title}>{langConfig.ANCHOR_LIST_LABEL.ANCHOR_LIST}</Typography>
       <div className={grow} />
       <List className={listRoot}>
         {onDutyAnchors && onDutyAnchors.map((anchor, index) => {
@@ -78,7 +80,7 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
                 </ListItemAvatar>
                 <ListItemText
                   primary={nickname}
-                  secondary={vid ? vid : "待機中"}
+                  secondary={vid ? vid : langConfig.ANCHOR_LIST_LABEL.FREE}
                   classes={{
                     primary,
                     secondary
@@ -90,7 +92,7 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
         })}
         {
           !onDutyAnchors && (
-            <Typography align="left" color="inherit" className={secondary}>沒有值班主播</Typography>
+            <Typography align="left" color="inherit" className={secondary}>{langConfig.ANCHOR_LIST_LABEL.NO_ON_DUTY_ANCHOR}</Typography>
           )
         }
       </List>

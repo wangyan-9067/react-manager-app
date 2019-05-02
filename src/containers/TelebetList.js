@@ -24,6 +24,7 @@ import { setToastMessage, setToastVariant, toggleToast } from '../actions/app';
 import { setManagerAction, setIsAnswerCall, setIncomingCallCount } from '../actions/voice';
 import { MUTE_STATE, MANAGER_ACTION_TYPE, DATA_SERVER_VIDEO_STATUS } from '../constants';
 import { formatAmount, isObject } from '../helpers/utils';
+import { getLangConfig } from '../helpers/appUtils';
 
 const telebetListTheme = createMuiTheme({
 	shadows: new Array(25),
@@ -263,11 +264,12 @@ const AnswerCallPanel = ({
 	} = classes;
 	const { MUTE, UNMUTE } = MUTE_STATE;
 	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
+	const langConfig = getLangConfig();
 
 	// Error handling when currentChannel is not found in existing channel list
 	if (!currentChannel) {
 		setIsAnswerCall(false);
-		setToastMessage("因為系統問題, 所以暫時不能接聽電話, 請聯絡管理員!");
+		setToastMessage(langConfig.ERROR_MESSAGES.NO_CURRENT_CHANNEL);
 		setToastVariant('error');
 		toggleToast(true);
 	}
@@ -288,15 +290,15 @@ const AnswerCallPanel = ({
 	let anchorMuteStatusTextDisplay;
 
 	if (isAnchorCall) {
-		line1Text = `與 ${vid}`;
-		line2Text = `玩家 ${clientName} 主播 ${anchorName}`;
+		line1Text = langConfig.TELEBET_LIST_LABEL.WITH_TABLE.replace("{vid}", vid);
+		line2Text = langConfig.TELEBET_LIST_LABEL.WITH_PLAYER_AND_ANCHOR.replace("{clientName}", clientName).replace("{anchorName}", anchorName)
 	} else {
-		line1Text = '與玩家';
+		line1Text = langConfig.TELEBET_LIST_LABEL.WITH_PLAYER;
 		line2Text = clientName;
 	}
 
-	clientMuteStatusTextDisplay = clientMute === MUTE ? '(玩家靜音中)' : '';
-	anchorMuteStatusTextDisplay = anchorMute === MUTE ? '(主播靜音中)' : '';
+	clientMuteStatusTextDisplay = clientMute === MUTE ? langConfig.TELEBET_LIST_LABEL.PLAYER_MUTE_ON_GOINGING : '';
+	anchorMuteStatusTextDisplay = anchorMute === MUTE ? langConfig.TELEBET_LIST_LABEL.ANCHOR_MUTE_ON_GOINGING : '';
 
 	const answerCallPanelClass = classNames.bind(classes);
 	const clientMuteButtonClass = answerCallPanelClass({
@@ -322,24 +324,24 @@ const AnswerCallPanel = ({
 						<CardContent className={answerCallPanelLeftClass}>
 							<Typography color="inherit" className={answerCallPanelLeftText}>{line1Text}</Typography>
 							<Typography color="inherit" className={answerCallPanelLeftText}>{line2Text}</Typography>
-							<Typography color="inherit" className={answerCallPanelLeftText}>通訊中...  {clientMuteStatusTextDisplay}{anchorMuteStatusTextDisplay}</Typography>
+							<Typography color="inherit" className={answerCallPanelLeftText}>{langConfig.TELEBET_LIST_LABEL.CONNECTED}  {clientMuteStatusTextDisplay}{anchorMuteStatusTextDisplay}</Typography>
 						</CardContent>
 					</Card>
 					<Card classes={{ root: answerCallPanelRightRoot }}>
 						<CardContent className={answerCallPanelRight}>
-							<Typography color="inherit" className={answerCallPanelRightText}><span>玩家:</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
-							<Typography color="inherit" className={answerCallPanelRightText}><span>餘額:</span><span className={answerCallPanelRightTextValue}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</span></Typography>
-							<Typography color="inherit" className={answerCallPanelRightText}><span>桌號:</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
+							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.PLAYER}</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
+							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.BALANCE}</span><span className={answerCallPanelRightTextValue}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</span></Typography>
+							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.TABLE_VID}</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
 						</CardContent>
 					</Card>
 				</div>
 				<div className={actionButtonWrapper}>
-					<Button variant="contained" size="medium" color="inherit" className={clientMuteButtonClass} onClick={() => { toggleMuteChannel(currentChannelId, false, clientMute === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>玩家靜音</Button>
-					<Button variant="contained" size="medium" color="inherit" className={anchorMuteButtonClass} onClick={() => { toggleMuteChannel(currentChannelId, true, anchorMute === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>主播靜音</Button>
-					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { leaveChannel(currentChannelId); }}><CallEndIcon className={icon} />掛斷</Button>
-					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { setOpenAssignTableDialog(true) }}>配對</Button>
-					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { setOpenKickoutClientDialog(true) }}>踢走玩家</Button>
-					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blacklistButton)} onClick={() => { setOpenBlacklistDialog(true) }}>列入黑名單</Button>
+					<Button variant="contained" size="medium" color="inherit" className={clientMuteButtonClass} onClick={() => { toggleMuteChannel(currentChannelId, false, clientMute === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>{langConfig.BUTTON_LABEL.PLAYER_MUTE}</Button>
+					<Button variant="contained" size="medium" color="inherit" className={anchorMuteButtonClass} onClick={() => { toggleMuteChannel(currentChannelId, true, anchorMute === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>{langConfig.BUTTON_LABEL.ANCHOR_MUTE}</Button>
+					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { leaveChannel(currentChannelId); }}><CallEndIcon className={icon} />{langConfig.BUTTON_LABEL.LEAVE_CHANNEL}</Button>
+					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { setOpenAssignTableDialog(true) }}>{langConfig.BUTTON_LABEL.ASSIGN_TABLE}</Button>
+					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { setOpenKickoutClientDialog(true) }}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
+					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blacklistButton)} onClick={() => { setOpenBlacklistDialog(true) }}>{langConfig.BUTTON_LABEL.BLACKLIST_PLAYER}</Button>
 				</div>
 				{ /** Assign Table Dialog*/ }
 				<Dialog
@@ -349,7 +351,7 @@ const AnswerCallPanel = ({
 					classes={{ paper: dialogPaper }}
 				>
 					<DialogTitle id="responsive-dialog-title">
-						<Typography color="inherit" className={dialogTitle}>選擇桌台</Typography>
+						<Typography color="inherit" className={dialogTitle}>{langConfig.TELEBET_LIST_LABEL.CHOOSE_TABLE}</Typography>
 					</DialogTitle>
 					<DialogContent>
 						<DialogContentText>
@@ -372,8 +374,8 @@ const AnswerCallPanel = ({
 						</DialogContentText>
 					</DialogContent>
 					<DialogActions classes={{ root: dialogActionsRoot }}>
-						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { assignTable(tableAssigned, clientName); setOpenAssignTableDialog(false); }}>確定</Button>
-						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenAssignTableDialog(false) }}>取消</Button>
+						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { assignTable(tableAssigned, clientName); setOpenAssignTableDialog(false); }}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
+						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenAssignTableDialog(false) }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
 					</DialogActions>
 				</Dialog>
 				{ /** Kickout Client Dialog*/ }
@@ -384,7 +386,7 @@ const AnswerCallPanel = ({
 					classes={{ paper: dialogPaper }}
 				>
 					<DialogContent>
-						<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}踢出桌台嗎?</Typography></DialogContentText>
+						<DialogContentText><Typography color="inherit" className={dialogContent}>{langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", clientName)}</Typography></DialogContentText>
 					</DialogContent>
 					<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
 						<Button 
@@ -404,9 +406,9 @@ const AnswerCallPanel = ({
 								setOpenKickoutClientDialog(false);
 							}}
 						>
-							確定
+							{langConfig.BUTTON_LABEL.CONFIRM}
 						</Button>
-						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenKickoutClientDialog(false) }}>取消</Button>
+						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenKickoutClientDialog(false) }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
 					</DialogActions>
 				</Dialog>
 				{ /** Blacklist Dialog*/ }
@@ -417,7 +419,7 @@ const AnswerCallPanel = ({
 					classes={{ paper: dialogPaper }}
 				>
 					<DialogContent>
-						<DialogContentText><Typography color="inherit" className={dialogContent}>要把{clientName}列入黑名單嗎?</Typography></DialogContentText>
+						<DialogContentText><Typography color="inherit" className={dialogContent}>{langConfig.DIALOG_LABEL.CONFIRM_BACKLIST_PLAYER.replace("{clientName}", clientName)}</Typography></DialogContentText>
 					</DialogContent>
 					<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
 						<Button 
@@ -436,9 +438,9 @@ const AnswerCallPanel = ({
 
 								setOpenBlacklistDialog(false);
 							}}>
-								確定
+								{langConfig.BUTTON_LABEL.CONFIRM}
 							</Button>
-						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenBlacklistDialog(false) }}>取消</Button>
+						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenBlacklistDialog(false) }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
 					</DialogActions>
 				</Dialog>
 			</Fragment>

@@ -15,6 +15,7 @@ import PopoverList from './PopoverList';
 import TextList from './TextList';
 import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS, PLAYTYPE } from '../constants';
 import { isObject, isNonEmptyArray } from '../helpers/utils';
+import { getLangConfig } from '../helpers/appUtils';
 
 const styles = {
 	cardHeader: {
@@ -54,13 +55,14 @@ const styles = {
 
 const getTableStatus = status => {
 	const { FREE, CONTRACTED } = DATA_SERVER_VIDEO_STATUS;
+	const langConfig = getLangConfig();
 	
 	switch(status) {
 		case FREE:
-			return '可進桌 / 可包桌';
+			return langConfig.TABLE_STATUS_LABEL.FREE;
 
 		case CONTRACTED:
-			return '包桌中';
+			return langConfig.TABLE_STATUS_LABEL.CONTRACTED;
 		
 		default:
 		return '';
@@ -69,28 +71,29 @@ const getTableStatus = status => {
 
 const getGameStatus = status => {
 	const { CLOSED, CAN_BET, DISPATCH_CARD, LAST_CALL, TURN_CARD, NEW_SHOE, PAUSE_BET } = DATA_SERVER_GAME_STATUS;
-	
+	const langConfig = getLangConfig();
+
 	switch(status) {
 		case CLOSED:
-			return '遊戲關閉';
+			return langConfig.GAME_STATUS_LABEL.CLOSED;
 
 		case CAN_BET:
-			return '可以下注';
+			return langConfig.GAME_STATUS_LABEL.CAN_BET;
 
 		case DISPATCH_CARD:
-			return '正在發牌';
+			return langConfig.GAME_STATUS_LABEL.DISPATCH_CARD;
 
 		case LAST_CALL:
-			return 'Last Call';
+			return langConfig.GAME_STATUS_LABEL.LAST_CALL;
 		
 		case TURN_CARD:
-			return '正在眯牌';
+			return langConfig.GAME_STATUS_LABEL.TURN_CARD;
 
 		case NEW_SHOE:
-			return '洗牌';
+			return langConfig.GAME_STATUS_LABEL.NEW_SHOE;
 
 		case PAUSE_BET:
-			return '暫停下注';
+			return langConfig.GAME_STATUS_LABEL.PAUSE_BET;
 		
 		default:
 		return '-';
@@ -99,40 +102,41 @@ const getGameStatus = status => {
 
 const getPlayTypeText = playtype => {
 	const { BANKER, PLAYER, TIE, BANKER_PAIR, PLAYER_PAIR, BANKER_NO_COMMISSION, BANKER_DRAGON_BONUS, PLAYER_DRAGON_BONUS, SUPER_SIX, ANY_PAIR, PERFECT_PAIR } = PLAYTYPE;
+	const langConfig = getLangConfig();
 
 	switch(playtype) {
 		case BANKER:
-			return '庄';
+			return langConfig.PLAY_TYPE_LABEL.BANKER;
 
 		case PLAYER:
-			return '閑';
+			return langConfig.PLAY_TYPE_LABEL.PLAYER;
 
 		case TIE:
-			return '和';
+			return langConfig.PLAY_TYPE_LABEL.TIE;
 
 		case BANKER_PAIR:
-			return '閑對';
+			return langConfig.PLAY_TYPE_LABEL.BANKER_PAIR;
 		
 		case PLAYER_PAIR:
-			return '庄對';
+			return langConfig.PLAY_TYPE_LABEL.PLAYER_PAIR;
 
 		case BANKER_NO_COMMISSION:
-			return '庄免佣';
+			return langConfig.PLAY_TYPE_LABEL.BANKER_NO_COMMISSION;
 
 		case BANKER_DRAGON_BONUS:
-			return '庄龍寶';
+			return langConfig.PLAY_TYPE_LABEL.BANKER_DRAGON_BONUS;
 
 		case PLAYER_DRAGON_BONUS:
-			return '闲龍寶';
+			return langConfig.PLAY_TYPE_LABEL.PLAYER_DRAGON_BONUS;
 
 		case SUPER_SIX:
-			return '超级六';
+			return langConfig.PLAY_TYPE_LABEL.SUPER_SIX;
 
 		case ANY_PAIR:
-			return '任意對子';
+			return langConfig.PLAY_TYPE_LABEL.ANY_PAIR;
 
 		case PERFECT_PAIR:
-			return '完美對子';
+			return langConfig.PLAY_TYPE_LABEL.PERFECT_PAIR;
 		
 		default:
 		return;
@@ -181,8 +185,9 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 	const currentChannel = channelList.find(channel => channel.vid === vid);
 	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorName ? currentChannel.anchorName : '-';
 	const tableLimitList = getTableLimitList(vid, tableLimit);
+	const langConfig = getLangConfig();
 	const tableLimitDisplay = isNonEmptyArray(tableLimitList) ? (
-		<PopoverList buttonText="限紅列表">
+		<PopoverList buttonText={langConfig.TABLE_LIMIT_LIST}>
 			<TextList list={tableLimitList} dataItem={DataItem} />
 		</PopoverList>
 	) : <span className={tableValue}>-</span>
@@ -202,17 +207,17 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 				<div className={tableStatus}>{getTableStatus(status)}</div>
 			</div>
 			<CardContent className={cardContent}>
-				<Typography color="inherit"><span>座位數:</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>
-				<Typography color="inherit"><span>局號:</span><span className={tableValue}>{gameCode || '-'}</span></Typography>
-				<Typography color="inherit"><span>荷官:</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
-				<Typography color="inherit"><span>主播:</span><span className={tableValue}>{/* getAnchorByVid(vid, anchorsOnDutyList) */}{currentAnchorName}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.SEAT_NUMBER}</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>
+				<Typography color="inherit"><span>{langConfig.GAME_CODE}</span><span className={tableValue}>{gameCode || '-'}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.DEALER}:</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.ANCHOR}</span><span className={tableValue}>{/* getAnchorByVid(vid, anchorsOnDutyList) */}{currentAnchorName}</span></Typography>
 				<Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
-					<Grid item><Typography color="inherit">限紅:</Typography></Grid>
+					<Grid item><Typography color="inherit">{langConfig.TABLE_LIMIT}</Typography></Grid>
 					<Grid item>{tableLimitDisplay}</Grid>
 				</Grid>
-				<Typography color="inherit"><span>桌主:</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
-				<Typography color="inherit"><span>牌靴:</span><span className={tableValue}>-</span></Typography>
-				<Typography color="inherit"><span>遊戲狀態:</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.TABLE_OWNER}</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.CARD_TYPE}</span><span className={tableValue}>-</span></Typography>
+				<Typography color="inherit"><span>{langConfig.GAME_STATUS}</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
 			</CardContent>
 			<CardActions>
 				<Button
@@ -229,7 +234,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 					}}
 					disabled={!tableOwner}
 				>
-					踢走桌主
+					{langConfig.KICKOUT_CLIENT}
 				</Button>
 			</CardActions>
 		</Card>

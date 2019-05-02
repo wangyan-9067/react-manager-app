@@ -119,7 +119,7 @@ import {
   CALLING_MANAGER_STATES
 } from './constants';
 import { isObject } from './helpers/utils';
-import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure, mapBetHistoryResult } from './helpers/appUtils';
+import { voiceServerLoginCMD, dataServerLoginCMD, handleLoginFailure, mapBetHistoryResult, getLangConfig } from './helpers/appUtils';
 import './App.css';
 
 const nullGate = new NullGateSocket();
@@ -166,6 +166,7 @@ class App extends React.Component {
         formValues,
         setIncomingCallCount
       } = this.props;
+      const langConfig = getLangConfig();
 
       switch(evt.data.respId) {
         case MANAGER_LOGIN_R:
@@ -190,7 +191,7 @@ class App extends React.Component {
                 setToastVariant,
                 setToastDuration,
                 toggleToast,
-                message: "沒有AppId, 請聯絡管理員!"
+                message: langConfig.ERROR_MESSAGES.NO_APP_ID
               });
 
               this.reset();
@@ -202,7 +203,7 @@ class App extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "經理重覆登入!"
+              message: langConfig.ERROR_MESSAGES.REPEAT_LOGIN
             });
 
             this.reset();
@@ -213,7 +214,7 @@ class App extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "用戶名/密碼錯誤!"
+              message: langConfig.ERROR_MESSAGES.PWD_ERROR
             });
             
             this.reset();
@@ -224,7 +225,7 @@ class App extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "沒有此用戶!"
+              message: langConfig.ERROR_MESSAGES.NO_USER
             });
 
             this.reset();
@@ -235,7 +236,7 @@ class App extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: `[VoiceServer] 無法登入, 請聯絡管理員! (code: ${loginStatus})`
+              message: langConfig.ERROR_MESSAGES.VOICE_SERVER_LOGIN_FAIL.replace("{loginStatus}", loginStatus)
             });
 
             this.reset();
@@ -252,7 +253,7 @@ class App extends React.Component {
               setToastVariant,
               setToastDuration,
               toggleToast,
-              message: "經理重覆登入!"
+              message: langConfig.ERROR_MESSAGES.REPEAT_LOGIN
             });
           }
         break;
@@ -320,7 +321,7 @@ class App extends React.Component {
               break;
             }
           } else {
-            setToastMessage(`經理操作不能執行! (code: ${actionStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.FAIL_MANAGER_ACTION.replace("{actionStatus}", actionStatus));
             setToastVariant('error');
             toggleToast(true);
           }
@@ -339,7 +340,7 @@ class App extends React.Component {
           let functionToExecute;
 
           if (anchorAddStatus !== SUCCESS) {
-            setToastMessage(`[VoiceServer] 無法${managerAction === ADD_ANCHOR ? "加入" : "編輯"}主播! (code: ${anchorAddStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_ANCHOR_OPERATION.replace("{managerAction}", managerAction === ADD_ANCHOR ? langConfig.BUTTON_LABEL.ADD : langConfig.BUTTON_LABEL.EDIT).replace("{anchorAddStatus}", anchorAddStatus));
             setToastVariant('error');
             toggleToast(true);
           } else {
@@ -354,7 +355,7 @@ class App extends React.Component {
 
           if (anchorDeleteStatus !== SUCCESS) {
             toggleDialog(false);
-            setToastMessage(`[VoiceServer] 無法刪除主播! (code: ${anchorDeleteStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_DELETE_ANCHOR.replace("{anchorDeleteStatus}", anchorDeleteStatus));
             setToastVariant('error');
             toggleToast(true);
           } else {
@@ -376,7 +377,7 @@ class App extends React.Component {
           const { code: managerAddStatus } = evt.data;
 
           if (managerAddStatus !== SUCCESS) {
-            setToastMessage(`[VoiceServer] 無法${managerAction === ADD_MANAGER ? "加入" : "編輯"}經理! (code: ${managerAddStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_MANAGER_OPERATION.replace("{managerAction}", managerAction === ADD_MANAGER ? langConfig.BUTTON_LABEL.ADD : langConfig.BUTTON_LABEL.EDIT).replace("{managerAddStatus}", managerAddStatus));
             setToastVariant('error');
             toggleToast(true);
           } else {
@@ -391,7 +392,7 @@ class App extends React.Component {
 
           if (managerDeleteStatus !== SUCCESS) {
             toggleDialog(false);
-            setToastMessage(`[VoiceServer] 無法刪除經理! (code: ${managerDeleteStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_DELETE_MANAGER.replace("{managerDeleteStatus}", managerDeleteStatus));
             setToastVariant('error');
             toggleToast(true);
           } else {
@@ -405,11 +406,11 @@ class App extends React.Component {
           const { code: assignTokenStatus } = evt.data;
           
           if (assignTokenStatus === DELEGATOR_NOT_IN_LINE) {
-            setToastMessage('代理並不在線!');
+            setToastMessage(langConfig.ERROR_MESSAGES.DELEGATOR_IS_OFFLINE);
             setToastVariant('error');
             toggleToast(true);
           } else if (assignTokenStatus !== SUCCESS) {
-            setToastMessage(`不能成功派籌, 請聯絡管理員! (code: ${assignTokenStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TOKEN.replace("{assignTokenStatus}", assignTokenStatus));
             setToastVariant('error');
             toggleToast(true);
           }
@@ -419,7 +420,7 @@ class App extends React.Component {
           const { code: kickDelegatorStatus } = evt.data;
           
           if (kickDelegatorStatus !== SUCCESS) {
-            setToastMessage(`不能成功踢走代理, 請聯絡管理員! (code: ${kickDelegatorStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_DELEGATOR.replace("{kickDelegatorStatus}", kickDelegatorStatus));
             setToastVariant('error');
             toggleToast(true);
           }
@@ -433,7 +434,7 @@ class App extends React.Component {
           const { code: addDelegatorStatus } = evt.data;
 
           if (addDelegatorStatus !== SUCCESS) {
-            setToastMessage(`無法加入代理! (code: ${addDelegatorStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ADD_DELEGATOR.replace("{addDelegatorStatus}", addDelegatorStatus));
             setToastVariant('error');
             toggleToast(true);
           } else {
@@ -446,12 +447,12 @@ class App extends React.Component {
 
           if (deleteDelegatorStatus === DELEGATOR_HAS_TOKEN) {
             toggleDialog(false);
-            setToastMessage("代理已拿籌, 不能刪除此代理記錄!");
+            setToastMessage(langConfig.ERROR_MESSAGES.DELEGATOR_HAS_TOKEN);
             setToastVariant('error');
             toggleToast(true);
           } else if (deleteDelegatorStatus !== SUCCESS) {
             toggleDialog(false);
-            setToastMessage(`無法刪除代理! (code: ${deleteDelegatorStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.FAIL_DELETE_DELEGATOR.replace("{deleteDelegatorStatus}", deleteDelegatorStatus));
             setToastVariant('error');
             toggleToast(true);
           } else {
@@ -500,6 +501,7 @@ class App extends React.Component {
       setTableLimit
     } = this.props;
     const { SUCCESS, ERR_NO_LOGIN } = GAME_SERVER_RESPONSE_CODES;
+    const langConfig = getLangConfig();
 
     switch(evt.data.respId) {
       case CDS_CONTROL_REQ_VIDEO_RES:
@@ -576,7 +578,7 @@ class App extends React.Component {
             setToastVariant,
             setToastDuration,
             toggleToast,
-            message: `[DataServer] 無法登入, 請聯絡管理員 (code: ${loginStatus})`
+            message: langConfig.ERROR_MESSAGES.DATA_SERVER_LOGIN_FAIL.replace("{loginStatus}", loginStatus)
           });
 
           this.reset();
@@ -589,14 +591,14 @@ class App extends React.Component {
         if (assignTableStatus === SUCCESS) {
           this.assignTableToChannel(currentChannelId, evt.data.vid);
         } else {
-          setToastMessage(`無法將玩家配對到桌枱! (code: ${assignTableStatus})`);
+          setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER_IMMEDIATE.replace("{assignTableStatus}", assignTableStatus));
           setToastVariant('error');
           toggleToast(true);
         }
       break;
 
       case CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC:
-        setToastMessage(`無法將玩家${evt.data.username}配對到桌枱!`);
+        setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER.replace("{username}", evt.data.username));
         setToastVariant('error');
         setToastDuration(null);
         toggleToast(true);
@@ -612,7 +614,7 @@ class App extends React.Component {
             this.blacklistClient(currentChannelId);
           }
         } else {
-          setToastMessage(`無法將玩家踢出桌枱/加入黑名單! (Reason: ${kickoutReason})`);
+          setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason));
           setToastVariant('error');
           toggleToast(true);
         }
@@ -648,27 +650,27 @@ class App extends React.Component {
           // display error message
           switch(evt.data.reqCmd) {
             case CDS_ADD_ANCHOR:
-              message = "加入主播";
+              message = langConfig.ERROR_MESSAGES.USER_OPERATION.ADD_ANCHOR;
             break;
 
             case CDS_UPDATE_ANCHOR:
-              message = "編輯主播";
+              message = langConfig.ERROR_MESSAGES.USER_OPERATION.EDIT_ANCHOR;
             break;
 
             case CDS_REMOVE_ANCHOR:
-              message = "刪除主播";
+              message = langConfig.ERROR_MESSAGES.USER_OPERATION.DELETE_ANCHOR;
             break;
 
             case CDS_ADD_MANAGER:
-              message = "加入經理";
+              message = langConfig.ERROR_MESSAGES.USER_OPERATION.ADD_MANAGER;
             break;
 
             case CDS_UPDATE_MANAGER:
-              message = "編輯經理";
+              message = langConfig.ERROR_MESSAGES.USER_OPERATION.EDIT_MANAGER;
             break;
 
             case CDS_REMOVE_MANAGER:
-              message = "刪除經理";
+              message = langConfig.ERROR_MESSAGES.USER_OPERATION.DELETE_MANAGER;
             break;
 
             default:
@@ -676,7 +678,7 @@ class App extends React.Component {
           }
 
           if (message) {
-            setToastMessage(`[DataServer] 無法${message}! (code: ${cdsActionStatus})`);
+            setToastMessage(langConfig.ERROR_MESSAGES.USER_OPERATION_FAIL.replace("{message}", message).replace("{cdsActionStatus}", cdsActionStatus));
             setToastVariant('error');
             toggleToast(true);
           }

@@ -22,6 +22,7 @@ import AudioButton from '../components/AudioButton';
 import { toggleToast, setToastMessage, setToastVariant } from '../actions/app';
 import { setBetHistoryTablePageIndex } from '../actions/data';
 import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
+import { getLangConfig } from '../helpers/appUtils';
 import { PLAYTYPE } from '../constants';
 
 const actionsStyles = theme => ({
@@ -128,40 +129,41 @@ const styles = theme => ({
 
 const getPlayType = playtype => {
   const {	BANKER, PLAYER, TIE, BANKER_PAIR, PLAYER_PAIR, BANKER_NO_COMMISSION, BANKER_DRAGON_BONUS, PLAYER_DRAGON_BONUS, SUPER_SIX, ANY_PAIR, PERFECT_PAIR } = PLAYTYPE;
-  
+  const langConfig = getLangConfig();
+
   switch (playtype) {
-    case BANKER:
-      return '庄';
+		case BANKER:
+			return langConfig.PLAY_TYPE_LABEL.BANKER;
 
-    case PLAYER:
-      return '闲';
+		case PLAYER:
+			return langConfig.PLAY_TYPE_LABEL.PLAYER;
 
-    case TIE:
-      return '和';
+		case TIE:
+			return langConfig.PLAY_TYPE_LABEL.TIE;
 
-    case BANKER_PAIR:
-      return '闲对';
+		case BANKER_PAIR:
+			return langConfig.PLAY_TYPE_LABEL.BANKER_PAIR;
+		
+		case PLAYER_PAIR:
+			return langConfig.PLAY_TYPE_LABEL.PLAYER_PAIR;
 
-    case PLAYER_PAIR:
-      return '庄对';
-      
-    case BANKER_NO_COMMISSION:
-      return '庄免佣';
+		case BANKER_NO_COMMISSION:
+			return langConfig.PLAY_TYPE_LABEL.BANKER_NO_COMMISSION;
 
-    case BANKER_DRAGON_BONUS:
-      return '庄龙宝';
+		case BANKER_DRAGON_BONUS:
+			return langConfig.PLAY_TYPE_LABEL.BANKER_DRAGON_BONUS;
 
-    case PLAYER_DRAGON_BONUS:
-      return '闲龙宝';
+		case PLAYER_DRAGON_BONUS:
+			return langConfig.PLAY_TYPE_LABEL.PLAYER_DRAGON_BONUS;
 
-    case SUPER_SIX:
-      return '超级六';
+		case SUPER_SIX:
+			return langConfig.PLAY_TYPE_LABEL.SUPER_SIX;
 
-    case ANY_PAIR:
-      return '任意对子';
+		case ANY_PAIR:
+			return langConfig.PLAY_TYPE_LABEL.ANY_PAIR;
 
-    case PERFECT_PAIR:
-      return '完美对子';
+		case PERFECT_PAIR:
+			return langConfig.PLAY_TYPE_LABEL.PERFECT_PAIR;
     
     default:
       return '';
@@ -201,6 +203,7 @@ const BetHistory = ({
   // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
   const prevRows = usePrevious(betHistoryList);
   const noRecordDisplay = rows.length === 0;
+  const langConfig = getLangConfig();
 
   const handleChangePage = (event, page) => {
     const { loginname, gmCode } = betHistoryTableSearchFields;
@@ -239,17 +242,17 @@ const BetHistory = ({
         <Table className={table}>
           <TableHead>
             <TableRow>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">訂單號</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">局號</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">時間</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">結果</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">重播</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">玩家</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">主播</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">玩法</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">總投注</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">派彩</TableCell>
-              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">狀態</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.BILL_NO}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.GAME_CODE}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.TIME}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.RESULT}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.REPLAY}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.PLAYER}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.ANCHOR}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.PLAY_TYPE}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.TOTAL_BET}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.FLAG}</TableCell>
+              <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.GAME_STATUS}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -265,14 +268,14 @@ const BetHistory = ({
                   <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.billno}</TableCell>
                   <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.gmcode}</TableCell>
                   <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.betTime}</TableCell>
-                  <TableCell classes={{ root: cellRoot }} align="center">庄 {row.bankerVal} 閑 {row.playerVal}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{langConfig.BANKER} {row.bankerVal} {langConfig.PLAYER} {row.playerVal}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center"><AudioButton gmcode={row.gmcode} toggleToast={toggleToast} setToastMessage={setToastMessage} setToastVariant={setToastVariant} /></TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{betHistoryUserPid + row.name}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">-</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{formatAmount(row.amount)}</TableCell>
                   <TableCell classes={{ root: cellRoot }} className={profitClasses} align="center">{row.profit > 0 ? '+' : ''}{formatAmount(row.profit)}</TableCell>
-                  <TableCell classes={{ root: cellRoot }} align="center">{row.flag === 0 ? '未派彩' : '已派彩'}</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{row.flag === 0 ? langConfig.FLAG_STATUS.UNPAID : langConfig.FLAG_STATUS.PAID}</TableCell>
                 </TableRow>
               );
             })}
@@ -284,7 +287,7 @@ const BetHistory = ({
             {noRecordDisplay && (
               <TableRow>
                 <TableCell colSpan={12}>
-                  <Typography color="inherit" align="center">沒有遊戲記錄! 請輸入玩家名搜尋!</Typography>
+                  <Typography color="inherit" align="center">{langConfig.BET_HISTORY_LABEL.NO_RECORD}</Typography>
                 </TableCell>
               </TableRow>
             )}

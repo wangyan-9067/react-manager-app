@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import UserForm from '../components/UserForm';
 import ToggleButtonGridList from '../components/ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
+import { getLangConfig } from '../helpers/appUtils';
 
 const styles = () => ({
   root: {
@@ -108,6 +109,7 @@ const DelegatorList = ({
     dialogPaper,
     dialogTitle
   } = classes;
+  const langConfig = getLangConfig();
 
   const onClickHandler = () => {
     if (isEdit) {
@@ -131,7 +133,7 @@ const DelegatorList = ({
     panel = (
       <Card className={emptyAnchorCardRoot}>
         <CardContent>
-          <Typography color="inherit" className={emptyText}>沒有代理記錄!</Typography>
+          <Typography color="inherit" className={emptyText}>{langConfig.DELEGATOR_LIST_LABEL.NO_RECORD}</Typography>
         </CardContent>
       </Card>
     );
@@ -145,7 +147,7 @@ const DelegatorList = ({
 
 	return (
 		<div className={root}>
-      <Typography color="inherit" align="left" className={headerText}>請選取需要編輯的代理</Typography>
+      <Typography color="inherit" align="left" className={headerText}>{langConfig.DELEGATOR_LIST_LABEL.SELECT_DELEGATOR}</Typography>
       <div className={grow} />
       <Button
         variant="contained"
@@ -157,7 +159,7 @@ const DelegatorList = ({
           setIsEdit(false);
           setOpenAddDelegatorDialog(true);
         }}>
-          新增代理
+          {langConfig.BUTTON_LABEL.ADD_DELEGATOR}
         </Button>
       {panel}
 			<Dialog
@@ -168,7 +170,7 @@ const DelegatorList = ({
         disableBackdropClick
 			>
 				<DialogTitle id="responsive-dialog-title">
-					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}代理資料</Typography>
+					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? langConfig.BUTTON_LABEL.EDIT : langConfig.BUTTON_LABEL.ADD}{langConfig.DELEGATOR_LIST_LABEL.DELEGATOR_INFO}</Typography>
 				</DialogTitle>
 				<DialogContent>
           <UserForm
@@ -198,7 +200,7 @@ const DelegatorList = ({
         onClickHandler={onClickHandler}
       />
       <div>
-        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} onClick={() => { setSelected(); }}>取消選取</Button>
+        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} onClick={() => { setSelected(); }}>{langConfig.BUTTON_LABEL.CANCEL_SELECT}</Button>
       </div>
 		</div>
 	);

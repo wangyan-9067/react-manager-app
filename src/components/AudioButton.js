@@ -5,6 +5,8 @@ import IconButton from '@material-ui/core/IconButton';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 
+import { getLangConfig } from '../helpers/appUtils';
+
 const styles = () => ({
   playerIcon: {
     color: '#3970B0'
@@ -15,6 +17,7 @@ const AudioButton = ({ classes, gmcode, toggleToast, setToastMessage, setToastVa
   const { playerIcon } = classes;
   const [ isPlaying, setIsPlaying ] = useState(false);
   const audioObject = useRef(null);
+  const langConfig = getLangConfig();
 
   return (
     <Fragment>
@@ -35,7 +38,7 @@ const AudioButton = ({ classes, gmcode, toggleToast, setToastMessage, setToastVa
 
           player.onerror = () => {
             toggleToast(true);
-            setToastMessage("錄音不能播放!");
+            setToastMessage(langConfig.FAIL_TO_PLAY_RECORD_AUDIO);
             setToastVariant("error");
             setIsPlaying(false);
           }

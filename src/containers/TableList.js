@@ -11,6 +11,7 @@ import { setKickoutClient } from '../actions/data';
 import { setManagerAction } from '../actions/voice';
 import { MANAGER_ACTION_TYPE } from '../constants';
 import { isNonEmptyArray } from '../helpers/utils';
+import { getLangConfig } from '../helpers/appUtils';
 
 const GRID_ITEM_BG_COLOR = '#E8E8E8';
 const styles = () => ({
@@ -41,6 +42,7 @@ const TableList = ({
   tableLimit
 }) => {
   const { root, emptyText } = classes;
+  const langConfig = getLangConfig();
   let panel;
 
   if (isNonEmptyArray(tableList)) {
@@ -61,12 +63,12 @@ const TableList = ({
             kickoutClientFromDataServer(vid, clientName);
             toggleDialog(false);
           }}
-          content="確定要踢走桌主嗎?"
+          content={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_TABLE_OWNER}
         />
       </Fragment>
     );
   } else {
-    panel = <div className={emptyText}>沒有桌台資訊!</div>;
+    panel = <div className={emptyText}>{langConfig.TABLE_LIST_LABEL.NO_RECORD}</div>;
   }
   
   return (

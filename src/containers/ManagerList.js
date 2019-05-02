@@ -16,6 +16,7 @@ import ToggleButtonGridList from '../components/ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 import { setManagerAction, setFormValues } from '../actions/voice';
 import { MANAGER_ACTION_TYPE } from '../constants';
+import { getLangConfig } from '../helpers/appUtils';
 
 const styles = () => ({
   root: {
@@ -114,6 +115,7 @@ const ManagerList = ({
     dialogTitle
   } = classes;
   const { ADD_MANAGER, EDIT_MANAGER } = MANAGER_ACTION_TYPE;
+  const langConfig = getLangConfig();
 
   const onClickHandler = () => {
     if (isEdit) {
@@ -150,7 +152,7 @@ const ManagerList = ({
     panel = (
       <Card className={emptyAnchorCardRoot}>
         <CardContent>
-          <Typography color="inherit" className={emptyText}>沒有經理記錄!</Typography>
+          <Typography color="inherit" className={emptyText}>{langConfig.MANAGER_LIST_LABEL.NO_RECORD}</Typography>
         </CardContent>
       </Card>
     );
@@ -164,7 +166,7 @@ const ManagerList = ({
 
 	return (
 		<div className={root}>
-      <Typography color="inherit" align="left" className={headerText}>請選取需要編輯的經理</Typography>
+      <Typography color="inherit" align="left" className={headerText}>{langConfig.MANAGER_LIST_LABEL.SELECT_MANAGER}</Typography>
       <div className={grow} />
       <Button
         variant="contained"
@@ -177,7 +179,7 @@ const ManagerList = ({
           setOpenAddManagerDialog(true);
           setManagerAction(ADD_MANAGER);
         }}>
-          新增經理
+          {langConfig.BUTTON_LABEL.ADD_MANAGER}
         </Button>
       {panel}
 			<Dialog
@@ -188,7 +190,7 @@ const ManagerList = ({
         disableBackdropClick
 			>
 				<DialogTitle id="responsive-dialog-title">
-					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? '編輯' : '新增'}經理資料</Typography>
+					<Typography color="inherit" className={dialogTitle} align="center">{ isEdit ? langConfig.BUTTON_LABEL.EDIT : langConfig.BUTTON_LABEL.ADD}{langConfig.MANAGER_LIST_LABEL.MANAGER_INFO}</Typography>
 				</DialogTitle>
 				<DialogContent>
           <UserForm
@@ -219,7 +221,7 @@ const ManagerList = ({
         onClickHandler={onClickHandler}
       />
       <div>
-        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} onClick={() => { setSelected(); }}>取消選取</Button>
+        <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} onClick={() => { setSelected(); }}>{langConfig.BUTTON_LABEL.CANCEL_SELECT}</Button>
       </div>
 		</div>
 	);

@@ -2,6 +2,7 @@ import 'cube-egret-polyfill';
 import * as Socket from 'cube-socket/live';
 import { MANAGER_LOGIN, CDS_OPERATOR_LOGIN } from '../protocols';
 import { VALUE_LENGTH, DATA_SERVER_VALUE_LENGTH } from '../constants';
+import langConfig from '../languages/zh-cn.json';
 
 export const voiceServerLoginCMD = (username, password, socket) => {
   socket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
@@ -50,4 +51,8 @@ export const mapBetHistoryResult = (loginname, result) => {
       remark: temp.remark
     }
   })
-}
+};
+
+export const getLangConfig = () => {
+  return langConfig;
+};

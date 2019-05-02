@@ -11,6 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import DialogWrapper from './DialogWrapper';
+import { getLangConfig } from '../helpers/appUtils';
 
 const styles = theme => ({
   managerActionDialog: {
@@ -191,18 +192,19 @@ class UserForm extends React.Component {
     const level = { ...this.state.level };
     const tel = { ...this.state.tel };
     const { isEdit, userList, isManager, isDelegator } = this.props;
+    const langConfig = getLangConfig();
 
     let isGood = true;
 
     if (validator.isEmpty(loginname.value)) {
-      isGood = this.setField(loginname, false, 'Loginname is required');
+      isGood = this.setField(loginname, false, langConfig.USER_FORM.LOGIN_NAME_EMPTY);
     } else {
       this.resetField(loginname);
     }
 
     if (loginname.isValid) {
       if (!validator.isAlphanumeric(loginname.value)) {
-        isGood = this.setField(loginname, false, 'Loginname must be alphanumeric');
+        isGood = this.setField(loginname, false, langConfig.USER_FORM.LOGIN_NAME_ALPHANUMERIC);
       } else {
         this.resetField(loginname);
       }
@@ -210,7 +212,7 @@ class UserForm extends React.Component {
 
     if (loginname.isValid && !isEdit) {
       if (userList.find(user => user.loginname.toLowerCase() === loginname.value.toLowerCase())) {
-        isGood = this.setField(loginname, false, 'Loginname is already registered');
+        isGood = this.setField(loginname, false, langConfig.USER_FORM.LOGIN_NAME_ALREADY_REGISTERED);
       } else {
         this.resetField(loginname);
       }
@@ -218,27 +220,27 @@ class UserForm extends React.Component {
 
     if (!isDelegator) {
       if (validator.isEmpty(nickname.value)) {
-        isGood = this.setField(nickname, false, 'Nickname is required');
+        isGood = this.setField(nickname, false, langConfig.USER_FORM.NICK_NAME_EMPTY);
       } else {
         this.resetField(nickname);
       }
     }
 
     if (validator.isEmpty(password.value)) {
-      isGood = this.setField(password, false, 'Password is required');
+      isGood = this.setField(password, false, langConfig.USER_FORM.PASSWORD_EMPTY);
     } else {
       this.resetField(password);
     }
 
     if (validator.isEmpty(passwordConfirm.value)) {
-      isGood = this.setField(passwordConfirm, false, 'Password Confirm is required');
+      isGood = this.setField(passwordConfirm, false, langConfig.USER_FORM.PASSWORD_CONFIRM_EMPTY);
     } else {
       this.resetField(passwordConfirm);
     }
 
     if (passwordConfirm.isValid) {
       if (!validator.equals(password.value, passwordConfirm.value)) {
-        isGood = this.setField(passwordConfirm, false, 'Password does not match');
+        isGood = this.setField(passwordConfirm, false, langConfig.USER_FORM.PASSWORD_DOES_NOT_MATCH);
       } else {
         this.resetField(passwordConfirm);
       }
@@ -246,7 +248,7 @@ class UserForm extends React.Component {
 
     if (!isDelegator) {
       if (validator.isEmpty(iconUrl.value)) {
-        isGood = this.setField(iconUrl, false, 'Icon URL is required');
+        isGood = this.setField(iconUrl, false, langConfig.USER_FORM.ICON_URL_EMPTY);
       } else {
         this.resetField(iconUrl);
       }
@@ -254,7 +256,7 @@ class UserForm extends React.Component {
 
     if (isManager) {
       if (!(level.value === 0 || level.value === 1)) {
-        isGood = this.setField(level, false, 'Level is required');
+        isGood = this.setField(level, false, langConfig.USER_FORM.LEVEL_EMPTY);
       } else {
         this.resetField(level);
       }
@@ -262,14 +264,14 @@ class UserForm extends React.Component {
 
     if (isDelegator) {
       if (validator.isEmpty(tel.value)) {
-        isGood = this.setField(tel, false, 'Phone number is required');
+        isGood = this.setField(tel, false, langConfig.USER_FORM.PHONE_EMPTY);
       } else {
         this.resetField(tel);
       }
 
       if (tel.isValid) {
         if (!validator.isNumeric(tel.value)) {
-          isGood = this.setField(tel, false, 'Phone number must be numeric');
+          isGood = this.setField(tel, false, langConfig.USER_FORM.PHONE_NUMERIC);
         } else {
           this.resetField(tel);
         }
@@ -333,6 +335,7 @@ class UserForm extends React.Component {
       dialogCancelButton,
       dialogDeleteButton
     } = classes;
+    const langConfig = getLangConfig();
 
     return (
       <div>
@@ -340,7 +343,7 @@ class UserForm extends React.Component {
           <div className={managerActionDialog}>
             <div className={managerActionDialogSectionLeft}>
               <FormControl classes={{ root: formControlRoot }} className={formControl} error={!loginname.isValid}>
-                <div className={managerActionFormLabel}>Login名</div>
+                <div className={managerActionFormLabel}>{langConfig.USER_FORM.LOGIN_NAME}</div>
                 <Input
                   classes={{underline: inputUnderline}}
                   className={input}
@@ -357,7 +360,7 @@ class UserForm extends React.Component {
               </FormControl>
               {!isDelegator && (
                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!nickname.isValid}>
-                  <div className={managerActionFormLabel}>暱稱</div>
+                  <div className={managerActionFormLabel}>{langConfig.USER_FORM.NICK_NAME}</div>
                   <Input
                     classes={{underline: inputUnderline}}
                     className={input}
@@ -373,7 +376,7 @@ class UserForm extends React.Component {
                 </FormControl>
               )}
               <FormControl classes={{ root: formControlRoot }} className={formControl} error={!password.isValid}>
-                <div className={managerActionFormLabel}>密碼</div>
+                <div className={managerActionFormLabel}>{langConfig.USER_FORM.PASSWORD}</div>
                 <Input
                   classes={{underline: inputUnderline}}
                   className={input}
@@ -388,7 +391,7 @@ class UserForm extends React.Component {
                 <FormHelperText id="component-error-text">{password.message}</FormHelperText>
               </FormControl>
               <FormControl classes={{ root: formControlRoot }} className={formControl} error={!passwordConfirm.isValid}>
-                <div className={managerActionFormLabel}>確認密碼</div>
+                <div className={managerActionFormLabel}>{langConfig.USER_FORM.PASSWORD_CONFIRM}</div>
                 <Input
                   classes={{underline: inputUnderline}}
                   className={input}
@@ -404,7 +407,7 @@ class UserForm extends React.Component {
               </FormControl>
               {!isDelegator && (
                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!iconUrl.isValid}>
-                  <div className={managerActionFormLabel}>照片URL</div>
+                  <div className={managerActionFormLabel}>{langConfig.USER_FORM.ICON_URL}</div>
                   <Input
                     classes={{underline: inputUnderline}}
                     className={input}
@@ -421,7 +424,7 @@ class UserForm extends React.Component {
               )}
               {isManager && (
                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!level.isValid}>
-                  <div className={managerActionFormLabel}>權限</div>
+                  <div className={managerActionFormLabel}>{langConfig.USER_FORM.LEVEL}</div>
                   <Select
                     value={level.value}
                     onChange={this.onChange}
@@ -431,15 +434,15 @@ class UserForm extends React.Component {
                       id: 'level',
                     }}
                   >
-                    <MenuItem value={0}>普通經理</MenuItem>
-                    <MenuItem value={1}>admin經理</MenuItem>
+                    <MenuItem value={0}>{langConfig.USER_FORM.LEVEL_OPTION.NORMAL}</MenuItem>
+                    <MenuItem value={1}>{langConfig.USER_FORM.LEVEL_OPTION.ADMIN}</MenuItem>
                   </Select>
                   <FormHelperText id="component-error-text">{level.message}</FormHelperText>
                 </FormControl>
               )}
               {isDelegator && (
                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!tel.isValid}>
-                  <div className={managerActionFormLabel}>電話</div>
+                  <div className={managerActionFormLabel}>{langConfig.USER_FORM.PHONE}</div>
                   <Input
                     classes={{underline: inputUnderline}}
                     className={input}
@@ -456,9 +459,9 @@ class UserForm extends React.Component {
               )}
             </div>
             <div className={managerActionDialogSectionRight}>
-              <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)}>確定</Button>
-              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogCancelButton)} onClick={() => { setOpenAddDialog(false); }}>取消</Button>
-              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogDeleteButton)} disabled={!isEdit} onClick={() => { toggleDialog(true); }}>刪除</Button>
+              <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
+              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogCancelButton)} onClick={() => { setOpenAddDialog(false); }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
+              <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogDeleteButton)} disabled={!isEdit} onClick={() => { toggleDialog(true); }}>{langConfig.BUTTON_LABEL.DELETE}</Button>
             </div>
           </div>
         </form>
@@ -479,7 +482,7 @@ class UserForm extends React.Component {
             deleteUser(loginname.value);
             setOpenAddDialog(false);
           }}
-          content="確定要刪除嗎?"
+          content={langConfig.DIALOG_LABEL.CONFIRM_DELETE}
         />
       </div>
     );

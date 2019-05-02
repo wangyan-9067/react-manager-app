@@ -30,6 +30,8 @@ import DateTimeBadge from './DateTimeBadge';
 import SearchForm from './SearchForm';
 import CallNotification from './CallNotification';
 
+import { getLangConfig } from '../helpers/appUtils';
+
 const styles = theme => ({
   appBar: {
     backgroundColor: '#E8E8E8',
@@ -225,6 +227,7 @@ class MenuBar extends React.Component {
       gutters,
       labelContainer
     } = classes;
+    const langConfig = getLangConfig();
 
     return (
       <div className={root}>
@@ -233,9 +236,9 @@ class MenuBar extends React.Component {
             <DateTimeBadge />
             <div className={grow} />
             <Tabs value={value} onChange={this.handleChange} classes={{ root: tabsRoot, indicator: tabsIndicator }}>
-              <Tab label="主播排班" classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
-              <Tab label={<CallNotification count={incomingCallCount} label="經理操作" />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
-              <Tab label="桌台狀態" classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+              <Tab label={langConfig.MENU_BAR_LABEL.ANCHOR_MANAGEMENT} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+              <Tab label={<CallNotification count={incomingCallCount} label={langConfig.MENU_BAR_LABEL.MANAGER_OPERATION} />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+              <Tab label={langConfig.MENU_BAR_LABEL.TABLE_MANAGEMENT} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
               {/* To suppress material-ui error */}
               <Tab label="管理經理" style={{ display: 'none' }} />
               <Tab label="管理代理" style={{ display: 'none' }} />
@@ -252,7 +255,7 @@ class MenuBar extends React.Component {
                 this.handleOpen();
               }}
             >
-              遊戲記錄
+              {langConfig.MENU_BAR_LABEL.BET_HISTORY}
             </Button>
             <div className={grow1} />
             <List>
@@ -261,7 +264,7 @@ class MenuBar extends React.Component {
                   classes={{ secondary }}
                   secondary={
                     <Fragment>
-                      <Typography color="inherit">經理:</Typography>
+                      <Typography color="inherit">{langConfig.MENU_BAR_LABEL.MANAGER}</Typography>
                       <Typography color="inherit" className={managerName}>{managerLoginname}</Typography>
                     </Fragment>
                   }
@@ -269,9 +272,9 @@ class MenuBar extends React.Component {
               </ListItem>
             </List>
             <div className={grow} />
-            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.handleChange.bind(null, null, 4)}>管理代理</Button>
-            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold, managerLevel === 1 ? show : hide)} onClick={this.handleChange.bind(null, null, 3)}>管理經理</Button>
-            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={logout}>登出</Button>
+            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.handleChange.bind(null, null, 4)}>{langConfig.MENU_BAR_LABEL.DELEGATOR_MANAGEMENT}</Button>
+            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold, managerLevel === 1 ? show : hide)} onClick={this.handleChange.bind(null, null, 3)}>{langConfig.MENU_BAR_LABEL.MANAGER_MANAGEMENT}</Button>
+            <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={logout}>{langConfig.BUTTON_LABEL.LOGOUT}</Button>
           </Toolbar>
         </AppBar>
         <Grid container>
