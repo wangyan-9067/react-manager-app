@@ -241,11 +241,11 @@ const AnswerCallPanel = ({
 	toggleToast
 }) => {
 	const {
-		answerCallPanel, 
+		answerCallPanel,
 		answerCallPanelLeftRoot,
-		answerCallPanelLeftText, 
-		answerCallPanelRightRoot, 
-		answerCallPanelRight, 
+		answerCallPanelLeftText,
+		answerCallPanelRightRoot,
+		answerCallPanelRight,
 		answerCallPanelRightText,
 		answerCallPanelRightTextValue,
 		actionButtonWrapper,
@@ -264,6 +264,7 @@ const AnswerCallPanel = ({
 	} = classes;
 	const { MUTE, UNMUTE } = MUTE_STATE;
 	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
+	const vidsInChannel = channelList.map(channel => channel.vid);
 	const langConfig = getLangConfig();
 
 	// Error handling when currentChannel is not found in existing channel list
@@ -355,18 +356,18 @@ const AnswerCallPanel = ({
 					</DialogTitle>
 					<DialogContent>
 						<DialogContentText>
-							<ToggleButtonGroup 
+							<ToggleButtonGroup
 								value={tableAssigned}
 								exclusive
 								onChange={(event, table) => {
 									if (!table) {
 										table = tableAssigned;
 									}
-									changeTable(event, table, setTableAssigned); 
+									changeTable(event, table, setTableAssigned);
 								}}
 							>
 							{tableList.map((table, index) =>
-								<ToggleButton value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
+								<ToggleButton value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE || vidsInChannel.indexOf(table.vid) > -1} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
 									<Typography color="inherit" className={toggleButtonLabel}>{table.vid}</Typography>
 								</ToggleButton>
 							)}
@@ -389,7 +390,7 @@ const AnswerCallPanel = ({
 						<DialogContentText><Typography color="inherit" className={dialogContent}>{langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", clientName)}</Typography></DialogContentText>
 					</DialogContent>
 					<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-						<Button 
+						<Button
 							variant="contained"
 							size="medium"
 							color="inherit"
@@ -422,7 +423,7 @@ const AnswerCallPanel = ({
 						<DialogContentText><Typography color="inherit" className={dialogContent}>{langConfig.DIALOG_LABEL.CONFIRM_BACKLIST_PLAYER.replace("{clientName}", clientName)}</Typography></DialogContentText>
 					</DialogContent>
 					<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-						<Button 
+						<Button
 							variant="contained"
 							size="medium"
 							color="inherit"
@@ -458,7 +459,7 @@ AnswerCallPanel.prototype = {
 	assignTableToChannel: PropTypes.func,
 	toggleMuteChannel: PropTypes.func,
 	kickoutClientFromDataServer: PropTypes.func,
-	kickoutClient: PropTypes.func, 
+	kickoutClient: PropTypes.func,
 	blacklistClient: PropTypes.func,
 	tableList: PropTypes.array,
 	setManagerAction: PropTypes.func,
@@ -468,7 +469,7 @@ AnswerCallPanel.prototype = {
 	toggleToast: PropTypes.func
 };
 
-const TelebetList = ({ 
+const TelebetList = ({
 	classes,
 	channelList,
 	joinChannel,
@@ -523,7 +524,7 @@ const TelebetList = ({
 
 	if (isAnswerCall) {
 		panel = (
-			<AnswerCallPanel 
+			<AnswerCallPanel
 				classes={classes}
 				currentChannelId={currentChannelId}
 				channelList={channelList}
@@ -589,7 +590,7 @@ TelebetList.prototype = {
 const StyledTelebetList = withStyles(styles)(TelebetList);
 
 const mapStateToProps = state => {
-	const { 
+	const {
 		voiceAppId,
 		channelList,
 		currentChannelId,
@@ -598,10 +599,10 @@ const mapStateToProps = state => {
 		waitingList
 	} = state.voice;
 
-	const { 
+	const {
 		tableList
 	} = state.data;
-	
+
   return ({
 		voiceAppId,
 		channelList,

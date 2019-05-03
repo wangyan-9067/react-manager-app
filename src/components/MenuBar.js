@@ -33,6 +33,10 @@ import CallNotification from './CallNotification';
 import { getLangConfig } from '../helpers/appUtils';
 
 const styles = theme => ({
+  version: {
+    position: 'absolute',
+    right: theme.spacing.unit
+  },
   appBar: {
     backgroundColor: '#E8E8E8',
     color: '#3970B0'
@@ -225,13 +229,15 @@ class MenuBar extends React.Component {
       show,
       hide,
       gutters,
-      labelContainer
+      labelContainer,
+      version
     } = classes;
     const langConfig = getLangConfig();
 
     return (
       <div className={root}>
         <AppBar position="static" color="inherit" className={appBar}>
+          <Typography variant='body2' className={version}>{process.env.REACT_APP_VERSION}</Typography>
           <Toolbar classes={{ gutters }}>
             <DateTimeBadge />
             <div className={grow} />
