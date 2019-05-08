@@ -21,7 +21,8 @@
     "ASSIGN_TABLE": "配对",
     "KICKOUT_PLAYER": "踢走玩家",
     "BLACKLIST_PLAYER": "列入黑名单",
-    "JOIN_CHANNEL": "接听"
+    "JOIN_CHANNEL": "接听",
+    "JOIN_CHANNEL_2": "{name}接听中"
   },
   "NO_TABLE_INFO": "没有桌台资讯",
   "MENU_BAR_LABEL": {

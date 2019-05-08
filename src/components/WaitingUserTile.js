@@ -68,7 +68,7 @@ const styles = {
   }
 };
 
-const AlreadyHaveToken = ({ classes, name, waitingTime, kickDelegator }) => {
+const AlreadyHaveToken = ({ classes, name, waitingTime, kickDelegator, tel }) => {
   const { card, tokenCard, cardContentRoot, cardContent, cardContentText, cardContentMainText, cardContentSubText, actionButton, kickButton } = classes;
   const langConfig = getLangConfig();
 
@@ -76,6 +76,7 @@ const AlreadyHaveToken = ({ classes, name, waitingTime, kickDelegator }) => {
     <Card className={classNames(card, tokenCard)}>
       <CardContent className={cardContent} classes={{ root: cardContentRoot }}>
 				<Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} noWrap={true} align="center">{name}</Typography>
+        <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{tel}</Typography>
         <Typography color="inherit" className={classNames(cardContentText, cardContentSubText)} noWrap={true} align="center">{langConfig.BUTTON_LABEL.DEAL_IN}</Typography>
 				<CardActions>
           <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, kickButton)} onClick={() => { kickDelegator(name); }}>{langConfig.BUTTON_LABEL.KICKOUT}</Button>
@@ -93,14 +94,15 @@ AlreadyHaveToken.propTypes = {
   kickDelegator: PropTypes.func
 };
 
-const WaitingForToken = ({ classes, name, waitingTime, assignTokenToDelegator }) => {
-  const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButton } = classes;
+const WaitingForToken = ({ classes, name, waitingTime, assignTokenToDelegator, tel }) => {
+  const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButton,cardContentSubText } = classes;
   const langConfig = getLangConfig();
 
   return (
     <Card className={card}>
       <CardContent className={cardContent} classes={{ root: cardContentRoot }}>
 				<Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} noWrap={true} align="center">{name}</Typography>
+        <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{tel}</Typography>
 				<CardActions>
           <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { assignTokenToDelegator(name); }}>{langConfig.BUTTON_LABEL.ASSIGN_TOKEN}</Button>
 				</CardActions>
@@ -119,14 +121,13 @@ WaitingForToken.propTypes = {
 
 const WaitingUserTile = ({ classes, item, assignTokenToDelegator, kickDelegator }) => {
   const [waitingTime, setWaitingTime] = useState({});
-  const { name, waitingStartTime, token } = item;
-
+  const { name, tel, waitingStartTime, token } = item;
   let panel;
 
   if (token === 1) {
-    panel = <AlreadyHaveToken classes={classes} name={name} waitingTime={waitingTime[item.name]} kickDelegator={kickDelegator} />;
+    panel = <AlreadyHaveToken classes={classes} name={name} waitingTime={waitingTime[item.name]} kickDelegator={kickDelegator} tel={tel} />;
   } else {
-    panel = <WaitingForToken classes={classes} name={name} waitingTime={waitingTime[item.name]} assignTokenToDelegator={assignTokenToDelegator} />;
+    panel = <WaitingForToken classes={classes} name={name} waitingTime={waitingTime[item.name]} assignTokenToDelegator={assignTokenToDelegator} tel={tel}/>;
   }
 
   useEffect(() => {

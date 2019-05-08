@@ -277,7 +277,7 @@ const AnswerCallPanel = ({
 
 	const { vid, clientName, anchorName, clientMute, anchorMute } = currentChannel;
 	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;
-
+	console.log("Current Table: ",currentTable)
 	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
 	const [tableAssigned, setTableAssigned] = useState(vid);
 	const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
@@ -617,8 +617,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
 	setManagerAction: action => dispatch(setManagerAction(action)),
 	setIsAnswerCall: answer => dispatch(setIsAnswerCall(answer)),
-  setToastMessage: message => dispatch(setToastMessage(message)),
-  setToastVariant: variant => dispatch(setToastVariant(variant)),
+	setToastMessage: message => dispatch(setToastMessage(message)),
+	setToastVariant: variant => dispatch(setToastVariant(variant)),
 	toggleToast: toggle => dispatch(toggleToast(toggle)),
 	setIncomingCallCount: count => dispatch(setIncomingCallCount(count))
 });
