@@ -299,7 +299,7 @@ class App extends React.Component {
           setIsAnswerCall(joinStatus === 0 ? true : false);
 
           if (joinStatus === SUCCESS) {
-            await RTC.joinRoom(currentChannelId, voiceAppId);
+            await RTC.joinRoom(currentChannelId.toString(), voiceAppId);
             this.sendManagerAction(MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
           }
         break;
@@ -544,7 +544,6 @@ class App extends React.Component {
 
       case CDS_CLIENT_ENTER_TABLE_NOTIFY:
         const currentTable = tableList.find(table => table.vid === evt.data.vid);
-
         setTableList({
           vid: evt.data.vid,
           username: evt.data.username,
@@ -1187,7 +1186,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall, formValues, incomingCallCount } = state.voice;
+  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall, formValues, incomingCallCount } = state.voice;  
   const { tableList } = state.data;
   const { variant, message, duration, open, managerCredential, showLoading } = state.app;
   return ({

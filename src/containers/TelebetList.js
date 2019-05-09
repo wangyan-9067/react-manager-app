@@ -556,7 +556,9 @@ const TelebetList = ({
 		<div className={classList}>
 			{ panel }
 			<div className={separator} />
-			<WaitingUser waitingList={waitingList} assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
+			{!isAnswerCall && 			
+				<WaitingUser waitingList={waitingList} assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
+			}
 		</div>
 	);
 }
