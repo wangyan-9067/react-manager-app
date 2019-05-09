@@ -152,7 +152,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 		default:
 		break;
 	}
-console.log(managerName, currentManagerName);
+
 	return (
     <Card className={classNames(cardBase, classes[cardClass])}>
       <CardContent className={cardContent}>

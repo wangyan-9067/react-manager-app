@@ -148,7 +148,8 @@
     "MANAGER_PASSWORD": "密码:"
   },
   "SYSTEM_MESSAGES": {
-    "CONNECTING": "连线中......"
+    "CONNECTING": "连线中......",
+    "DISCONNECT": "连线中断."
   },
   "ERROR_MESSAGES": {
     "NO_APP_ID": "[VoiceServer] 没有AppId, 请联络管理员",

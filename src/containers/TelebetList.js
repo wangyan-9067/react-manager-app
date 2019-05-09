@@ -367,7 +367,7 @@ const AnswerCallPanel = ({
 								}}
 							>
 							{tableList.map((table, index) =>
-								<ToggleButton value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE || vidsInChannel.indexOf(table.vid) > -1} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
+								<ToggleButton key={index} value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE || vidsInChannel.indexOf(table.vid) > -1} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
 									<Typography color="inherit" className={toggleButtonLabel}>{table.vid}</Typography>
 								</ToggleButton>
 							)}
@@ -521,6 +521,9 @@ const TelebetList = ({
 	// channelList[2].clientState = 2;
 
 	let panel;
+console.log("isAnswerCall", isAnswerCall);
+
+	
 
 	if (isAnswerCall) {
 		panel = (
@@ -603,8 +606,7 @@ const mapStateToProps = state => {
 
 	const {
 		tableList
-	} = state.data;
-
+	} = state.data;	
   return ({
 		voiceAppId,
 		channelList,

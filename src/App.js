@@ -468,7 +468,26 @@ class App extends React.Component {
   }
 
   onVoiceSocketClose = () => {
-    RTC.leaveRoom();
+    RTC.leaveRoom();    
+    const {
+      setIsUserAuthenticated,
+      setToastMessage,
+      setToastVariant,
+      setToastDuration,
+      toggleToast,
+    } = this.props;
+
+    const langConfig = getLangConfig();
+    handleLoginFailure({
+      setIsUserAuthenticated,
+      setToastMessage,
+      setToastVariant,
+      setToastDuration,
+      toggleToast,
+      message: langConfig.SYSTEM_MESSAGES.DISCONNECT
+    });
+    this.reset();
+
   }
 
   onVoiceSocketDie = () => {
@@ -709,6 +728,32 @@ class App extends React.Component {
     }
   }
 
+  onDataSocketClose = () => {
+    RTC.leaveRoom();
+    const {
+      setIsUserAuthenticated,
+      setToastMessage,
+      setToastVariant,
+      setToastDuration,
+      toggleToast,
+    } = this.props;
+
+    const langConfig = getLangConfig();
+    handleLoginFailure({
+      setIsUserAuthenticated,
+      setToastMessage,
+      setToastVariant,
+      setToastDuration,
+      toggleToast,
+      message: langConfig.SYSTEM_MESSAGES.DISCONNECT
+    });
+    this.reset()
+  }
+
+  onDataSocketDie = () => {
+    RTC.leaveRoom();
+  }
+
   onNullGateSocketOpen = evt => {
     this.nullGateLoginCMD();
   }
@@ -746,14 +791,50 @@ class App extends React.Component {
     }
   }
 
+  onNullGateSocketClose = () => {
+    RTC.leaveRoom();
+    const {
+      setIsUserAuthenticated,
+      setToastMessage,
+      setToastVariant,
+      setToastDuration,
+      toggleToast,
+    } = this.props;
+
+    const langConfig = getLangConfig();
+    handleLoginFailure({
+      setIsUserAuthenticated,
+      setToastMessage,
+      setToastVariant,
+      setToastDuration,
+      toggleToast,
+      message: langConfig.SYSTEM_MESSAGES.DISCONNECT
+    });
+    this.reset()
+  }
+
+  onNullGateSocketDie = () => {
+    RTC.leaveRoom();
+  }
+
   // TODO: move to appUtils
   reset = () => {
     const { voice: voiceSocket, data: dataSocket, setManagerCredential, setIsUserAuthenticated } = this.props;
+    if(voiceSocket.isOpen()) {
+      voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
+      voiceSocket.close();  
+    }
 
-    voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
-    voiceSocket.close();
-    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
-    dataSocket.close();
+    if(dataSocket.isOpen()) {
+      dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
+      dataSocket.close();      
+    }
+
+    if(nullGate.isOpen()) {
+      nullGate.close();      
+    }
+    
+
 
     setManagerCredential(null);
     setIsUserAuthenticated(false);
@@ -769,9 +850,14 @@ class App extends React.Component {
 
     dataSocket.addEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
+    dataSocket.addEventListener(Socket.EVENT_CLOSE, this.onDataSocketClose);
+    dataSocket.addEventListener(Socket.EVENT_DIE, this.onDataSocketDie);
 
     nullGate.addEventListener(Socket.EVENT_OPEN, this.onNullGateSocketOpen);
     nullGate.addEventListener(Socket.EVENT_PACKET, this.onNullGateSocketPacket);
+    nullGate.addEventListener(Socket.EVENT_CLOSE, this.onNullGateSocketClose);
+    nullGate.addEventListener(Socket.EVENT_DIE, this.onNullGateSocketDie);
+
 
     await voiceSocket.autoConnect();
     // await dataSocket.autoConnect();
@@ -788,9 +874,13 @@ class App extends React.Component {
 
     dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
+    dataSocket.removeEventListener(Socket.EVENT_CLOSE, this.onDataSocketClose);
+    dataSocket.removeEventListener(Socket.EVENT_DIE, this.onDataSocketDie);    
 
     nullGate.removeEventListener(Socket.EVENT_OPEN, this.onNullGateSocketOpen);
     nullGate.removeEventListener(Socket.EVENT_PACKET, this.onNullGateSocketPacket);
+    nullGate.removeEventListener(Socket.EVENT_CLOSE, this.onNullGateSocketClose);
+    nullGate.removeEventListener(Socket.EVENT_DIE, this.onNullGateDie);    
   }
 
   joinChannel = channelId => {
@@ -1046,11 +1136,15 @@ class App extends React.Component {
   logout = () => {
     const { voice: voiceSocket, data: dataSocket, resetAction } = this.props;
 
-    voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
-    voiceSocket.close();
+    if(voiceSocket.isOpen()) {
+      voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
+      voiceSocket.close();
+    }
 
-    dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
-    dataSocket.close();
+    if(voiceSocket.isOpen()) {
+      dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
+      dataSocket.close();
+    }
 
     RTC.leaveRoom();
     resetAction();
