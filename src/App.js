@@ -469,24 +469,24 @@ class App extends React.Component {
 
   onVoiceSocketClose = () => {
     RTC.leaveRoom();    
-    const {
-      setIsUserAuthenticated,
-      setToastMessage,
-      setToastVariant,
-      setToastDuration,
-      toggleToast,
-    } = this.props;
+    // const {
+    //   setIsUserAuthenticated,
+    //   setToastMessage,
+    //   setToastVariant,
+    //   setToastDuration,
+    //   toggleToast,
+    // } = this.props;
 
-    const langConfig = getLangConfig();
-    handleLoginFailure({
-      setIsUserAuthenticated,
-      setToastMessage,
-      setToastVariant,
-      setToastDuration,
-      toggleToast,
-      message: langConfig.SYSTEM_MESSAGES.DISCONNECT
-    });
-    this.reset();
+    // const langConfig = getLangConfig();
+    // handleLoginFailure({
+    //   setIsUserAuthenticated,
+    //   setToastMessage,
+    //   setToastVariant,
+    //   setToastDuration,
+    //   toggleToast,
+    //   message: langConfig.SYSTEM_MESSAGES.DISCONNECT
+    // });
+    // this.reset();
 
   }
 
@@ -729,29 +729,29 @@ class App extends React.Component {
   }
 
   onDataSocketClose = () => {
-    RTC.leaveRoom();
-    const {
-      setIsUserAuthenticated,
-      setToastMessage,
-      setToastVariant,
-      setToastDuration,
-      toggleToast,
-    } = this.props;
+    // RTC.leaveRoom();
+    // const {
+    //   setIsUserAuthenticated,
+    //   setToastMessage,
+    //   setToastVariant,
+    //   setToastDuration,
+    //   toggleToast,
+    // } = this.props;
 
-    const langConfig = getLangConfig();
-    handleLoginFailure({
-      setIsUserAuthenticated,
-      setToastMessage,
-      setToastVariant,
-      setToastDuration,
-      toggleToast,
-      message: langConfig.SYSTEM_MESSAGES.DISCONNECT
-    });
-    this.reset()
+    // const langConfig = getLangConfig();
+    // handleLoginFailure({
+    //   setIsUserAuthenticated,
+    //   setToastMessage,
+    //   setToastVariant,
+    //   setToastDuration,
+    //   toggleToast,
+    //   message: langConfig.SYSTEM_MESSAGES.DISCONNECT
+    // });
+    // this.reset()
   }
 
   onDataSocketDie = () => {
-    RTC.leaveRoom();
+    // RTC.leaveRoom();
   }
 
   onNullGateSocketOpen = evt => {
@@ -792,29 +792,29 @@ class App extends React.Component {
   }
 
   onNullGateSocketClose = () => {
-    RTC.leaveRoom();
-    const {
-      setIsUserAuthenticated,
-      setToastMessage,
-      setToastVariant,
-      setToastDuration,
-      toggleToast,
-    } = this.props;
+    // RTC.leaveRoom();
+    // const {
+    //   setIsUserAuthenticated,
+    //   setToastMessage,
+    //   setToastVariant,
+    //   setToastDuration,
+    //   toggleToast,
+    // } = this.props;
 
-    const langConfig = getLangConfig();
-    handleLoginFailure({
-      setIsUserAuthenticated,
-      setToastMessage,
-      setToastVariant,
-      setToastDuration,
-      toggleToast,
-      message: langConfig.SYSTEM_MESSAGES.DISCONNECT
-    });
-    this.reset()
+    // const langConfig = getLangConfig();
+    // handleLoginFailure({
+    //   setIsUserAuthenticated,
+    //   setToastMessage,
+    //   setToastVariant,
+    //   setToastDuration,
+    //   toggleToast,
+    //   message: langConfig.SYSTEM_MESSAGES.DISCONNECT
+    // });
+    // this.reset()
   }
 
   onNullGateSocketDie = () => {
-    RTC.leaveRoom();
+    // RTC.leaveRoom();
   }
 
   // TODO: move to appUtils

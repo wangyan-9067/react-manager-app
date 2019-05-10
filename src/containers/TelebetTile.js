@@ -124,7 +124,7 @@ DisabledCard.propTypes = {
 
 const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, currentTable, setIncomingCallCount, incomingCallCount, isConnecting, currentManagerName }) => {	
 	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
-	const { channelId, anchorState, managerName } = item;	
+	const { channelId, anchorState, managerName, clientBalance } = item;	
 	const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;	
 	const langConfig = getLangConfig();
 	let anchorStateText = '';
@@ -151,7 +151,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 
 		default:
 		break;
-	}
+	}	
 
 	return (
     <Card className={classNames(cardBase, classes[cardClass])}>
@@ -160,7 +160,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 				{ isAnchor && anchorStateText ? (
 					<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.REASON}: {anchorStateText}</Typography>
 				) : null }
-				<Typography color="inherit" className={cardContentText}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</Typography>
+				<Typography color="inherit" className={cardContentText}>{clientBalance > 0 ? `$${formatAmount(clientBalance)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
       	<Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled={managerName && managerName !== currentManagerName} onClick={() => { joinRoom(channelId, joinChannel, isAnchor, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }}>{langConfig.BUTTON_LABEL.JOIN_CHANNEL}</Button>
@@ -184,7 +184,7 @@ CallInfoCard.propTypes = {
 
 const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable, setIncomingCallCount, incomingCallCount }) => {
 	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
-	const { clientName, anchorName, channelId, managerName } = item;
+	const { clientName, anchorName, channelId, managerName, clientBalance } = item;
 	const langConfig = getLangConfig();
 
 	return (
@@ -192,7 +192,7 @@ const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChann
       <CardContent className={cardContent}>
 				<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.ANCHOR}<span className={client}>{anchorName}</span></Typography>
 				<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.PLAYER}<span className={client}>{clientName}</span>{langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography>
-				<Typography color="inherit" className={cardContentText}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</Typography>
+				<Typography color="inherit" className={cardContentText}>{clientBalance > 0 ? `$${formatAmount(clientBalance)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
         <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }} disabled={managerName && !isManagerReconnect ? true : false}>{langConfig.BUTTON_LABEL.JOIN_CHANNEL_2.replace("{name}", managerName)}</Button>
@@ -221,20 +221,21 @@ const TelebetTile = ({
 	tableList,
 	setIncomingCallCount,
 	incomingCallCount
-}) => {	
-	const { anchorName, clientName, managerName, anchorState, clientState, vid } = item;	
+}) => {		
+	const { anchorName, clientName, managerName, managerState, anchorState, clientState, vid,  } = item;	
 	const { CONNECTED, CONNECTING } = USER_STATE;
 	const currentManagerName = isObject(managerCredential) ? managerCredential.managerLoginname: '';	
 	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;
 
 	const isCallingManager = CALLING_MANAGER_STATES.findIndex(state => state === anchorState) !== -1;
 	const isManagerReconnect = managerName === currentManagerName ? true : false;
+	const isManagerConnected = managerState === 1 ? true : false
 
 	const clientConnecting = clientName && !anchorName && clientState === CONNECTING;
-	const anchorConnecting = clientName && anchorName && isCallingManager && anchorState === CONNECTING;
+	const anchorConnecting = clientName && anchorName;
 	const clientDealIn = clientName && !anchorName && clientState === CONNECTED;
 	const anchorDealIn = clientName && anchorName && isCallingManager;
-	const clientAnchorPlaying = clientName && (clientState === CONNECTED || clientState === CONNECTING) && anchorName && (anchorState === CONNECTED || anchorState === CONNECTING);
+	const clientAnchorPlaying = clientName && (clientState === CONNECTED || clientState === CONNECTING) && anchorName;
 	const nobodyDealIn = !clientName && !anchorName && !managerName;
 	// const fullDesk = clientName && (anchorName || managerName) && clientState === CONNECTED && (anchorState === CONNECTED || managerState === CONNECTED);
 
@@ -263,11 +264,44 @@ const TelebetTile = ({
 	if (clientAnchorPlaying) {
 		cardClass = 'playingCard';
 	}
-		console.log(item)
+		
 
 	if (nobodyDealIn) {
 		cardClass = 'emptyCard';
 		panel = <EmptyCard classes={classes} />;
+	} else if (isManagerConnected) {
+		panel = (
+			<FullChatroomCard 
+				classes={classes}
+				item={item}
+				setIsAnchorCall={setIsAnchorCall}
+				cardClass={cardClass}
+				joinChannel={joinChannel}
+				isManagerReconnect={isManagerReconnect}
+				currentTable={currentTable}
+				setIncomingCallCount={setIncomingCallCount}
+				incomingCallCount={incomingCallCount}
+			/>
+		);
+	} else if (clientConnecting || anchorConnecting) {		
+		panel = (
+			<CallInfoCard 
+				classes={classes}
+				item={item}
+				setIsAnchorCall={setIsAnchorCall}
+				isAnchor={anchorDealIn}
+				role={role}
+				roleName={roleName}
+				cardClass={cardClass}
+				roleClass={roleClass}
+				joinChannel={joinChannel}
+				currentTable={currentTable}
+				setIncomingCallCount={setIncomingCallCount}
+				incomingCallCount={incomingCallCount}
+				isConnecting={true}
+				currentManagerName={currentManagerName}
+			/>
+		);
 	} else if (clientDealIn || anchorDealIn) {
 		if (managerName && !isManagerReconnect) {			
 			cardClass = 'disabledCard';
@@ -301,40 +335,7 @@ const TelebetTile = ({
 				/>
 			);
 		}
-	} else if (clientAnchorPlaying) {
-		panel = (
-			<FullChatroomCard 
-				classes={classes}
-				item={item}
-				setIsAnchorCall={setIsAnchorCall}
-				cardClass={cardClass}
-				joinChannel={joinChannel}
-				isManagerReconnect={isManagerReconnect}
-				currentTable={currentTable}
-				setIncomingCallCount={setIncomingCallCount}
-				incomingCallCount={incomingCallCount}
-			/>
-		);
-	} else if (clientConnecting || anchorConnecting) {		
-		panel = (
-			<CallInfoCard 
-				classes={classes}
-				item={item}
-				setIsAnchorCall={setIsAnchorCall}
-				isAnchor={anchorDealIn}
-				role={role}
-				roleName={roleName}
-				cardClass={cardClass}
-				roleClass={roleClass}
-				joinChannel={joinChannel}
-				currentTable={currentTable}
-				setIncomingCallCount={setIncomingCallCount}
-				incomingCallCount={incomingCallCount}
-				isConnecting={true}
-				currentManagerName={currentManagerName}
-			/>
-		);
-	}
+	} 
 
 	return (
 		<div>{panel}</div>

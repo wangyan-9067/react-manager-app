@@ -276,8 +276,7 @@ const AnswerCallPanel = ({
 	}
 
 	const { vid, clientName, anchorName, clientMute, anchorMute } = currentChannel;
-	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;
-	console.log("Current Table: ",currentTable)
+	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;	
 	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
 	const [tableAssigned, setTableAssigned] = useState(vid);
 	const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
@@ -316,7 +315,6 @@ const AnswerCallPanel = ({
 		answerCallPanelLeft: true,
 		answerCallPanelLeftAnchor: isAnchorCall
 	});
-
 	return (
 		<MuiThemeProvider theme={telebetListTheme}>
 			<Fragment>
@@ -331,7 +329,7 @@ const AnswerCallPanel = ({
 					<Card classes={{ root: answerCallPanelRightRoot }}>
 						<CardContent className={answerCallPanelRight}>
 							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.PLAYER}</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
-							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.BALANCE}</span><span className={answerCallPanelRightTextValue}>{isObject(currentTable) && currentTable.account ? `$${formatAmount(currentTable.account)}` : '-'}</span></Typography>
+							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.BALANCE}</span><span className={answerCallPanelRightTextValue}>{isObject(currentChannel) && currentChannel.clientBalance > 0 ? `$${formatAmount(currentChannel.clientBalance)}` : '-'}</span></Typography>
 							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.TABLE_VID}</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
 						</CardContent>
 					</Card>
@@ -492,7 +490,8 @@ const TelebetList = ({
 	toggleToast,
 	assignTokenToDelegator,
 	kickDelegator,
-	setIncomingCallCount
+	setIncomingCallCount,
+	managerCredential
 }) => {
 	const { separator, tile } = classes;
 
@@ -521,17 +520,28 @@ const TelebetList = ({
 	// channelList[2].clientState = 2;
 
 	let panel;
-console.log("isAnswerCall", isAnswerCall);
+	const currentManager = managerCredential.managerLoginname;
+	let currentAnswering = channelList.filter( channel => channel.managerName === currentManager )
+	let tempAnswerCall = isAnswerCall;
+	let tempAnchorCall = isAnchorCall;
+	let tempCurrentChannelId = currentChannelId;
 
-	
+	if(currentAnswering.length > 0 && currentAnswering[0].managerState === 1) {
+		tempAnswerCall = true;
+		tempAnchorCall = currentAnswering[0].anchorName ? true : false;		
+		tempCurrentChannelId = currentAnswering[0].channelId;
 
-	if (isAnswerCall) {
+	}
+
+
+
+	if (tempAnswerCall) {
 		panel = (
 			<AnswerCallPanel
 				classes={classes}
-				currentChannelId={currentChannelId}
+				currentChannelId={tempCurrentChannelId}
 				channelList={channelList}
-				isAnchorCall={isAnchorCall}
+				isAnchorCall={tempAnchorCall}
 				leaveChannel={leaveChannel}
 				assignTable={assignTable}
 				assignTableToChannel={assignTableToChannel}
@@ -607,6 +617,9 @@ const mapStateToProps = state => {
 	const {
 		tableList
 	} = state.data;	
+	const {
+		managerCredential
+	} = state.app
   return ({
 		voiceAppId,
 		channelList,
@@ -614,7 +627,8 @@ const mapStateToProps = state => {
 		isAnswerCall,
 		isAnchorCall,
 		waitingList,
-		tableList
+		tableList,
+		managerCredential
   });
 };
 
