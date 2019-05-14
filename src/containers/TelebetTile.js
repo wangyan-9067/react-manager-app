@@ -163,7 +163,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 				<Typography color="inherit" className={cardContentText}>{clientBalance > 0 ? `$${formatAmount(clientBalance)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
-      	<Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled={managerName && managerName !== currentManagerName} onClick={() => { joinRoom(channelId, joinChannel, isAnchor, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }}>{langConfig.BUTTON_LABEL.JOIN_CHANNEL}</Button>
+      	<Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled={ !!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchor, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }}>{langConfig.BUTTON_LABEL.JOIN_CHANNEL}</Button>
       </CardActions>
     </Card>
 	);

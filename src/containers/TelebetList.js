@@ -276,13 +276,14 @@ const AnswerCallPanel = ({
 	}
 
 	const { vid, clientName, anchorName, clientMute, anchorMute } = currentChannel;
-	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;	
+	// 'currentTable' is assigned a value but never used
+	// const currentTable = vid ? tableList.find(table => table.vid === vid) : null;	
 	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
 	const [tableAssigned, setTableAssigned] = useState(vid);
 	const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
 	const [openBlacklistDialog, setOpenBlacklistDialog] = useState(false);
 
-	const { KICKOUT_CLIENT, BLACKLIST_CLIENT } = MANAGER_ACTION_TYPE;
+	const { KICKOUT_CLIENT, BLACKLIST_CLIENT } = MANAGER_ACTION_TYPE;	
 
 	let line1Text;
 	let line2Text;
@@ -393,9 +394,9 @@ const AnswerCallPanel = ({
 							size="medium"
 							color="inherit"
 							className={classNames(actionButton, dialogActionButton)}
-							onClick={() => {
+							onClick={() => {	
+								console.log(KICKOUT_CLIENT, tableAssigned, clientName);							
 								setManagerAction(KICKOUT_CLIENT);
-
 								if (!tableAssigned) {
 									kickoutClient(currentChannelId);
 								} else {
@@ -569,7 +570,7 @@ const TelebetList = ({
 		<div className={classList}>
 			{ panel }
 			<div className={separator} />
-			{!isAnswerCall && 			
+			{!tempAnswerCall && 			
 				<WaitingUser waitingList={waitingList} assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
 			}
 		</div>

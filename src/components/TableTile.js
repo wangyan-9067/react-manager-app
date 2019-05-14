@@ -151,8 +151,8 @@ const getPlayTypeText = playtype => {
 const getTableLimitList = (vid, tableLimit) => {
 	const playtypeList = Object.values(PLAYTYPE);
 	const hashTableList = tableLimit.byHash[vid];
-	
 	if (isNonEmptyArray(hashTableList)) {
+		// eslint-disable-next-line
 		return hashTableList.filter(value => {
 			if (playtypeList.includes(value.playtype)) {
 				return value;

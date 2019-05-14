@@ -39,7 +39,8 @@ const TableList = ({
   kickoutClientFromDataServer,
   setKickoutClient,
   clientToKickOut,
-  tableLimit
+  tableLimit,
+  setManagerAction
 }) => {
   const { root, emptyText } = classes;
   const langConfig = getLangConfig();
@@ -57,12 +58,12 @@ const TableList = ({
             toggleDialog(false);
           }}
           actionHandler={() => {
-            const { vid, clientName} = clientToKickOut;
-
+            const { vid, clientName} = clientToKickOut; 
+            console.log(MANAGER_ACTION_TYPE.KICKOUT_CLIENT,vid, clientName)
             setManagerAction(MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
             kickoutClientFromDataServer(vid, clientName);
             toggleDialog(false);
-          }}
+          }}        
           content={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_TABLE_OWNER}
         />
       </Fragment>

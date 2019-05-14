@@ -304,6 +304,7 @@ class UserForm extends React.Component {
       makes it easy to set all validation states on form inputs in case the number
       of fields on our form grows in the future.
     */
+    // eslint-disable-next-line
     Object.keys(state).map(key => {
       if (state[key].hasOwnProperty('isValid')) {
         state[key].isValid = true;

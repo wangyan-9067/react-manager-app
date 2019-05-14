@@ -65,7 +65,10 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
       <Typography align="left" color="inherit" className={title}>{langConfig.ANCHOR_LIST_LABEL.ANCHOR_LIST}</Typography>
       <div className={grow} />
       <List className={listRoot}>
-        {onDutyAnchors && onDutyAnchors.map((anchor, index) => {
+
+        {
+          // eslint-disable-next-line
+          onDutyAnchors && onDutyAnchors.map((anchor, index) => {
           if (anchor) {
             const { loginname, nickname, url, vid } = anchor;
 

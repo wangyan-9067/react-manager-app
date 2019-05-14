@@ -95,7 +95,7 @@ AlreadyHaveToken.propTypes = {
 };
 
 const WaitingForToken = ({ classes, name, waitingTime, assignTokenToDelegator, tel }) => {
-  const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButton,cardContentSubText } = classes;
+  const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButton } = classes;
   const langConfig = getLangConfig();
 
   return (
