@@ -265,7 +265,13 @@ const BetHistory = ({
                 profitClass: row.profit > 0,
                 lossClass: row.profit < 0
               });
-
+              var remark = row.remark;
+              if(remark) {
+                remark = remark.split(",");
+                if(remark.length > 0) {
+                  remark = remark[0].split(":");
+                }
+              }
               return (
                 <TableRow key={row.billno}>
                   <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.billno}</TableCell>
@@ -274,7 +280,7 @@ const BetHistory = ({
                   <TableCell classes={{ root: cellRoot }} align="center">{langConfig.BANKER} {row.bankerVal} {langConfig.PLAYER} {row.playerVal}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center"><AudioButton gmcode={row.gmcode} toggleToast={toggleToast} setToastMessage={setToastMessage} setToastVariant={setToastVariant} /></TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{betHistoryUserPid + row.name}</TableCell>
-                  <TableCell classes={{ root: cellRoot }} align="center">-</TableCell>
+                  <TableCell classes={{ root: cellRoot }} align="center">{remark.length > 1 ? remark[1] : '-'}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
                   <TableCell classes={{ root: cellRoot }} align="center">{formatAmount(row.amount)}</TableCell>
                   <TableCell classes={{ root: cellRoot }} className={profitClasses} align="center">{row.profit > 0 ? '+' : ''}{formatAmount(row.profit)}</TableCell>
