@@ -29,8 +29,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:development": "env-cmd .env.development npm run build",
-    "build:qa": "env-cmd .env.qa npm run build npm run build",
-    "build:uat": "env-cmd .env.uat npm run build npm run build",
+    "build:qa": "env-cmd .env.qa npm run build",
+    "build:uat": "env-cmd .env.uat npm run build",
     "build:production": "env-cmd .env.production npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
