@@ -285,8 +285,8 @@ class Login extends React.Component {
     // dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketOpen);
     dataSocket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
 
-    await voiceSocket.autoConnect();
-    await dataSocket.autoConnect();
+    // await voiceSocket.autoConnect();
+    // await dataSocket.autoConnect();
   }
 
   componentWillUnmount() {
