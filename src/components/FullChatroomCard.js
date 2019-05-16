@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames/bind';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -13,6 +14,73 @@ import { USER_STATE } from '../constants';
 import { formatAmount } from '../helpers/utils';
 
 
+const styles = theme => ({
+	cardBase: {
+		minHeight: '200px'
+	},
+	emptyCard: {
+		borderRadius: '16px',
+		border: '3px solid #F5F5F5',
+		padding: '30px',
+		backgroundColor: '#F5F5F5'
+	},
+	disabledCard: {
+		borderRadius: '16px',
+		border: '3px solid #DDDDDD',
+		padding: '30px',
+		backgroundColor: '#DDDDDD'
+	},
+	card: {
+		borderRadius: '16px',
+		border: '3px solid #FD0100',
+		padding: '30px 10px',
+		backgroundColor: '#F5F5F5'
+	},
+	anchorCard: {
+		borderRadius: '16px',
+		border: '3px solid #3970B0',
+		padding: '30px 10px',
+		backgroundColor: '#F5F5F5'
+	},
+	playingCard: {
+		borderRadius: '16px',
+		border: '3px solid #F5F5F5',
+		padding: '30px 10px',
+		backgroundColor: '#F5F5F5'
+	},
+	cardContent: {
+		color: '#818181'
+	},
+	cardActionButton: {
+		margin: '0 auto',
+		padding: '3px 40px',
+		borderRadius: '60px',
+		fontSize: '20px',
+		fontWeight: 'bold',
+		color: '#FFFFFF',
+		backgroundColor: '#3970B0',
+    '&:hover': {
+      backgroundColor: '#3970B0',
+      borderColor: '#3970B0',
+    }
+	},
+	cardContentText: {
+		fontSize: '24px'
+	},
+	client: {
+		fontWeight: 'bold',
+	},
+	player: {
+		color: '#FD0100'
+	},
+	anchor: {
+		color: '#3970B0'
+	},
+	greenColor: {
+		color: '#36e168'
+	}
+});
+
 const joinRoom = (channelId, joinChannel, isAnchor, setIsAnchorCall, setIncomingCallCount, incomingCallCount) => {
 	setIsAnchorCall(isAnchor);
 	joinChannel(channelId);
@@ -21,7 +89,7 @@ const joinRoom = (channelId, joinChannel, isAnchor, setIsAnchorCall, setIncoming
 
 const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable, setIncomingCallCount, incomingCallCount }) => {
 	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
-	const { clientName, anchorState, anchorName, channelId, managerName, clientBalance, vid } = item;
+	const { clientName, anchorState, anchorName, channelId, managerName, clientBalance, vid ,clientState} = item;
 	const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;	
 	const langConfig = getLangConfig();
 	let renderButton = ''
@@ -54,12 +122,26 @@ const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChann
 		break;
 	}	
 
+	var anchorTextColorClass = ''
+	if(anchorState === 1) {
+		anchorTextColorClass = classes.anchor;
+	} else {
+		anchorTextColorClass = classes.greenColor;
+	}
+
+	var clientTextColorClass = ''
+	if(clientState === 1) {
+		clientTextColorClass = classes.anchor;
+	} else {
+		clientTextColorClass = classes.greenColor;
+	}
+
 	return (
     <Card className={classNames(cardBase, classes[cardClass])}>
 		<CardContent className={cardContent}>
 			{ vid && <Typography color="inherit" className={cardContentText}>{vid}</Typography> }
-			{ anchorName && <Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.ANCHOR}<span className={client}>{anchorName}</span></Typography> }
-			<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.PLAYER}<span className={client}>{clientName}</span>{langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography>
+			{ anchorName && <Typography color="inherit" className={classNames(cardContentText, anchorTextColorClass)}>{langConfig.TELEBET_TILE_LABEL.ANCHOR}<span className={client}> {anchorName} </span>{anchorState === 1 ? langConfig.TELEBET_TILE_LABEL.CONNECTING : langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography> }
+			<Typography color="inherit" className={classNames(cardContentText, clientTextColorClass)}>{langConfig.TELEBET_TILE_LABEL.PLAYER}<span className={client}> {clientName} </span>{clientState === 1 ? langConfig.TELEBET_TILE_LABEL.CONNECTING : langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography>
 			{ [CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT].indexOf(anchorState) > -1 && anchorStateText ? (
 				<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.REASON}: {anchorStateText}</Typography>
 			) : null }
@@ -82,4 +164,4 @@ FullChatroomCard.propTypes = {
 	currentTable: PropTypes.object
 };
 
-export default FullChatroomCard;
+export default withStyles(styles)(FullChatroomCard);

@@ -247,8 +247,7 @@ const TelebetTile = ({
 		panel = <EmptyCard classes={classes} />;
 	} else if (isManagerConnected) {
 		panel = (
-			<FullChatroomCard 
-				classes={classes}
+			<FullChatroomCard 				
 				item={item}
 				setIsAnchorCall={setIsAnchorCall}
 				cardClass={cardClass}
@@ -261,8 +260,7 @@ const TelebetTile = ({
 		);
 	} else if (clientConnecting || anchorConnecting) {		
 		panel = (
-			<CallInfoCard 
-				classes={classes}
+			<CallInfoCard 				
 				item={item}
 				setIsAnchorCall={setIsAnchorCall}
 				isAnchor={anchorDealIn}
