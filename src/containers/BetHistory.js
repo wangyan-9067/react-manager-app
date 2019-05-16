@@ -209,7 +209,7 @@ const BetHistory = ({
   const prevRows = usePrevious(betHistoryList);
   const noRecordDisplay = rows.length === 0;
   const langConfig = getLangConfig();
-
+console.log(rows);
   const handleChangePage = (event, page) => {
     const { loginname, gmCode } = betHistoryTableSearchFields;
     nullGateForwardMsgCMD(loginname, gmCode, page + 1);
