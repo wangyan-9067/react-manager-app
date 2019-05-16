@@ -521,28 +521,13 @@ const TelebetList = ({
 	// channelList[2].clientState = 2;
 
 	let panel;
-	const currentManager = managerCredential.managerLoginname;
-	let currentAnswering = channelList.filter( channel => channel.managerName === currentManager )
-	let tempAnswerCall = isAnswerCall;
-	let tempAnchorCall = isAnchorCall;
-	let tempCurrentChannelId = currentChannelId;
-
-	if(currentAnswering.length > 0 && currentAnswering[0].managerState === 1) {
-		tempAnswerCall = true;
-		tempAnchorCall = currentAnswering[0].anchorName ? true : false;		
-		tempCurrentChannelId = currentAnswering[0].channelId;
-
-	}
-
-
-
-	if (tempAnswerCall) {
+	if (isAnswerCall) {
 		panel = (
 			<AnswerCallPanel
 				classes={classes}
-				currentChannelId={tempCurrentChannelId}
+				currentChannelId={currentChannelId}
 				channelList={channelList}
-				isAnchorCall={tempAnchorCall}
+				isAnchorCall={isAnchorCall}
 				leaveChannel={leaveChannel}
 				assignTable={assignTable}
 				assignTableToChannel={assignTableToChannel}
@@ -570,7 +555,7 @@ const TelebetList = ({
 		<div className={classList}>
 			{ panel }
 			<div className={separator} />
-			{!tempAnswerCall && 			
+			{!isAnswerCall && 			
 				<WaitingUser waitingList={waitingList} assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
 			}
 		</div>

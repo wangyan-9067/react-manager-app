@@ -22,7 +22,8 @@
     "KICKOUT_PLAYER": "踢走玩家",
     "BLACKLIST_PLAYER": "列入黑名单",
     "JOIN_CHANNEL": "接听",
-    "JOIN_CHANNEL_2": "{name}接听中"
+    "JOIN_CHANNEL_2": "{name}接听中",
+    "CONTINUE_CHANNEL": "继续接听"
   },
   "NO_TABLE_INFO": "没有桌台资讯",
   "MENU_BAR_LABEL": {
@@ -59,6 +60,8 @@
     "TIE": "和",
     "BANKER_PAIR": "闲对",
     "PLAYER_PAIR": "庄对",
+    "BIG": "大",
+    "SMALL": "小",
     "BANKER_NO_COMMISSION": "庄免佣",
     "BANKER_DRAGON_BONUS": "庄龙宝",
     "PLAYER_DRAGON_BONUS": "闲龙宝",

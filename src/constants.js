@@ -171,7 +171,9 @@ export const PLAYTYPE = {
 	PLAYER: 2, // 闲
 	TIE: 3, // 和
 	BANKER_PAIR: 4, // 闲对
-	PLAYER_PAIR: 5, // 庄对
+	PLAYER_PAIR: 5, // 庄对,
+	BIG: 6, //大
+	SMALL: 7, //小
 	BANKER_NO_COMMISSION: 11,
 	BANKER_DRAGON_BONUS: 12, // 庄龙宝
 	PLAYER_DRAGON_BONUS: 13, // 闲龙宝

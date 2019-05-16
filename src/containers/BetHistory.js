@@ -128,7 +128,7 @@ const styles = theme => ({
 });
 
 const getPlayType = playtype => {
-  const {	BANKER, PLAYER, TIE, BANKER_PAIR, PLAYER_PAIR, BANKER_NO_COMMISSION, BANKER_DRAGON_BONUS, PLAYER_DRAGON_BONUS, SUPER_SIX, ANY_PAIR, PERFECT_PAIR } = PLAYTYPE;
+  const {	BANKER, PLAYER, TIE, BANKER_PAIR, PLAYER_PAIR, BANKER_NO_COMMISSION, BANKER_DRAGON_BONUS, PLAYER_DRAGON_BONUS, SUPER_SIX, ANY_PAIR, PERFECT_PAIR, BIG, SMALL } = PLAYTYPE;
   const langConfig = getLangConfig();
 
   switch (playtype) {
@@ -162,8 +162,11 @@ const getPlayType = playtype => {
 		case ANY_PAIR:
 			return langConfig.PLAY_TYPE_LABEL.ANY_PAIR;
 
-		case PERFECT_PAIR:
-			return langConfig.PLAY_TYPE_LABEL.PERFECT_PAIR;
+		case BIG:
+			return langConfig.PLAY_TYPE_LABEL.BIG;
+    
+    case SMALL:
+      return langConfig.PLAY_TYPE_LABEL.SMALL;
     
     default:
       return '';

@@ -187,6 +187,12 @@ const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChann
 	const { clientName, anchorName, channelId, managerName, clientBalance } = item;
 	const langConfig = getLangConfig();
 
+	let renderButton = ''
+	if(isManagerReconnect) {
+		renderButton = <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }} disabled={managerName && !isManagerReconnect ? true : false}>{langConfig.BUTTON_LABEL.CONTINUE_CHANNEL}</Button>		
+	} else if(!isManagerReconnect && managerName ){
+		renderButton = <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }} disabled>{langConfig.BUTTON_LABEL.JOIN_CHANNEL_2.replace("{name}", managerName)}</Button>		
+	}
 	return (
     <Card className={classNames(cardBase, classes[cardClass])}>
       <CardContent className={cardContent}>
@@ -195,7 +201,7 @@ const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChann
 				<Typography color="inherit" className={cardContentText}>{clientBalance > 0 ? `$${formatAmount(clientBalance)}` : '-'}</Typography>
       </CardContent>
       <CardActions>
-        <Button variant="contained" size="medium" color="inherit" className={cardActionButton} onClick={() => { joinRoom(channelId, joinChannel, true, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }} disabled={managerName && !isManagerReconnect ? true : false}>{langConfig.BUTTON_LABEL.JOIN_CHANNEL_2.replace("{name}", managerName)}</Button>
+        {renderButton}
       </CardActions>
     </Card>
 	);
