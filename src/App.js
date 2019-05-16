@@ -1192,7 +1192,7 @@ class App extends React.Component {
       bytes.writeBytes(Socket.stringToBytes('', GM_TYPE));
       bytes.writeBytes(Socket.stringToBytes('', BILL_NO));
       // TODO: set to EBAC
-      bytes.writeBytes(Socket.stringToBytes('', PLATFORM));
+      bytes.writeBytes(Socket.stringToBytes('EBAC', PLATFORM));
       bytes.writeBytes(Socket.stringToBytes('', REQEXT));
   
       bytes.writeShort(perNum);

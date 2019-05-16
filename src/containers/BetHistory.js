@@ -161,7 +161,9 @@ const getPlayType = playtype => {
 
 		case ANY_PAIR:
 			return langConfig.PLAY_TYPE_LABEL.ANY_PAIR;
-
+    case PERFECT_PAIR:
+      return langConfig.PLAY_TYPE_LABEL.PERFECT_PAIR;
+      
 		case BIG:
 			return langConfig.PLAY_TYPE_LABEL.BIG;
     
