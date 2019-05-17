@@ -94,18 +94,17 @@ export default function data(state = initialState, action) {
 			const { data: tableLimitData, vid: tableId } = action;
 			const tableIds = [];
 			const tableLimitList = {};
-
+			let tempTableLimit = state.tableLimit;
 			if (Array.isArray(tableLimitData) && tableLimitData.length > 0) {
 				tableIds.push(tableId);
+				tempTableLimit.byId.push(tableId);
+				tempTableLimit.byHash[tableId] = tableLimitData;
 				tableLimitList[tableId] = tableLimitData;
 			}
-
+console.log("Table Limit => ", tableLimitList, tableId, state)
 			return {
 				...state,
-				tableLimit: {
-					byId: tableIds,
-					byHash: tableLimitList
-				}
+				tableLimit: tempTableLimit
 			};
 
 		case SET_BET_HISTORY_INFO:
