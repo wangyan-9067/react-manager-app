@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 
 import PopoverList from './PopoverList';
 import TextList from './TextList';
-import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS, PLAYTYPE } from '../constants';
+import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS, PLAYTYPE, SUPPORT_PLAYTYPE } from '../constants';
 import { isObject, isNonEmptyArray } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 
@@ -101,7 +101,7 @@ const getGameStatus = status => {
 };
 
 const getPlayTypeText = playtype => {
-	const { BANKER, PLAYER, TIE, BANKER_PAIR, PLAYER_PAIR, BANKER_NO_COMMISSION, BANKER_DRAGON_BONUS, PLAYER_DRAGON_BONUS, SUPER_SIX, ANY_PAIR, PERFECT_PAIR } = PLAYTYPE;
+	const { BANKER, PLAYER, TIE, BANKER_PAIR, PLAYER_PAIR, BANKER_NO_COMMISSION, BANKER_DRAGON_BONUS, PLAYER_DRAGON_BONUS, SUPER_SIX, ANY_PAIR, PERFECT_PAIR, BIG, SMALL } = PLAYTYPE;
 	const langConfig = getLangConfig();
 
 	switch(playtype) {
@@ -137,6 +137,10 @@ const getPlayTypeText = playtype => {
 
 		case PERFECT_PAIR:
 			return langConfig.PLAY_TYPE_LABEL.PERFECT_PAIR;
+		case BIG:
+			return langConfig.PLAY_TYPE_LABEL.BIG;
+		case SMALL:
+			return langConfig.PLAY_TYPE_LABEL.SMALL;
 		
 		default:
 		return;
@@ -149,12 +153,13 @@ const getPlayTypeText = playtype => {
 // };
 
 const getTableLimitList = (vid, tableLimit) => {
+	console.log(vid, tableLimit)
 	const playtypeList = Object.values(PLAYTYPE);
 	const hashTableList = tableLimit.byHash[vid];
 	if (isNonEmptyArray(hashTableList)) {
 		// eslint-disable-next-line
 		return hashTableList.filter(value => {
-			if (playtypeList.includes(value.playtype)) {
+			if (SUPPORT_PLAYTYPE.includes(value.playtype)) {
 				return value;
 			}
 		});
@@ -186,7 +191,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorName ? currentChannel.anchorName : '-';
 	const tableLimitList = getTableLimitList(vid, tableLimit);
 	const langConfig = getLangConfig();
-	const tableLimitDisplay = isNonEmptyArray(tableLimitList) ? (
+	const tableLimitDisplay = tableLimitList.length > 0 ? (
 		<PopoverList buttonText={langConfig.TABLE_LIMIT_LIST}>
 			<TextList list={tableLimitList} dataItem={DataItem} />
 		</PopoverList>
