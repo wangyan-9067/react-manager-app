@@ -1138,12 +1138,20 @@ class App extends React.Component {
 
     if(voiceSocket.isOpen()) {
       voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
-      voiceSocket.close();
+      setTimeout(() => {
+        voiceSocket.close();        
+      }, 500);
     }
 
     if(voiceSocket.isOpen()) {
       dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
-      dataSocket.close();
+      setTimeout(() => {
+        dataSocket.close();
+      }, 500);
+    }
+
+    if(nullGate.isOpen()) {
+      nullGate.close();
     }
 
     RTC.leaveRoom();
