@@ -113,6 +113,8 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 		case ADVERTISEMENT:
 			anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.ADVERTISEMENT;
 		break;
+		default:
+		break;
 	}	
 	var anchorTextColorClass = ''
 	if(anchorState === 1) {

@@ -120,6 +120,8 @@ const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChann
 		case ADVERTISEMENT:
 			anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.ADVERTISEMENT;
 		break;
+		default:
+		break;
 	}	
 
 	var anchorTextColorClass = ''
