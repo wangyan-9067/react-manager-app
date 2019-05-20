@@ -95,7 +95,7 @@ const StyledTableList = withStyles(styles)(TableList);
 const mapStateToProps = state => {
   const { voice, data, app } = state;
   const { anchorsOnDutyList, channelList } = voice;
-  const { tableList, clientToKickOut, tableLimit } = data;
+  const { tableList, clientToKickOut, tableLimit, player } = data;
   const { openDialog } = app;
 	
   return ({

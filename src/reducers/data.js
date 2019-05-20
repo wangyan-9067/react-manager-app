@@ -7,7 +7,8 @@ import {
 	SET_BET_HISTORY_INFO,
 	SET_BET_HISTORY_USER_PID,
 	SET_BET_HISTORY_TABLE_PAGE_INDEX,
-	SET_BET_HISTORY_SEARCH_FIELDS
+	SET_BET_HISTORY_SEARCH_FIELDS,
+	UPDATE_PLAYER_BALANCE
 } from '../types';
   
 const initialState = {
@@ -33,6 +34,10 @@ const initialState = {
 	betHistoryTableSearchFields: {
 		loginname: '',
 		gmCode: ''
+	},
+	player: {
+		username: '',
+		balance: 0
 	}
 };
 
@@ -101,7 +106,6 @@ export default function data(state = initialState, action) {
 				tempTableLimit.byHash[tableId] = tableLimitData;
 				tableLimitList[tableId] = tableLimitData;
 			}
-console.log("Table Limit => ", tableLimitList, tableId, state)
 			return {
 				...state,
 				tableLimit: tempTableLimit
@@ -129,7 +133,11 @@ console.log("Table Limit => ", tableLimitList, tableId, state)
 				gmCode: action.fields.gmCode
 			};
 			return { ...state, betHistoryTableSearchFields }; 
-
+		case UPDATE_PLAYER_BALANCE:		
+			return { ...state, player: {
+				username: action.data.username,
+				balance: action.data.balance
+			} }; 
 		case RESET_ACTION:
       return initialState;
 
