@@ -87,9 +87,12 @@ const joinRoom = (channelId, joinChannel, isAnchor, setIsAnchorCall, setIncoming
 	setIncomingCallCount(incomingCallCount - 1)
 };
 
-const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable, setIncomingCallCount, incomingCallCount }) => {
+const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable, setIncomingCallCount, incomingCallCount, player }) => {
 	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
 	const { clientName, anchorState, anchorName, channelId, managerName, clientBalance, vid ,clientState} = item;
+	let latestClientBalance = clientBalance;
+	if(player.username !== '' && player.username === clientName) latestClientBalance = player.balance;
+	console.log("===",player, item);
 	const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;	
 	const langConfig = getLangConfig();
 	let renderButton = ''
@@ -145,9 +148,9 @@ const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChann
 			{ anchorName && <Typography color="inherit" className={classNames(cardContentText, anchorTextColorClass)}>{langConfig.TELEBET_TILE_LABEL.ANCHOR}<span className={client}> {anchorName} </span>{anchorState === 1 ? langConfig.TELEBET_TILE_LABEL.CONNECTING : langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography> }
 			<Typography color="inherit" className={classNames(cardContentText, clientTextColorClass)}>{langConfig.TELEBET_TILE_LABEL.PLAYER}<span className={client}> {clientName} </span>{clientState === 1 ? langConfig.TELEBET_TILE_LABEL.CONNECTING : langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography>
 			{ [CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT].indexOf(anchorState) > -1 && anchorStateText ? (
-				<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.REASON}: {anchorStateText}</Typography>
+				<Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.REASON} {anchorStateText}</Typography>
 			) : null }
-			<Typography color="inherit" className={cardContentText}>{clientBalance > 0 ? `$${formatAmount(clientBalance)}` : '-'}</Typography>
+			<Typography color="inherit" className={cardContentText}>{latestClientBalance > 0 ? `$${formatAmount(latestClientBalance)}` : '-'}</Typography>
 			</CardContent>
 			<CardActions>
 			{renderButton}

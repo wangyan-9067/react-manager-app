@@ -238,7 +238,8 @@ const AnswerCallPanel = ({
 	setIsAnswerCall,
 	setToastMessage,
 	setToastVariant,
-	toggleToast
+	toggleToast,
+	player
 }) => {
 	const {
 		answerCallPanel,
@@ -266,6 +267,11 @@ const AnswerCallPanel = ({
 	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
 	const vidsInChannel = channelList.map(channel => channel.vid);
 	const langConfig = getLangConfig();
+	let latestPlayerBalance = 0;
+	if(currentChannel) {
+		latestPlayerBalance = currentChannel.clientBalance;
+		if(player.username !== '' && player.username === currentChannel.clientName ) latestPlayerBalance = player.balance;
+	}
 
 	// Error handling when currentChannel is not found in existing channel list
 	if (!currentChannel) {
@@ -330,7 +336,7 @@ const AnswerCallPanel = ({
 					<Card classes={{ root: answerCallPanelRightRoot }}>
 						<CardContent className={answerCallPanelRight}>
 							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.PLAYER}</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
-							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.BALANCE}</span><span className={answerCallPanelRightTextValue}>{isObject(currentChannel) && currentChannel.clientBalance > 0 ? `$${formatAmount(currentChannel.clientBalance)}` : '-'}</span></Typography>
+							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.BALANCE}</span><span className={answerCallPanelRightTextValue}>{latestPlayerBalance > 0 ? `$${formatAmount(latestPlayerBalance)}` : '-'}</span></Typography>
 							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.TABLE_VID}</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
 						</CardContent>
 					</Card>
@@ -492,7 +498,8 @@ const TelebetList = ({
 	assignTokenToDelegator,
 	kickDelegator,
 	setIncomingCallCount,
-	managerCredential
+	managerCredential,
+	player
 }) => {
 	const { separator, tile } = classes;
 
@@ -541,6 +548,7 @@ const TelebetList = ({
 				setToastMessage={setToastMessage}
 				setToastVariant={setToastVariant}
 				toggleToast={toggleToast}
+				player={player}
 			/>
 		);
 	} else {
@@ -601,7 +609,8 @@ const mapStateToProps = state => {
 	} = state.voice;
 
 	const {
-		tableList
+		tableList,
+		player
 	} = state.data;	
 	const {
 		managerCredential
@@ -614,7 +623,8 @@ const mapStateToProps = state => {
 		isAnchorCall,
 		waitingList,
 		tableList,
-		managerCredential
+		managerCredential,
+		player
   });
 };
 

@@ -196,13 +196,13 @@ const TelebetTile = ({
 	managerCredential,
 	tableList,
 	setIncomingCallCount,
-	incomingCallCount
+	incomingCallCount,
+	player
 }) => {		
 	const { anchorName, clientName, managerName, anchorState, clientState, vid,  } = item;	
 	const { CONNECTED, CONNECTING } = USER_STATE;
 	const currentManagerName = isObject(managerCredential) ? managerCredential.managerLoginname: '';	
 	const currentTable = vid ? tableList.find(table => table.vid === vid) : null;
-
 	const isCallingManager = CALLING_MANAGER_STATES.findIndex(state => state === anchorState) !== -1;
 	const isManagerReconnect = managerName === currentManagerName ? true : false;
 	const isManagerConnected = managerName ? true : false
@@ -256,6 +256,7 @@ const TelebetTile = ({
 				currentTable={currentTable}
 				setIncomingCallCount={setIncomingCallCount}
 				incomingCallCount={incomingCallCount}
+				player={player}				
 			/>
 		);
 	} else if (clientConnecting || anchorConnecting) {		
@@ -274,6 +275,7 @@ const TelebetTile = ({
 				incomingCallCount={incomingCallCount}
 				isConnecting={true}
 				currentManagerName={currentManagerName}
+				player={player}
 			/>
 		);
 	} else if (clientDealIn || anchorDealIn) {
@@ -306,6 +308,7 @@ const TelebetTile = ({
 					incomingCallCount={incomingCallCount}
 					isConnecting={false}
 					currentManagerName={currentManagerName}
+					player={player}
 				/>
 			);
 		}
@@ -333,11 +336,13 @@ const StyledTelebetTile = withStyles(styles)(TelebetTile);
 const mapStateToProps = state => {
 	const { voiceAppId, incomingCallCount } = state.voice;
 	const { managerCredential } = state.app;
+	const { player } = state.data;
 	
   return ({
 		voiceAppId,
 		managerCredential,
-		incomingCallCount
+		incomingCallCount,
+		player
   });
 };
 
