@@ -152,9 +152,8 @@ const getPlayTypeText = playtype => {
 // 	return targetAnchor ? targetAnchor.anchorName : '-';
 // };
 
-const getTableLimitList = (vid, tableLimit) => {
-	console.log(vid, tableLimit)
-	const playtypeList = Object.values(PLAYTYPE);
+const getTableLimitList = (vid, tableLimit) => {	
+	// const playtypeList = Object.values(PLAYTYPE);
 	const hashTableList = tableLimit.byHash[vid];
 	if (isNonEmptyArray(hashTableList)) {
 		// eslint-disable-next-line
@@ -188,7 +187,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
 	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
 	const currentChannel = channelList.find(channel => channel.vid === vid);
-	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorName ? currentChannel.anchorName : '-';
+	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorState === 2 ? currentChannel.anchorName : '-';
 	const tableLimitList = getTableLimitList(vid, tableLimit);
 	const langConfig = getLangConfig();
 	const tableLimitDisplay = tableLimitList.length > 0 ? (
