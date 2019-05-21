@@ -180,7 +180,7 @@ class Login extends React.Component {
               toggleToast,
               message: langConfig.ERROR_MESSAGES.PWD_ERROR
             });
-            
+
             this.reset();
           } else if (loginStatus === ERR_NO_USER) {
             handleLoginFailure({
@@ -296,9 +296,9 @@ class Login extends React.Component {
     voiceSocket.removeEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
     // dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
-    
-    voiceSocket.close();
-    dataSocket.close();
+
+    // voiceSocket.close();
+    // dataSocket.close();
   }
 
   onChange = (e) => {
@@ -338,6 +338,7 @@ class Login extends React.Component {
       } else {
         await voiceSocket.killSocket();
         await voiceSocket.autoConnect();
+        toggleToast(false);
         voiceServerLoginCMD(managerLoginname.value, managerPassword.value, voiceSocket);
       }
     }

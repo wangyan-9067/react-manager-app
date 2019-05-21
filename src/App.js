@@ -216,7 +216,7 @@ class App extends React.Component {
               toggleToast,
               message: langConfig.ERROR_MESSAGES.PWD_ERROR
             });
-            
+
             this.reset();
           } else if (loginStatus === ERR_NO_USER) {
             handleLoginFailure({
@@ -262,15 +262,15 @@ class App extends React.Component {
           let callCnt = 0;
           let currentChannel;
           let channelList = evt.data.channelList;
-          
+
           setChannelList(channelList);
 
           if (isAnswerCall) {
             currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
-            
+
             if (
-              isObject(currentChannel) && 
-              currentChannel.anchorName && 
+              isObject(currentChannel) &&
+              currentChannel.anchorName &&
               (currentChannel.anchorState === CONNECTING || currentChannel.anchorState === CONNECTED)) {
                 setIsAnchorCall(true);
             }
@@ -404,7 +404,7 @@ class App extends React.Component {
 
         case ASSIGN_TOKEN_TO_DELEGATOR_R:
           const { code: assignTokenStatus } = evt.data;
-          
+
           if (assignTokenStatus === DELEGATOR_NOT_IN_LINE) {
             setToastMessage(langConfig.ERROR_MESSAGES.DELEGATOR_IS_OFFLINE);
             setToastVariant('error');
@@ -418,7 +418,7 @@ class App extends React.Component {
 
         case KICK_DELEGATOR_R:
           const { code: kickDelegatorStatus } = evt.data;
-          
+
           if (kickDelegatorStatus !== SUCCESS) {
             setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_DELEGATOR.replace("{kickDelegatorStatus}", kickDelegatorStatus));
             setToastVariant('error');
@@ -468,7 +468,7 @@ class App extends React.Component {
   }
 
   onVoiceSocketClose = () => {
-    RTC.leaveRoom();    
+    RTC.leaveRoom();
     // const {
     //   setIsUserAuthenticated,
     //   setToastMessage,
@@ -637,7 +637,7 @@ class App extends React.Component {
           toggleToast(true);
         }
       break;
-      
+
       case CDS_TABLE_LIMIT:
         setTableLimit(evt.data.vid, evt.data.tableLimit);
       break;
@@ -822,18 +822,18 @@ class App extends React.Component {
     const { voice: voiceSocket, data: dataSocket, setManagerCredential, setIsUserAuthenticated } = this.props;
     if(voiceSocket.isOpen()) {
       voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
-      voiceSocket.close();  
+      voiceSocket.close();
     }
 
     if(dataSocket.isOpen()) {
       dataSocket.writeBytes(Socket.createCMD(CDS_OPERATOR_LOGOUT));
-      dataSocket.close();      
+      dataSocket.close();
     }
 
     if(nullGate.isOpen()) {
-      nullGate.close();      
+      nullGate.close();
     }
-    
+
 
 
     setManagerCredential(null);
@@ -859,7 +859,7 @@ class App extends React.Component {
     nullGate.addEventListener(Socket.EVENT_DIE, this.onNullGateSocketDie);
 
 
-    await voiceSocket.autoConnect();
+    // await voiceSocket.autoConnect();
     // await dataSocket.autoConnect();
     await nullGate.autoConnect();
   }
@@ -875,12 +875,12 @@ class App extends React.Component {
     dataSocket.removeEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
     dataSocket.removeEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
     dataSocket.removeEventListener(Socket.EVENT_CLOSE, this.onDataSocketClose);
-    dataSocket.removeEventListener(Socket.EVENT_DIE, this.onDataSocketDie);    
+    dataSocket.removeEventListener(Socket.EVENT_DIE, this.onDataSocketDie);
 
     nullGate.removeEventListener(Socket.EVENT_OPEN, this.onNullGateSocketOpen);
     nullGate.removeEventListener(Socket.EVENT_PACKET, this.onNullGateSocketPacket);
     nullGate.removeEventListener(Socket.EVENT_CLOSE, this.onNullGateSocketClose);
-    nullGate.removeEventListener(Socket.EVENT_DIE, this.onNullGateDie);    
+    nullGate.removeEventListener(Socket.EVENT_DIE, this.onNullGateDie);
   }
 
   joinChannel = channelId => {
@@ -1139,7 +1139,7 @@ class App extends React.Component {
     if(voiceSocket.isOpen()) {
       voiceSocket.writeBytes(Socket.createCMD(MANAGER_LOGOUT));
       setTimeout(() => {
-        voiceSocket.close();        
+        voiceSocket.close();
       }, 500);
     }
 
@@ -1182,16 +1182,16 @@ class App extends React.Component {
     const { PRODUCT_ID, LOGIN_NAME, BEGIN_TIME, END_TIME, GM_CODE, GM_TYPE, BILL_NO, PLATFORM, REQEXT } = QUERY_SERVER_VALUE_LENGTH;
     const productId = fullLoginname.slice(0, 3);
     const loginname = fullLoginname.slice(3);
-  
+
     this.props.setBetHistoryUserPid(productId);
-  
+
     nullGate.writeBytes(Socket.createCMD(GATE_FORWARD_MSG, bytes => {
       bytes.writeBytes(Socket.stringToBytes(loginname, LOGIN_NAME));
-  
+
       bytes.writeInt(GET_BET_RECORDS);
       bytes.writeInt(0);
       bytes.writeInt(0);
-  
+
       bytes.writeBytes(Socket.stringToBytes(productId, PRODUCT_ID));
       bytes.writeBytes(Socket.stringToBytes(loginname, LOGIN_NAME));
       bytes.writeBytes(Socket.stringToBytes('', BEGIN_TIME));
@@ -1202,7 +1202,7 @@ class App extends React.Component {
       // TODO: set to EBAC
       bytes.writeBytes(Socket.stringToBytes('', PLATFORM));
       bytes.writeBytes(Socket.stringToBytes('', REQEXT));
-  
+
       bytes.writeShort(perNum);
       bytes.writeShort(pageIndex);
     }));
@@ -1288,7 +1288,7 @@ class App extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall, formValues, incomingCallCount } = state.voice;  
+  const { voiceAppId, channelList, currentChannelId, managerAction, managerLevel, isAnswerCall, formValues, incomingCallCount } = state.voice;
   const { tableList } = state.data;
   const { variant, message, duration, open, managerCredential, showLoading } = state.app;
   return ({
