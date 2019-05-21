@@ -14,6 +14,7 @@ import PrivateRoute from './helpers/PrivateRoute';
 import { ContextProvider } from './helpers/SocketContext';
 import * as serviceWorker from './serviceWorker';
 import './index.css';
+import { getConfig } from './config';
 
 const store = createStore(
 	reducer,
@@ -50,7 +51,7 @@ const Application = () => {
 					<ContextProvider>
 						<Switch>
 							{/* <ContextRoute exact path="/login" contextConsumer={ContextConsumer} component={Login} /> */}
-							<PrivateRoute exact path="/" component={App} />					
+							<PrivateRoute exact path="/" component={App} />
 						</Switch>
 					</ContextProvider>
 				</Router>
@@ -59,7 +60,9 @@ const Application = () => {
 	);
 };
 
-ReactDOM.render(<Application />, document.getElementById('root'));
+getConfig().then(() => {
+	ReactDOM.render(<Application />, document.getElementById('root'));
+});
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

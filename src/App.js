@@ -461,7 +461,7 @@ class App extends React.Component {
             toggleDialog(false);
             this.getDelegatorList();
           }
-        break;        
+        break;
         default:
         break;
       }
@@ -868,7 +868,7 @@ class App extends React.Component {
     nullGate.addEventListener(Socket.EVENT_DIE, this.onNullGateSocketDie);
 
 
-    // await voiceSocket.autoConnect();
+    await voiceSocket.autoConnect();
     // await dataSocket.autoConnect();
     await nullGate.autoConnect();
   }

@@ -2,6 +2,7 @@ import 'cube-egret-polyfill';
 import * as Socket from 'cube-socket/live';
 import { GATE_FORWARD_MSG } from '../../protocols';
 import GetBetRecordsResp from './responses/GetBetRecordsResp';
+import { CONFIG, ENV } from '../../config';
 
 export default class NullGateSocket extends Socket.WebSocketBase {
 	constructor() {
@@ -12,7 +13,7 @@ export default class NullGateSocket extends Socket.WebSocketBase {
 	}
 
 	getUrlList() {
-		return [process.env.REACT_APP_NULL_GATE_SERVER_URL];
+		return [CONFIG.NULL_GATE_SERVER_URL[ENV]];
 	}
 
 	setupRespClazzMap() {

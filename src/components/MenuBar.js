@@ -31,6 +31,7 @@ import SearchForm from './SearchForm';
 import CallNotification from './CallNotification';
 
 import { getLangConfig } from '../helpers/appUtils';
+import { CONFIG } from '../config';
 
 const styles = theme => ({
   version: {
@@ -237,7 +238,7 @@ class MenuBar extends React.Component {
     return (
       <div className={root}>
         <AppBar position="static" color="inherit" className={appBar}>
-          <Typography variant='body2' className={version}>{process.env.REACT_APP_VERSION}</Typography>
+          <Typography variant='body2' className={version}>{CONFIG.VERSION}</Typography>
           <Toolbar classes={{ gutters }}>
             <DateTimeBadge />
             <div className={grow} />

@@ -15,8 +15,9 @@ import CDSControlReqVideoResp from './responses/CDSControlReqVideoResp';
 import CDSBetListResp from './responses/CDSBetListResp';
 import CDSTableLimitResp from './responses/CDSTableLimitResp';
 import CDSActionResp from './responses/CDSActionResp';
+import { CONFIG, ENV } from '../../config';
 
-import { 
+import {
 	CDS_OPERATOR_LOGIN_R,
 	CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R,
 	CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC,
@@ -44,7 +45,7 @@ export default class DataSocket extends Socket.WebSocketBase {
 	}
 
 	getUrlList() {
-		return [process.env.REACT_APP_DATA_SERVER_URL];
+		return [CONFIG.DATA_SERVER_URL[ENV]];
 	}
 
 	setupRespClazzMap() {

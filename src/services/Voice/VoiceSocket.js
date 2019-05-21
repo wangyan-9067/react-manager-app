@@ -21,11 +21,12 @@ import KickDelegatorResp from './responses/KickDelegatorResp';
 import AddDelegatorResp from './responses/AddDelegatorResp';
 import DeleteDelegatorResp from './responses/DeleteDelegatorResp';
 import QueryAllDelegatorResp from './responses/QueryAllDelegatorResp';
+import { CONFIG, ENV } from '../../config';
 
-import { 
-	MANAGER_LOGIN_R, 
-	CHANNEL_LIST_R, 
-	CHANNEL_JOIN_R, 
+import {
+	MANAGER_LOGIN_R,
+	CHANNEL_LIST_R,
+	CHANNEL_JOIN_R,
 	MANAGER_ACTION_R,
 	ANCHORS_ON_DUTY_R,
 	MANAGER_ADD_R,
@@ -55,7 +56,7 @@ export default class VoiceSocket extends Socket.WebSocketBase {
 	}
 
 	getUrlList() {
-		return [process.env.REACT_APP_VOICE_SERVER_URL];
+		return [CONFIG.VOICE_SERVER_URL[ENV]];
 	}
 
 	setupRespClazzMap() {
