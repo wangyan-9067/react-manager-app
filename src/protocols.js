@@ -41,6 +41,7 @@ export const QUERY_ALL_DELEGATOR = 0x0bb21b;
 export const QUERY_ALL_DELEGATOR_R = 0x0bb21b;
 
 //Data server
+export const CDS_UPDATE_PLAYER_AMOUNT_R = 0x090026;
 export const CDS_OPERATOR_LOGIN = 0x090038;
 export const CDS_OPERATOR_LOGIN_R = 0x090039;
 export const CDS_OPERATOR_LOGOUT = 0x090046;

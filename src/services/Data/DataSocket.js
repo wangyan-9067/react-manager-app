@@ -1,6 +1,7 @@
 import 'cube-egret-polyfill';
 import * as Socket from 'cube-socket/live';
 
+import CDSUpdatePlayerAmountResp from './responses/CDSUpdatePlayerAmountResp';
 import CDSOperatorLoginResp from './responses/CDSOperatorLoginResp';
 import CDSOperatorControlContractTableResp from './responses/CDSOperatorControlContractTableResp';
 import CDSOperatorControlContractTableEBAC from './responses/CDSOperatorControlContractTableEBAC';
@@ -28,7 +29,8 @@ import {
 	// CDS_BET_HIST_R,
 	CDS_BET_LIST,
 	CDS_TABLE_LIMIT,
-	CDS_ACTION_R
+	CDS_ACTION_R,
+	CDS_UPDATE_PLAYER_AMOUNT_R
 } from '../../protocols';
 
 export default class DataSocket extends Socket.WebSocketBase {
@@ -46,6 +48,7 @@ export default class DataSocket extends Socket.WebSocketBase {
 	}
 
 	setupRespClazzMap() {
+		this.respClazzMap.set(CDS_UPDATE_PLAYER_AMOUNT_R, CDSUpdatePlayerAmountResp);
 		this.respClazzMap.set(CDS_OPERATOR_LOGIN_R, CDSOperatorLoginResp);
 		this.respClazzMap.set(CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R, CDSOperatorControlContractTableResp);
 		this.respClazzMap.set(CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC, CDSOperatorControlContractTableEBAC);

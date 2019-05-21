@@ -35,8 +35,8 @@ const styles = {
 	},
 	cardActionButton: {
 		margin: '0 auto',
-		backgroundColor: '#E2E2E2',
-		color: '#6C6C6C'
+		// backgroundColor: '#E2E2E2',
+		// color: '#6C6C6C'
 	},
 	tableNo: {
 		flex: '0 0 auto'
@@ -152,9 +152,8 @@ const getPlayTypeText = playtype => {
 // 	return targetAnchor ? targetAnchor.anchorName : '-';
 // };
 
-const getTableLimitList = (vid, tableLimit) => {
-	console.log(vid, tableLimit)
-	const playtypeList = Object.values(PLAYTYPE);
+const getTableLimitList = (vid, tableLimit) => {	
+	// const playtypeList = Object.values(PLAYTYPE);
 	const hashTableList = tableLimit.byHash[vid];
 	if (isNonEmptyArray(hashTableList)) {
 		// eslint-disable-next-line
@@ -188,7 +187,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
 	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
 	const currentChannel = channelList.find(channel => channel.vid === vid);
-	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorName ? currentChannel.anchorName : '-';
+	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorState === 2 ? currentChannel.anchorName : '-';
 	const tableLimitList = getTableLimitList(vid, tableLimit);
 	const langConfig = getLangConfig();
 	const tableLimitDisplay = tableLimitList.length > 0 ? (
@@ -214,21 +213,24 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 			<CardContent className={cardContent}>
 				<Typography color="inherit"><span>{langConfig.SEAT_NUMBER}</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>
 				<Typography color="inherit"><span>{langConfig.GAME_CODE}</span><span className={tableValue}>{gameCode || '-'}</span></Typography>
-				<Typography color="inherit"><span>{langConfig.DEALER}:</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.DEALER}</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
 				<Typography color="inherit"><span>{langConfig.ANCHOR}</span><span className={tableValue}>{/* getAnchorByVid(vid, anchorsOnDutyList) */}{currentAnchorName}</span></Typography>
-				<Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
-					<Grid item><Typography color="inherit">{langConfig.TABLE_LIMIT}</Typography></Grid>
-					<Grid item>{tableLimitDisplay}</Grid>
-				</Grid>
-				<Typography color="inherit"><span>{langConfig.TABLE_OWNER}</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
-				<Typography color="inherit"><span>{langConfig.CARD_TYPE}</span><span className={tableValue}>-</span></Typography>
+				{ 
+					tableLimitList.length > 0 ? 
+					<Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
+						<Grid item><Typography color="inherit">{langConfig.TABLE_LIMIT}</Typography></Grid>
+						<Grid item>{tableLimitDisplay}</Grid>
+					</Grid> : <Typography color="inherit"><span>{langConfig.DEALER}</span><span className={tableValue}>-</span></Typography>
+
+				}
+				<Typography color="inherit"><span>{langConfig.TABLE_OWNER}</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>				
 				<Typography color="inherit"><span>{langConfig.GAME_STATUS}</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
 			</CardContent>
 			<CardActions>
 				<Button
 					variant="contained"
 					size="medium"
-					color="inherit"
+					color={tableOwner ? 'primary' : 'inherit'}
 					className={cardActionButton}
 					onClick={() => {
 						setKickoutClient({

@@ -6,7 +6,8 @@ import {
 	SET_BET_HISTORY_INFO,
 	SET_BET_HISTORY_USER_PID,
 	SET_BET_HISTORY_TABLE_PAGE_INDEX,
-	SET_BET_HISTORY_SEARCH_FIELDS
+	SET_BET_HISTORY_SEARCH_FIELDS,
+	UPDATE_PLAYER_BALANCE
 } from '../types';
 
 export const setTableList = table => ({ type: SET_TABLE_LIST, table });
@@ -17,3 +18,4 @@ export const setBetHistoryInfo = info => ({ type: SET_BET_HISTORY_INFO, info });
 export const setBetHistoryUserPid = pid => ({ type: SET_BET_HISTORY_USER_PID, pid });
 export const setBetHistoryTablePageIndex = index => ({ type: SET_BET_HISTORY_TABLE_PAGE_INDEX, index });
 export const setBetHistorySearchFields = fields => ({ type: SET_BET_HISTORY_SEARCH_FIELDS, fields })
+export const setPlayerBalance = data => ({ type: UPDATE_PLAYER_BALANCE, data })

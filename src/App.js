@@ -31,7 +31,8 @@ import {
   setTableLimit,
   setBetHistoryInfo,
   setBetHistoryUserPid,
-  setBetHistorySearchFields
+  setBetHistorySearchFields,
+  setPlayerBalance
 } from './actions/data';
 import {
   setToastMessage,
@@ -103,7 +104,8 @@ import {
   GATE_REQUEST_CACHE,
   GATE_FORWARD_MSG,
   GET_BET_RECORDS,
-  GET_BET_RECORDS_R
+  GET_BET_RECORDS_R,
+  CDS_UPDATE_PLAYER_AMOUNT_R
 } from './protocols';
 import {
   VALUE_LENGTH,
@@ -459,8 +461,7 @@ class App extends React.Component {
             toggleDialog(false);
             this.getDelegatorList();
           }
-        break;
-
+        break;        
         default:
         break;
       }
@@ -517,7 +518,8 @@ class App extends React.Component {
       managerAction,
       tableList,
       setIsUserAuthenticated,
-      setTableLimit
+      setTableLimit,
+      setPlayerBalance
     } = this.props;
     const { SUCCESS, ERR_NO_LOGIN } = GAME_SERVER_RESPONSE_CODES;
     const langConfig = getLangConfig();
@@ -721,6 +723,13 @@ class App extends React.Component {
         }
 
         this.resetFormValues();
+      break;
+      case CDS_UPDATE_PLAYER_AMOUNT_R:
+        console.log("CDS_UPDATE_PLAYER_AMOUNT_R => ", evt.data)
+        setPlayerBalance({
+          username: evt.data.username,
+          balance: evt.data.account
+        })
       break;
 
       default:
@@ -1339,7 +1348,8 @@ const mapDispatchToProps = dispatch => ({
   setBetHistoryInfo: info => dispatch(setBetHistoryInfo(info)),
   setBetHistoryUserPid: pid => dispatch(setBetHistoryUserPid(pid)),
   setBetHistorySearchFields: fields => dispatch(setBetHistorySearchFields(fields)),
-  setIncomingCallCount: count => dispatch(setIncomingCallCount(count))
+  setIncomingCallCount: count => dispatch(setIncomingCallCount(count)),
+  setPlayerBalance: data => dispatch(setPlayerBalance(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
