@@ -29,10 +29,6 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "build:DEV": "REACT_APP_ENV=DEV npm run build",
-    "build:QA": "REACT_APP_ENV=QA npm run build",
-    "build:UAT": "REACT_APP_ENV=UAT npm run build",
-    "build:PROD": "REACT_APP_ENV=PROD npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

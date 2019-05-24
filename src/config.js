@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const ENV = process.env.REACT_APP_ENV;
+export let ENV;
 export let CONFIG = {};
 
 export function getConfig() {
@@ -8,5 +8,6 @@ export function getConfig() {
       url: './config.json'
   }).then(response => {
     CONFIG = { ...response.data };
+    ENV = CONFIG.ENV;
   });
 }
