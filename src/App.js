@@ -1195,7 +1195,7 @@ class App extends React.Component {
     this.props.setBetHistoryUserPid(productId);
 
     nullGate.writeBytes(Socket.createCMD(GATE_FORWARD_MSG, bytes => {
-      bytes.writeBytes(Socket.stringToBytes(loginname, LOGIN_NAME));
+      bytes.writeBytes(Socket.stringToBytes(fullLoginname, LOGIN_NAME));
 
       bytes.writeInt(GET_BET_RECORDS);
       bytes.writeInt(0);

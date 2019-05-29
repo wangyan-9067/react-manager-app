@@ -3,17 +3,18 @@
   "DATA_SERVER_URL": {
     "DEV": "wss://172.20.2.101:5224",
     "QA": "wss://172.20.2.204:5877",
-    "UAT": "wss://172.20.2.204:5877"
+    "UAT": "wss://uat.vpcdn.com:4303"
   },
   "VOICE_SERVER_URL": {
     "DEV": "wss://172.20.2.101:5547",
     "QA": "wss://172.20.2.204:5876",
-    "UAT": "wss://172.20.2.204:5876"
+    "UAT": "wss://uat.vpcdn.com:5430"
   },
   "NULL_GATE_SERVER_URL": {
     "DEV": "wss://172.20.2.204:5881",
     "QA": "wss://172.20.2.204:5881",
-    "UAT": "wss://172.20.2.204:5881"
+    "UAT": "wss://uat.vpcdn.com:5010"
   },
-  "VERSION": "v0.0.3"
+  "VERSION": "v0.0.4"
 }
+
