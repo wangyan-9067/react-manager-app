@@ -19,6 +19,7 @@ const styles = theme => ({
     height: '100%',
     margin: '10px',
     backgroundColor: '#F1F1F1',
+    border: '1px solid #F1F1F1',
     float: 'left',
     borderRadius: '8px',
     textTransform: 'capitalize',

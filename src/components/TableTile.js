@@ -18,6 +18,9 @@ import { isObject, isNonEmptyArray } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 
 const styles = {
+	root: {
+		backgroundColor: '#fff'
+	},
 	cardHeader: {
 		display: 'flex',
     padding: '12px',
@@ -205,7 +208,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 	});
 
   return (
-		<Card>
+		<Card className={classes.root}>
 			<div className={tileHeaderClass}>
 				<div className={tableNo}>{vid}</div>
 				<div className={tableStatus}>{getTableStatus(status)}</div>

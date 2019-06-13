@@ -12,22 +12,24 @@ const styles = () => ({
     flexWrap: 'wrap',
     overflowY: 'auto',
 		listStyle: 'none',
-		width: '100%'
+		width: '100%',
 	},
   root: {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-		padding: '5px',
-		width: '100%'
+		// padding: '5px',
+		width: '100%',
+
 	},
 	tile: {
 		top: 0,
 		left: 0,
 		width: '100%',
 		height: '100%',
-		backgroundColor: '#F5F5F5'
+		backgroundColor: '#fff',
+		borderRadius: 5
 	}
 });
 
