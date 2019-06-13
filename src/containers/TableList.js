@@ -20,7 +20,7 @@ const styles = () => ({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    padding: '5px',
+    // padding: '5px',
     backgroundColor: '#E8E8E8',
   },
   emptyText: {
@@ -95,7 +95,7 @@ const StyledTableList = withStyles(styles)(TableList);
 const mapStateToProps = state => {
   const { voice, data, app } = state;
   const { anchorsOnDutyList, channelList } = voice;
-  const { tableList, clientToKickOut, tableLimit, player } = data;
+  const { tableList, clientToKickOut, tableLimit } = data;
   const { openDialog } = app;
 	
   return ({

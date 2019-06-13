@@ -246,9 +246,6 @@ class MenuBar extends React.Component {
               <Tab label={langConfig.MENU_BAR_LABEL.ANCHOR_MANAGEMENT} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
               <Tab label={<CallNotification count={incomingCallCount} label={langConfig.MENU_BAR_LABEL.MANAGER_OPERATION} />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
               <Tab label={langConfig.MENU_BAR_LABEL.TABLE_MANAGEMENT} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
-              {/* To suppress material-ui error */}
-              <Tab label="管理經理" style={{ display: 'none' }} />
-              <Tab label="管理代理" style={{ display: 'none' }} />
             </Tabs>
             <div className={grow1} />
             <Button
@@ -286,19 +283,17 @@ class MenuBar extends React.Component {
         </AppBar>
         <Grid container>
           <Grid item xs={9}>
+            <TabContainer classes={classes}>
             {value === 0 && (
-              <TabContainer classes={classes}>
                 <AnchorList
                   getAnchorList={getAnchorList}
                   addAnchor={addAnchor}
                   deleteAnchor={deleteAnchor}
                   setAnchorsDuty={setAnchorsDuty}
                   getAnchorsDutyList={getAnchorsDutyList}
-                />
-              </TabContainer>
+                />              
             )}
             {value === 1 && (
-              <TabContainer classes={classes}>
                 <TelebetList
                   joinChannel={joinChannel}
                   leaveChannel={leaveChannel}
@@ -311,23 +306,17 @@ class MenuBar extends React.Component {
                   assignTokenToDelegator={assignTokenToDelegator}
                   kickDelegator={kickDelegator}
                 />
-              </TabContainer>
             )}
             {value === 2 && (
-              <TabContainer classes={classes}>
                 <TableList kickoutClientFromDataServer={kickoutClientFromDataServer} />
-              </TabContainer>
             )}
             {value === 3 && (
-              <TabContainer classes={classes}>
                 <ManagerList getManagerList={getManagerList} addManager={addManager} deleteManager={deleteManager} />
-              </TabContainer>
             )}
             {value === 4 && (
-              <TabContainer classes={classes}>
                 <DelegatorList getDelegatorList={getDelegatorList} addDelegator={addDelegator} deleteDelegator={deleteDelegator} />
-              </TabContainer>
             )}
+            </TabContainer>
           </Grid>
           <Grid item xs={3}>
             <TabContainer classes={classes}>
