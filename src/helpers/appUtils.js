@@ -7,7 +7,7 @@ import langConfig from '../languages/zh-cn.json';
 import voiceAPI from '../services/Voice/voiceAPI';
 import dataAPI from '../services/Data/dataAPI';
 import nullGateAPI from '../services/NullGate/nullGateAPI';
-import { setManagerCredential, setIsUserAuthenticated } from '../actions/app';
+import { setManagerCredential, setIsUserAuthenticated, resetAction } from '../actions/app';
 
 export const voiceServerLoginCMD = (username, password, socket) => {
     socket.writeBytes(Socket.createCMD(MANAGER_LOGIN, bytes => {
@@ -79,4 +79,5 @@ export function reset() {
 
     setManagerCredential(null);
     setIsUserAuthenticated(false);
+    resetAction();
 }

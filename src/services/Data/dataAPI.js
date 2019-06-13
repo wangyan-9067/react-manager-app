@@ -18,6 +18,7 @@ import langConfig from '../../languages/zh-cn.json';
 import { isObject } from 'util';
 import { reset } from '../../helpers/appUtils';
 import voiceAPI from '../Voice/voiceAPI';
+import nullGateAPI from '../NullGate/nullGateAPI';
 
 class DataAPI {
     socket;
@@ -79,6 +80,8 @@ class DataAPI {
                     setToastDuration(null);
                     toggleToast(true);
                     reset();
+                } else {
+                    nullGateAPI.connect();
                 }
                 break;
 
@@ -277,6 +280,10 @@ class DataAPI {
         }));
     }
 
+    logout() {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_LOGOUT));
+    }
+
     addAnchorToDataServer(loginName, password, nickName, url, flag) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_ADD_ANCHOR, bytes => {
             bytes.writeUnsignedShort();
@@ -338,6 +345,26 @@ class DataAPI {
             bytes.writeUnsignedShort();
             bytes.writeUnsignedShort();
             bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+        }));
+    }
+
+    assignTable(vid, clientName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_CONTROL_CONTRACT_TABLE, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+            bytes.writeBytes(Socket.stringToBytes(clientName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+            bytes.writeByte(CONSTANTS.CONTRACT_MODE.OWNER);
+        }));
+    }
+
+    kickoutClientFromDataServer(vid, clientName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+            bytes.writeBytes(Socket.stringToBytes(clientName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+            bytes.writeByte(0);
         }));
     }
 }

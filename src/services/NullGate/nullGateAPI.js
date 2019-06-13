@@ -4,7 +4,7 @@ import * as Socket from 'cube-socket/live';
 import NullGateSocket from './NullGateSocket';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
-import { mapBetHistoryResult } from '../../helpers/appUtils';
+import { mapBetHistoryResult, reset } from '../../helpers/appUtils';
 import { setBetHistoryInfo, setBetHistory } from '../../actions/data';
 import { toggleLoading } from '../../actions/app';
 
@@ -66,14 +66,14 @@ class NullGateAPI {
     }
 
     onSocketClose() {
-
+        reset();
     }
 
     login() {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.GATE_REQUEST_CACHE));
     }
 
-    forwardMessage(fullLoginname = '', gmcode = '', pageIndex = 1, perNum = 20) {
+    getBetHistory(fullLoginname = '', gmcode = '', pageIndex = 1, perNum = 20) {
         const { PRODUCT_ID, LOGIN_NAME, BEGIN_TIME, END_TIME, GM_CODE, GM_TYPE, BILL_NO, PLATFORM, REQEXT } = CONSTANTS.QUERY_SERVER_VALUE_LENGTH;
         const productId = fullLoginname.slice(0, 3);
         const loginname = fullLoginname.slice(3);

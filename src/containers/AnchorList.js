@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
+
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -18,6 +19,7 @@ import { setManagerAction, setFormValues } from '../actions/voice';
 import { compareArray } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 import { MANAGER_ACTION_TYPE } from '../constants';
+import voiceAPI from '../services/Voice/voiceAPI';
 
 const styles = () => ({
   root: {
@@ -102,10 +104,6 @@ const usePrevious = value => {
 const AnchorList = ({
   classes,
   anchorList,
-  addAnchor,
-  deleteAnchor,
-  setAnchorsDuty,
-  getAnchorsDutyList,
   openDialog,
   toggleDialog,
   anchorsOnDutyList,
@@ -212,8 +210,6 @@ const AnchorList = ({
 				<DialogContent>
           <UserForm
             selectedUser={selectedAnchor}
-            addUser={addAnchor}
-            deleteUser={deleteAnchor}
             setOpenAddDialog={setOpenAddAnchorDialog}
             userList={anchorList}
             isEdit={isEdit}
@@ -237,7 +233,7 @@ const AnchorList = ({
         onClickHandler={onClickHandler}
       />
       <div>
-        <Button variant="contained" size="medium" color="inherit" className={dutyButton} disabled={isEdit} onClick={() => { setAnchorsDuty(selected); getAnchorsDutyList(); }}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
+        <Button variant="contained" size="medium" color="inherit" className={dutyButton} disabled={isEdit} onClick={() => { voiceAPI.setAnchorsDuty(selected); voiceAPI.getAnchorsDutyList(); }}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
         <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} disabled={isEdit} onClick={() => { setSelected(); }}>{langConfig.BUTTON_LABEL.CANCEL_SELECT}</Button>
       </div>
 		</div>
@@ -247,10 +243,6 @@ const AnchorList = ({
 AnchorList.proptype = {
   classes: PropTypes.object.isRequired,
   anchorList: PropTypes.array,
-  addAnchor: PropTypes.func,
-  deleteAnchor: PropTypes.func,
-  setAnchorsDuty: PropTypes.func,
-  getAnchorsDutyList: PropTypes.func,
   openDialog: PropTypes.bool,
   toggleDialog: PropTypes.func,
   anchorsOnDutyList: PropTypes.array,

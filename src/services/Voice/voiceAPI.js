@@ -24,7 +24,8 @@ import {
     setAnchorList,
     setDelegatorList,
     setAnchorsOnDutyList,
-    setManagerList
+    setManagerList,
+    setCurrentChannelId
 } from '../../actions/voice';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
@@ -346,6 +347,10 @@ class VoiceAPI {
         }));
     }
 
+    logout() {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.MANAGER_LOGOUT));
+    }
+
     getAnchorList() {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHOR_ALL_QUERY_REQ));
     }
@@ -382,6 +387,103 @@ class VoiceAPI {
 
     blacklistClient(channelId) {
         this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.BLACKLIST_CLIENT, channelId);
+    }
+
+    joinChannel(channelId) {
+        setCurrentChannelId(channelId);
+
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CHANNEL_JOIN, bytes => {
+            bytes.writeUnsignedInt(channelId);
+        }));
+    }
+
+    leaveChannel(channelId) {
+        this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.LEAVE_CHANNEL, channelId);
+    }
+
+    toggleMuteChannel(channelId, isAnchor, muteState) {
+        const { MUTE_ANCHOR, UNMUTE_ANCHOR, MUTE_CLIENT, UNMUTE_CLIENT } = CONSTANTS.MANAGER_ACTIONS;
+        const { MUTE } = CONSTANTS.MUTE_STATE;
+        let action;
+
+        if (isAnchor) {
+            action = muteState === MUTE ? MUTE_ANCHOR : UNMUTE_ANCHOR;
+        } else {
+            action = muteState === MUTE ? MUTE_CLIENT : UNMUTE_CLIENT;
+        }
+
+        this.sendManagerAction(action, channelId);
+    }
+
+    setAnchorsDuty(anchorList) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHORS_ON_DUTY_UPDATE, bytes => {
+            if (Array.isArray(anchorList) && anchorList.length > 0) {
+                bytes.writeUnsignedInt(anchorList.length);
+
+                for (let i = 0; i < anchorList.length; i++) {
+                    bytes.writeBytes(Socket.stringToBytes(anchorList[i], CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+                }
+            }
+        }));
+    }
+
+    addAnchor(loginName, password, nickName, url) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHOR_ADD_REQ, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+            bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.VALUE_LENGTH.PASSWORD));
+            bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.VALUE_LENGTH.NICK_NAME));
+            bytes.writeUnsignedInt(url.length);
+            bytes.writeBytes(Socket.stringToBytes(url, url.length));
+        }));
+    }
+
+    deleteAnchorz(loginName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHOR_DELETE_REQ, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+        }));
+    }
+
+    addManager(loginName, password, nickName, url, flag) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.MANAGER_ADD_REQ, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+            bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.VALUE_LENGTH.PASSWORD));
+            bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.VALUE_LENGTH.NICK_NAME));
+            bytes.writeUnsignedInt(url.length);
+            bytes.writeBytes(Socket.stringToBytes(url, url.length));
+            bytes.writeByte(flag);
+        }));
+    }
+
+    deleteManager(loginName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.MANAGER_DELETE, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+        }));
+    }
+
+    addDelegator(loginName, password, tel) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.ADD_DELEGATOR, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+            bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.VALUE_LENGTH.PASSWORD));
+            bytes.writeBytes(Socket.stringToBytes(tel, CONSTANTS.VALUE_LENGTH.TEL));
+        }));
+    }
+
+    deleteDelegator(loginName) {
+        this.writeBytes(Socket.createCMD(PROTOCOL.DELETE_DELEGATOR, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+        }));
+    }
+
+    assignTokenToDelegator(delegatorName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.ASSIGN_TOKEN_TO_DELEGATOR, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(delegatorName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+        }));
+    }
+
+    kickDelegator(delegatorName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.KICK_DELEGATOR, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(delegatorName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+        }));
     }
 }
 

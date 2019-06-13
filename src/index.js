@@ -1,15 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter as Router, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'typeface-roboto';
 
 import App from './App';
-// import Login from './containers/Login';
-// import ContextRoute from './helpers/ContextRoute';
-import PrivateRoute from './helpers/PrivateRoute';
-import { ContextProvider } from './helpers/SocketContext';
+import Main from './containers/Main';
 import * as serviceWorker from './serviceWorker';
 import './index.css';
 import { getConfig } from './config';
@@ -41,14 +37,7 @@ const Application = () => {
     return (
         <Provider store={store}>
             <MuiThemeProvider theme={theme}>
-                <Router>
-                    <ContextProvider>
-                        <Switch>
-                            {/* <ContextRoute exact path="/login" contextConsumer={ContextConsumer} component={Login} /> */}
-                            <PrivateRoute exact path="/" component={App} />
-                        </Switch>
-                    </ContextProvider>
-                </Router>
+                <Main component={App} />
             </MuiThemeProvider>
         </Provider>
     );
