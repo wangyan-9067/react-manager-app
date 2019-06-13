@@ -5,6 +5,7 @@ import * as RTC from 'cube-rtc';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import voiceAPI from './services/Voice/voiceAPI';
 import NullGateSocket from './services/NullGate/NullGateSocket';
 import MenuBar from './components/MenuBar';
 import MessageBar from './components/MessageBar';

@@ -1,0 +1,347 @@
+import 'cube-egret-polyfill';
+import * as Socket from 'cube-socket/live';
+
+import DataSocket from './DataSocket';
+import { store } from '../../store';
+import {
+    toggleToast,
+    setIsUserAuthenticated,
+    setToastMessage,
+    setToastVariant,
+    setToastDuration
+} from '../../actions/app';
+import { setTableList, setTableLimit, setPlayerBalance } from '../../actions/data';
+import { setFormValues } from '../../actions/voice';
+import * as PROTOCOL from '../../protocols';
+import * as CONSTANTS from '../../constants';
+import langConfig from '../../languages/zh-cn.json';
+import { isObject } from 'util';
+import { reset } from '../../helpers/appUtils';
+import voiceAPI from '../Voice/voiceAPI';
+
+class DataAPI {
+    socket;
+
+    constructor() {
+        this.socket = new DataSocket();
+
+        this.socket.addEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
+        this.socket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
+        this.socket.addEventListener(Socket.EVENT_CLOSE, this.onDataSocketClose);
+        this.socket.addEventListener(Socket.EVENT_DIE, this.onDataSocketClose);
+    }
+
+    connect() {
+        this.socket.autoConnect();
+    }
+
+    close() {
+        this.socket.close();
+    }
+
+    isOpen() {
+        return this.socket.isOpen();
+    }
+
+    onDataSocketOpen() {
+        toggleToast(false);
+
+        let { managerCredential } = store.getState().voice;
+
+        if (isObject(managerCredential)) {
+            this.login(managerCredential.managerLoginname, managerCredential.managerPassword);
+        }
+    }
+
+    onDataSocketClose() {
+        reset();
+    }
+
+    onDataSocketPacket(evt) {
+        if (evt.$type !== Socket.EVENT_PACKET) {
+            return;
+        }
+
+        console.log('[DataSocket]', evt.data);
+
+        const { SUCCESS, ERR_NO_LOGIN } = CONSTANTS.GAME_SERVER_RESPONSE_CODES;
+        const { tableList } = store.getState().data;
+        const { currentChannelId, managerAction } = store.getState().voice;
+
+        switch (evt.data.respId) {
+            case PROTOCOL.CDS_OPERATOR_LOGIN_R:
+                const { code: loginStatus } = evt.data;
+
+                if (loginStatus !== SUCCESS) {
+                    setIsUserAuthenticated(false);
+                    setToastMessage(langConfig.ERROR_MESSAGES.DATA_SERVER_LOGIN_FAIL.replace("{loginStatus}", loginStatus));
+                    setToastVariant('error');
+                    setToastDuration(null);
+                    toggleToast(true);
+                    reset();
+                }
+                break;
+
+            case PROTOCOL.CDS_CONTROL_REQ_VIDEO_RES:
+                const initialTableData = evt.data.videoStatusList;
+
+                if (Array.isArray(initialTableData)) {
+                    initialTableData.forEach(table => {
+                        let { vid, dealerName, gameCode, gmType, status } = table;
+
+                        setTableList({
+                            vid,
+                            dealerName,
+                            gameCode,
+                            gmType,
+                            gameStatus: status
+                        });
+                    });
+                }
+                break;
+
+            case PROTOCOL.CDS_CLIENT_LIST:
+                setTableList({
+                    vid: evt.data.vid,
+                    seatedPlayerNum: evt.data.seatedPlayerNum,
+                    tableOwner: evt.data.username,
+                    account: evt.data.account
+                });
+                break;
+
+            case PROTOCOL.CDS_VIDEO_STATUS:
+                setTableList({
+                    vid: evt.data.vid,
+                    gameStatus: evt.data.gameStatus,
+                    gameCode: evt.data.gmcode,
+                    tableOwner: evt.data.username,
+                    status: evt.data.videoStatus,
+                    dealerName: evt.data.deal
+                });
+                break;
+
+            case PROTOCOL.CDS_CLIENT_ENTER_TABLE_NOTIFY:
+                const currentTable = tableList.find(table => table.vid === evt.data.vid);
+                setTableList({
+                    vid: evt.data.vid,
+                    username: evt.data.username,
+                    account: evt.data.currentAmount,
+                    seatedPlayerNum: currentTable.seatedPlayerNum + 1
+                });
+                break;
+
+            case PROTOCOL.CDS_CLIENT_LEAVE_TABLE_NOTIFY:
+                setTableList({
+                    vid: evt.data.vid,
+                    dealerName: '',
+                    gameCode: '',
+                    gmType: '',
+                    gameStatus: 0,
+                    seatedPlayerNum: 0,
+                    account: 0,
+                    tableOwner: '',
+                    status: 0
+                });
+                setTableLimit(evt.data.vid, []);
+                break;
+
+            case PROTOCOL.CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R:
+                const { code: assignTableStatus } = evt.data;
+
+                if (assignTableStatus === SUCCESS) {
+                    voiceAPI.assignTableToChannel(currentChannelId, evt.data.vid);
+                } else {
+                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER_IMMEDIATE.replace("{assignTableStatus}", assignTableStatus));
+                    setToastVariant('error');
+                    toggleToast(true);
+                }
+                break;
+
+            case PROTOCOL.CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC:
+                setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER.replace("{username}", evt.data.username));
+                setToastVariant('error');
+                setToastDuration(null);
+                toggleToast(true);
+                break;
+
+            case PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R:
+                const { reason: kickoutReason } = evt.data;
+
+                if (kickoutReason === SUCCESS || kickoutReason === ERR_NO_LOGIN) {
+                    if (managerAction === CONSTANTS.MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
+                        voiceAPI.kickoutClient(currentChannelId);
+                    } else {
+                        voiceAPI.blacklistClient(currentChannelId);
+                    }
+                } else {
+                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason));
+                    setToastVariant('error');
+                    toggleToast(true);
+                }
+                break;
+
+            case PROTOCOL.CDS_TABLE_LIMIT:
+                setTableLimit(evt.data.vid, evt.data.tableLimit);
+                break;
+
+            case PROTOCOL.CDS_ACTION_R:
+                const { code: cdsActionStatus } = evt.data;
+                let message = '';
+
+                if (cdsActionStatus !== SUCCESS) {
+                    // display error message
+                    switch (evt.data.reqCmd) {
+                        case PROTOCOL.CDS_ADD_ANCHOR:
+                            message = langConfig.ERROR_MESSAGES.USER_OPERATION.ADD_ANCHOR;
+                            break;
+
+                        case PROTOCOL.CDS_UPDATE_ANCHOR:
+                            message = langConfig.ERROR_MESSAGES.USER_OPERATION.EDIT_ANCHOR;
+                            break;
+
+                        case PROTOCOL.CDS_REMOVE_ANCHOR:
+                            message = langConfig.ERROR_MESSAGES.USER_OPERATION.DELETE_ANCHOR;
+                            break;
+
+                        case PROTOCOL.CDS_ADD_MANAGER:
+                            message = langConfig.ERROR_MESSAGES.USER_OPERATION.ADD_MANAGER;
+                            break;
+
+                        case PROTOCOL.CDS_UPDATE_MANAGER:
+                            message = langConfig.ERROR_MESSAGES.USER_OPERATION.EDIT_MANAGER;
+                            break;
+
+                        case PROTOCOL.CDS_REMOVE_MANAGER:
+                            message = langConfig.ERROR_MESSAGES.USER_OPERATION.DELETE_MANAGER;
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    if (message) {
+                        setToastMessage(langConfig.ERROR_MESSAGES.USER_OPERATION_FAIL.replace("{message}", message).replace("{cdsActionStatus}", cdsActionStatus));
+                        setToastVariant('error');
+                        toggleToast(true);
+                    }
+                } else {
+                    // retrieve latest list
+                    switch (evt.data.reqCmd) {
+                        case PROTOCOL.CDS_ADD_ANCHOR:
+                        case PROTOCOL.CDS_UPDATE_ANCHOR:
+                        case PROTOCOL.CDS_REMOVE_ANCHOR:
+                            voiceAPI.getAnchorList();
+                            break;
+
+                        case PROTOCOL.CDS_ADD_MANAGER:
+                        case PROTOCOL.CDS_UPDATE_MANAGER:
+                        case PROTOCOL.CDS_REMOVE_MANAGER:
+                            voiceAPI.getManagerList();
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
+                setFormValues({
+                    loginname: '',
+                    nickname: '',
+                    password: '',
+                    iconUrl: '',
+                    level: '',
+                    tel: ''
+                });
+                break;
+
+            case PROTOCOL.CDS_UPDATE_PLAYER_AMOUNT_R:
+                setPlayerBalance({
+                    username: evt.data.username,
+                    balance: evt.data.account
+                })
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    login(username, password) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_LOGIN, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes('', CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+            bytes.writeBytes(Socket.stringToBytes(username, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+            bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
+            bytes.writeUnsignedInt();
+        }));
+    }
+
+    addAnchorToDataServer(loginName, password, nickName, url, flag) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_ADD_ANCHOR, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+            bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
+            bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
+            bytes.writeByte(flag);
+            bytes.writeBytes(Socket.stringToBytes(url, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
+        }));
+    }
+
+    updateAnchorToDataServer(loginName, password, nickName, url, flag) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_UPDATE_ANCHOR, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+            bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
+            bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
+            bytes.writeByte(flag);
+            bytes.writeBytes(Socket.stringToBytes(url, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
+        }));
+    }
+
+    deleteAnchorFromDataServer(loginName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_REMOVE_ANCHOR, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+        }));
+    }
+
+    addManagerToDataServer(loginName, password, nickName, url, flag) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_ADD_MANAGER, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+            bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
+            bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
+            bytes.writeByte(flag);
+            bytes.writeBytes(Socket.stringToBytes(url, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
+        }));
+    }
+
+    updateManagerToDataServer(loginName, password, nickName, url, flag) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_UPDATE_MANAGER, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+            bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
+            bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
+            bytes.writeByte(flag);
+            bytes.writeBytes(Socket.stringToBytes(url, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
+        }));
+    }
+
+    deleteManagerFromDataServer(loginName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_REMOVE_MANAGER, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+        }));
+    }
+}
+
+const dataAPI = new DataAPI();
+
+export default dataAPI;
