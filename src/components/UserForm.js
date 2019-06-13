@@ -450,6 +450,7 @@ class UserForm extends React.Component {
                     inputProps={{
                       'aria-label': 'tel',
                     }}
+                    type="tel"
                     name="tel"
                     placeholder=""
                     value={tel.value}

@@ -19,7 +19,7 @@ import FullChatroomCard from '../components/FullChatroomCard';
 
 const styles = {
 	cardBase: {
-		minHeight: '200px'
+		minHeight: '229px'
 	},
 	emptyCard: {
 		borderRadius: '16px',

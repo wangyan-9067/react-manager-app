@@ -73,7 +73,7 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
             const { loginname, nickname, url, vid } = anchor;
 
             return (
-              <ListItem index={index}>
+              <ListItem key={index}>
                 <AnchorStatus isBusy={vid ? true : false} />
                 <ListItemAvatar>
                   <CustomAvatar

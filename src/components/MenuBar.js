@@ -272,31 +272,23 @@ class MenuBar extends React.Component {
                 </AppBar>
                 <Grid container>
                     <Grid item xs={9}>
-                        {value === 0 && (
-                            <TabContainer classes={classes}>
+                        <TabContainer classes={classes}>
+                            {value === 0 && (
                                 <AnchorList />
-                            </TabContainer>
-                        )}
-                        {value === 1 && (
-                            <TabContainer classes={classes}>
+                            )}
+                            {value === 1 && (
                                 <TelebetList />
-                            </TabContainer>
-                        )}
-                        {value === 2 && (
-                            <TabContainer classes={classes}>
+                            )}
+                            {value === 2 && (
                                 <TableList />
-                            </TabContainer>
-                        )}
-                        {value === 3 && (
-                            <TabContainer classes={classes}>
+                            )}
+                            {value === 3 && (
                                 <ManagerList />
-                            </TabContainer>
-                        )}
-                        {value === 4 && (
-                            <TabContainer classes={classes}>
+                            )}
+                            {value === 4 && (
                                 <DelegatorList />
-                            </TabContainer>
-                        )}
+                            )}
+                        </TabContainer>
                     </Grid>
                     <Grid item xs={3}>
                         <TabContainer classes={classes}>

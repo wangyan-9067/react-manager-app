@@ -23,7 +23,7 @@ import TelebetTile from './TelebetTile';
 import { setToastMessage, setToastVariant, toggleToast } from '../actions/app';
 import { setManagerAction, setIsAnswerCall, setIncomingCallCount } from '../actions/voice';
 import { MUTE_STATE, MANAGER_ACTION_TYPE, DATA_SERVER_VIDEO_STATUS } from '../constants';
-import { formatAmount, isObject } from '../helpers/utils';
+import { formatAmount } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 
 const telebetListTheme = createMuiTheme({
@@ -58,11 +58,12 @@ const styles = theme => ({
     justifyContent: 'space-around',
     overflow: 'hidden',
     // padding: '5px',
-		backgroundColor: '#FFFFFF',
+		// backgroundColor: '#FFFFFF',
 		borderRadius: '10px'
 	},
 	pageBorder: {
-		border: '3px solid #FD0100'
+		border: '3px solid #FD0100',		
+		backgroundColor: '#FFFFFF',
 	},
 	tile: {
 		top: 0,
@@ -205,11 +206,13 @@ const styles = theme => ({
 		height: '50px',
 		margin: '5px',
 		color: '#FFFFFF',
-		backgroundColor: '#3970B0'
+		backgroundColor: '#3970B0',
+		border: '3px solid #3970B0'
 	},
 	toggleButtonDisabled: {
 		backgroundColor: '#F4F4F4',
-		color: '#D5D5D5'
+		color: '#D5D5D5',
+		border: '3px solid #F4F4F4'
 	},
 	toggleButtonLabel: {
 		fontSize: '1rem',
@@ -398,7 +401,7 @@ const AnswerCallPanel = ({
 						<Button
 							variant="contained"
 							size="medium"
-							color="inherit"
+							color="primary"
 							className={classNames(actionButton, dialogActionButton)}
 							onClick={() => {	
 								console.log(KICKOUT_CLIENT, tableAssigned, clientName);							
@@ -414,7 +417,7 @@ const AnswerCallPanel = ({
 						>
 							{langConfig.BUTTON_LABEL.CONFIRM}
 						</Button>
-						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenKickoutClientDialog(false) }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
+						<Button variant="contained" size="medium" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenKickoutClientDialog(false) }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
 					</DialogActions>
 				</Dialog>
 				{ /** Blacklist Dialog*/ }
