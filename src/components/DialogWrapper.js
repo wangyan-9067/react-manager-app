@@ -66,7 +66,7 @@ const DialogWrapper = ({ classes, isOpen, onCloseHandler, actionHandler, content
         </DialogContentText>
       </DialogContent>
       <DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-        <Button 
+        <Button
           variant="contained"
           size="medium"
           color="inherit"
@@ -97,7 +97,7 @@ const DialogWrapper = ({ classes, isOpen, onCloseHandler, actionHandler, content
   );
 };
 
-DialogWrapper.prototype = {
+DialogWrapper.propTypes = {
   classes: PropTypes.object.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onCloseHandler: PropTypes.func,

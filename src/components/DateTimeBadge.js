@@ -29,7 +29,7 @@ const DateTimeBadge = ({ classes }) => {
 	);
 };
 
-DateTimeBadge.prototype = {
+DateTimeBadge.propTypes = {
   classes: PropTypes.object.isRequired
 };
 

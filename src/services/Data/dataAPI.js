@@ -15,7 +15,6 @@ import { setFormValues } from '../../actions/voice';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
 import langConfig from '../../languages/zh-cn.json';
-import { isObject } from 'util';
 import { reset } from '../../helpers/appUtils';
 import voiceAPI from '../Voice/voiceAPI';
 import nullGateAPI from '../NullGate/nullGateAPI';
@@ -44,12 +43,10 @@ class DataAPI {
         return this.socket.isOpen();
     }
 
-    onDataSocketOpen() {
-        toggleToast(false);
+    onDataSocketOpen = () => {
+        let { managerCredential } = store.getState().app;
 
-        let { managerCredential } = store.getState().voice;
-
-        if (isObject(managerCredential)) {
+        if (managerCredential) {
             this.login(managerCredential.managerLoginname, managerCredential.managerPassword);
         }
     }
@@ -58,7 +55,7 @@ class DataAPI {
         reset();
     }
 
-    onDataSocketPacket(evt) {
+    onDataSocketPacket = (evt) => {
         if (evt.$type !== Socket.EVENT_PACKET) {
             return;
         }
@@ -74,13 +71,15 @@ class DataAPI {
                 const { code: loginStatus } = evt.data;
 
                 if (loginStatus !== SUCCESS) {
-                    setIsUserAuthenticated(false);
-                    setToastMessage(langConfig.ERROR_MESSAGES.DATA_SERVER_LOGIN_FAIL.replace("{loginStatus}", loginStatus));
-                    setToastVariant('error');
-                    setToastDuration(null);
-                    toggleToast(true);
+                    store.dispatch(setIsUserAuthenticated(false));
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.DATA_SERVER_LOGIN_FAIL.replace("{loginStatus}", loginStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(setToastDuration(null));
+                    store.dispatch(toggleToast(true));
                     reset();
                 } else {
+                    store.dispatch(toggleToast(false));
+                    store.dispatch(setIsUserAuthenticated(true));
                     nullGateAPI.connect();
                 }
                 break;
@@ -92,49 +91,49 @@ class DataAPI {
                     initialTableData.forEach(table => {
                         let { vid, dealerName, gameCode, gmType, status } = table;
 
-                        setTableList({
+                        store.dispatch(setTableList({
                             vid,
                             dealerName,
                             gameCode,
                             gmType,
                             gameStatus: status
-                        });
+                        }));
                     });
                 }
                 break;
 
             case PROTOCOL.CDS_CLIENT_LIST:
-                setTableList({
+                store.dispatch(setTableList({
                     vid: evt.data.vid,
                     seatedPlayerNum: evt.data.seatedPlayerNum,
                     tableOwner: evt.data.username,
                     account: evt.data.account
-                });
+                }));
                 break;
 
             case PROTOCOL.CDS_VIDEO_STATUS:
-                setTableList({
+                store.dispatch(setTableList({
                     vid: evt.data.vid,
                     gameStatus: evt.data.gameStatus,
                     gameCode: evt.data.gmcode,
                     tableOwner: evt.data.username,
                     status: evt.data.videoStatus,
                     dealerName: evt.data.deal
-                });
+                }));
                 break;
 
             case PROTOCOL.CDS_CLIENT_ENTER_TABLE_NOTIFY:
                 const currentTable = tableList.find(table => table.vid === evt.data.vid);
-                setTableList({
+                store.dispatch(setTableList({
                     vid: evt.data.vid,
                     username: evt.data.username,
                     account: evt.data.currentAmount,
                     seatedPlayerNum: currentTable.seatedPlayerNum + 1
-                });
+                }));
                 break;
 
             case PROTOCOL.CDS_CLIENT_LEAVE_TABLE_NOTIFY:
-                setTableList({
+                store.dispatch(setTableList({
                     vid: evt.data.vid,
                     dealerName: '',
                     gameCode: '',
@@ -144,8 +143,8 @@ class DataAPI {
                     account: 0,
                     tableOwner: '',
                     status: 0
-                });
-                setTableLimit(evt.data.vid, []);
+                }));
+                store.dispatch(setTableLimit(evt.data.vid, []));
                 break;
 
             case PROTOCOL.CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R:
@@ -154,17 +153,17 @@ class DataAPI {
                 if (assignTableStatus === SUCCESS) {
                     voiceAPI.assignTableToChannel(currentChannelId, evt.data.vid);
                 } else {
-                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER_IMMEDIATE.replace("{assignTableStatus}", assignTableStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER_IMMEDIATE.replace("{assignTableStatus}", assignTableStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 }
                 break;
 
             case PROTOCOL.CDS_OPERATOR_CONTROL_CONTRACT_TABLE_EBAC:
-                setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER.replace("{username}", evt.data.username));
-                setToastVariant('error');
-                setToastDuration(null);
-                toggleToast(true);
+                store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER.replace("{username}", evt.data.username)));
+                store.dispatch(setToastVariant('error'));
+                store.dispatch(setToastDuration(null));
+                store.dispatch(toggleToast(true));
                 break;
 
             case PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R:
@@ -177,14 +176,14 @@ class DataAPI {
                         voiceAPI.blacklistClient(currentChannelId);
                     }
                 } else {
-                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 }
                 break;
 
             case PROTOCOL.CDS_TABLE_LIMIT:
-                setTableLimit(evt.data.vid, evt.data.tableLimit);
+                store.dispatch(setTableLimit(evt.data.vid, evt.data.tableLimit));
                 break;
 
             case PROTOCOL.CDS_ACTION_R:
@@ -223,9 +222,9 @@ class DataAPI {
                     }
 
                     if (message) {
-                        setToastMessage(langConfig.ERROR_MESSAGES.USER_OPERATION_FAIL.replace("{message}", message).replace("{cdsActionStatus}", cdsActionStatus));
-                        setToastVariant('error');
-                        toggleToast(true);
+                        store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.USER_OPERATION_FAIL.replace("{message}", message).replace("{cdsActionStatus}", cdsActionStatus)));
+                        store.dispatch(setToastVariant('error'));
+                        store.dispatch(toggleToast(true));
                     }
                 } else {
                     // retrieve latest list
@@ -247,21 +246,21 @@ class DataAPI {
                     }
                 }
 
-                setFormValues({
+                store.dispatch(setFormValues({
                     loginname: '',
                     nickname: '',
                     password: '',
                     iconUrl: '',
                     level: '',
                     tel: ''
-                });
+                }));
                 break;
 
             case PROTOCOL.CDS_UPDATE_PLAYER_AMOUNT_R:
-                setPlayerBalance({
+                store.dispatch(setPlayerBalance({
                     username: evt.data.username,
                     balance: evt.data.account
-                })
+                }));
                 break;
 
             default:

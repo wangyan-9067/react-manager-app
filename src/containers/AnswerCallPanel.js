@@ -68,14 +68,14 @@ class AnswerCallPanel extends React.Component {
     }
 
     onClientMuteButtonClicked = () => {
-        const { currentChannelId, clientMute } = this.props;
+        const { clientMute, channelId: currentChannelId } = this.getCurrentChannelInfo();
         const { MUTE, UNMUTE } = MUTE_STATE;
 
         voiceAPI.toggleMuteChannel(currentChannelId, false, clientMute === MUTE ? UNMUTE : MUTE)
     }
 
     onAnchorMuteButtonClicked = () => {
-        const { currentChannelId, anchorMute } = this.props;
+        const { channelId: currentChannelId, anchorMute } = this.getCurrentChannelInfo();
         const { MUTE, UNMUTE } = MUTE_STATE;
 
         voiceAPI.toggleMuteChannel(currentChannelId, true, anchorMute === MUTE ? UNMUTE : MUTE);
@@ -170,7 +170,7 @@ class AnswerCallPanel extends React.Component {
     blacklistClient = () => {
         const { BLACKLIST_CLIENT } = MANAGER_ACTION_TYPE;
         const { tableAssigned } = this.state;
-        const { clientName, id: currentChannelId } = this.getCurrentChannelInfo();
+        const { clientName, channelId: currentChannelId } = this.getCurrentChannelInfo();
 
         this.props.setManagerAction(BLACKLIST_CLIENT);
 
@@ -384,10 +384,10 @@ class AnswerCallPanel extends React.Component {
                 </Fragment>
             </MuiThemeProvider>
         );
-    };
+    }
 }
 
-AnswerCallPanel.prototype = {
+AnswerCallPanel.propTypes = {
     classes: PropTypes.object.isRequired,
     currentChannelId: PropTypes.number.isRequired,
     channelList: PropTypes.array.isRequired,

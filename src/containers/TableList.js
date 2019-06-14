@@ -32,7 +32,7 @@ const styles = () => ({
 
 class TableList extends React.Component {
     closeDialog = () => {
-        toggleDialog(false);
+        this.props.toggleDialog(false);
     }
 
     kickoutClient = () => {
@@ -41,7 +41,7 @@ class TableList extends React.Component {
         console.log(MANAGER_ACTION_TYPE.KICKOUT_CLIENT, vid, clientName)
         this.props.setManagerAction(MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
         dataAPI.kickoutClientFromDataServer(vid, clientName);
-        toggleDialog(false);
+        this.closeDialog();
     }
 
     render() {

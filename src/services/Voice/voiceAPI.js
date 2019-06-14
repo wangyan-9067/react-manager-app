@@ -58,11 +58,11 @@ class VoiceAPI {
         return this.socket.isOpen();
     }
 
-    onVoiceSocketOpen() {
-        store.dispatch(toggleToast(false));
+    onVoiceSocketOpen = () => {
+        const { managerCredential } = store.getState().app;
 
-        if (store.getState().managerCredential) {
-            const { managerLoginname, managerPassword } = store.getState().managerCredential;
+        if (managerCredential) {
+            const { managerLoginname, managerPassword } = managerCredential;
 
             this.login(managerLoginname, managerPassword);
         }
@@ -73,7 +73,7 @@ class VoiceAPI {
         reset();
     }
 
-    async onVoiceSocketPacket(evt) {
+    onVoiceSocketPacket = async (evt) => {
         if (evt.$type !== Socket.EVENT_PACKET) {
             return;
         }
@@ -90,8 +90,8 @@ class VoiceAPI {
                 const { code: loginStatus } = evt.data;
 
                 if (loginStatus === SUCCESS) {
-                    setVoiceAppId(evt.data.voiceAppId);
-                    setUserLevel(evt.data.level);
+                    store.dispatch(setVoiceAppId(evt.data.voiceAppId));
+                    store.dispatch(setUserLevel(evt.data.level));
                     RTC.init(evt.data.voiceAppId);
 
                     this.getAnchorList();
@@ -103,23 +103,24 @@ class VoiceAPI {
                 } else {
                     switch (loginStatus) {
                         case REPEAT_LOGIN:
-                            setToastMessage(langConfig.ERROR_MESSAGES.REPEAT_LOGIN);
+                            store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.REPEAT_LOGIN));
                             break;
                         case ERR_PWD_ERROR:
-                            setToastMessage(langConfig.ERROR_MESSAGES.PWD_ERROR);
+                            store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.PWD_ERROR));
                             break;
                         case ERR_NO_USER:
-                            setToastMessage(langConfig.ERROR_MESSAGES.NO_USER);
+                            store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.NO_USER));
                             break;
 
                         default:
-                            setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_LOGIN_FAIL.replace("{loginStatus}", loginStatus));
+                            store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_LOGIN_FAIL.replace("{loginStatus}", loginStatus)));
                             break;
                     }
-                    setIsUserAuthenticated(false);
-                    setToastVariant('error');
-                    setToastDuration(null);
-                    toggleToast(true);
+
+                    store.dispatch(setIsUserAuthenticated(false));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(setToastDuration(null));
+                    store.dispatch(toggleToast(true));
                     reset();
                 }
                 break;
@@ -127,11 +128,11 @@ class VoiceAPI {
             case PROTOCOL.MANAGER_KICKOUT_R:
                 const { code: kickoutStatus } = evt.data;
 
-                setIsUserAuthenticated(false);
-                setToastMessage(kickoutStatus === REPEAT_LOGIN ? langConfig.ERROR_MESSAGES.REPEAT_LOGIN : `Manager get kickedout ${kickoutStatus}`);
-                setToastVariant('error');
-                setToastDuration(null);
-                toggleToast(true);
+                store.dispatch(setIsUserAuthenticated(false));
+                store.dispatch(setToastMessage(kickoutStatus === REPEAT_LOGIN ? langConfig.ERROR_MESSAGES.REPEAT_LOGIN : `Manager get kickedout ${kickoutStatus}`));
+                store.dispatch(setToastVariant('error'));
+                store.dispatch(setToastDuration(null));
+                store.dispatch(toggleToast(true));
                 reset();
                 break;
 
@@ -140,7 +141,7 @@ class VoiceAPI {
                 let currentChannel;
                 let channelList = evt.data.channelList;
 
-                setChannelList(channelList);
+                store.dispatch(setChannelList(channelList));
 
                 if (isAnswerCall) {
                     currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
@@ -149,7 +150,7 @@ class VoiceAPI {
                         isObject(currentChannel) &&
                         currentChannel.anchorName &&
                         (currentChannel.anchorState === CONNECTING || currentChannel.anchorState === CONNECTED)) {
-                        setIsAnchorCall(true);
+                        store.dispatch(setIsAnchorCall(true));
                     }
                 }
 
@@ -166,14 +167,14 @@ class VoiceAPI {
                     }
                 });
 
-                setIncomingCallCount(callCnt);
+                store.dispatch(setIncomingCallCount(callCnt));
                 break;
 
             case PROTOCOL.CHANNEL_JOIN_R:
                 const { code: joinStatus } = evt.data;
 
-                setChannelJoinStatus(joinStatus);
-                setIsAnswerCall(joinStatus === 0 ? true : false);
+                store.dispatch(setChannelJoinStatus(joinStatus));
+                store.dispatch(setIsAnswerCall(joinStatus === 0 ? true : false));
 
                 if (joinStatus === SUCCESS) {
                     await RTC.joinRoom(currentChannelId.toString(), store.getState().voice.voiceAppId);
@@ -191,38 +192,42 @@ class VoiceAPI {
                         case KICKOUT_CLIENT:
                         case BLACKLIST_CLIENT:
                             RTC.leaveRoom();
-                            setIsAnswerCall(false);
+                            store.dispatch(setIsAnswerCall(false));
                             break;
 
                         default:
                             break;
                     }
                 } else {
-                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_MANAGER_ACTION.replace("{actionStatus}", actionStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_MANAGER_ACTION.replace("{actionStatus}", actionStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 }
                 break;
 
             case PROTOCOL.WAITING_LIST_R:
-                setWaitingList(evt.data.delegatorList);
+                store.dispatch(setWaitingList(evt.data.delegatorList));
                 break;
 
             case PROTOCOL.ANCHOR_ALL_QUERY_R:
-                setAnchorList(evt.data.allAnchorsList);
+                store.dispatch(setAnchorList(evt.data.allAnchorsList));
                 break;
 
             case PROTOCOL.ANCHOR_ADD_R:
                 const { code: anchorAddStatus } = evt.data;
-                let functionToExecute;
 
                 if (anchorAddStatus !== SUCCESS) {
-                    setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_ANCHOR_OPERATION.replace("{managerAction}", managerAction === ADD_ANCHOR ? langConfig.BUTTON_LABEL.ADD : langConfig.BUTTON_LABEL.EDIT).replace("{anchorAddStatus}", anchorAddStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_ANCHOR_OPERATION.replace("{managerAction}", managerAction === ADD_ANCHOR ? langConfig.BUTTON_LABEL.ADD : langConfig.BUTTON_LABEL.EDIT).replace("{anchorAddStatus}", anchorAddStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 } else {
-                    functionToExecute = managerAction === ADD_ANCHOR ? dataAPI.addAnchorToDataServer : dataAPI.updateAnchorToDataServer;
-                    functionToExecute(formValues.loginname, formValues.password, formValues.nickname, formValues.iconUrl, 0);
+                    let functionParams = [formValues.loginname, formValues.password, formValues.nickname, formValues.iconUrl, 0];
+
+                    if (managerAction === ADD_ANCHOR) {
+                        dataAPI.addAnchorToDataServer(...functionParams);
+                    } else {
+                        dataAPI.updateAnchorToDataServer(...functionParams);
+                    }
                 }
                 break;
 
@@ -230,34 +235,39 @@ class VoiceAPI {
                 const { code: anchorDeleteStatus } = evt.data;
 
                 if (anchorDeleteStatus !== SUCCESS) {
-                    toggleDialog(false);
-                    setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_DELETE_ANCHOR.replace("{anchorDeleteStatus}", anchorDeleteStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(toggleDialog(false));
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_DELETE_ANCHOR.replace("{anchorDeleteStatus}", anchorDeleteStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 } else {
-                    toggleDialog(false);
+                    store.dispatch(toggleDialog(false));
                     dataAPI.deleteAnchorFromDataServer(formValues.loginname);
                 }
                 break;
 
             case PROTOCOL.ANCHORS_ON_DUTY_R:
-                setAnchorsOnDutyList(evt.data.anchorsOnDutyList);
+                store.dispatch(setAnchorsOnDutyList(evt.data.anchorsOnDutyList));
                 break;
 
             case PROTOCOL.MANAGER_ALL_QUERY_R:
-                setManagerList(evt.data.allManagersList);
+                store.dispatch(setManagerList(evt.data.allManagersList));
                 break;
 
             case PROTOCOL.MANAGER_ADD_R:
                 const { code: managerAddStatus } = evt.data;
 
                 if (managerAddStatus !== SUCCESS) {
-                    setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_MANAGER_OPERATION.replace("{managerAction}", managerAction === ADD_MANAGER ? langConfig.BUTTON_LABEL.ADD : langConfig.BUTTON_LABEL.EDIT).replace("{managerAddStatus}", managerAddStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_MANAGER_OPERATION.replace("{managerAction}", managerAction === ADD_MANAGER ? langConfig.BUTTON_LABEL.ADD : langConfig.BUTTON_LABEL.EDIT).replace("{managerAddStatus}", managerAddStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 } else {
-                    functionToExecute = managerAction === ADD_MANAGER ? dataAPI.addManagerToDataServer : dataAPI.updateManagerToDataServer;
-                    functionToExecute(formValues.loginname, formValues.password, formValues.nickname, formValues.iconUrl, formValues.level);
+                    let functionParams = [formValues.loginname, formValues.password, formValues.nickname, formValues.iconUrl, formValues.level];
+
+                    if (managerAction === ADD_MANAGER) {
+                        dataAPI.addManagerToDataServer(...functionParams);
+                    } else {
+                        dataAPI.updateManagerToDataServer(...functionParams);
+                    }
                     this.getManagerList();
                 }
                 break;
@@ -266,12 +276,12 @@ class VoiceAPI {
                 const { code: managerDeleteStatus } = evt.data;
 
                 if (managerDeleteStatus !== SUCCESS) {
-                    toggleDialog(false);
-                    setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_DELETE_MANAGER.replace("{managerDeleteStatus}", managerDeleteStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(toggleDialog(false));
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.VOICE_SERVER_FAIL_DELETE_MANAGER.replace("{managerDeleteStatus}", managerDeleteStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 } else {
-                    toggleDialog(false);
+                    store.dispatch(toggleDialog(false));
                     dataAPI.deleteManagerFromDataServer(formValues.loginname);
                 }
                 break;
@@ -280,13 +290,13 @@ class VoiceAPI {
                 const { code: assignTokenStatus } = evt.data;
 
                 if (assignTokenStatus === DELEGATOR_NOT_IN_LINE) {
-                    setToastMessage(langConfig.ERROR_MESSAGES.DELEGATOR_IS_OFFLINE);
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.DELEGATOR_IS_OFFLINE));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 } else if (assignTokenStatus !== SUCCESS) {
-                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TOKEN.replace("{assignTokenStatus}", assignTokenStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TOKEN.replace("{assignTokenStatus}", assignTokenStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 }
                 break;
 
@@ -294,23 +304,23 @@ class VoiceAPI {
                 const { code: kickDelegatorStatus } = evt.data;
 
                 if (kickDelegatorStatus !== SUCCESS) {
-                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_DELEGATOR.replace("{kickDelegatorStatus}", kickDelegatorStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_DELEGATOR.replace("{kickDelegatorStatus}", kickDelegatorStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 }
                 break;
 
             case PROTOCOL.QUERY_ALL_DELEGATOR_R:
-                setDelegatorList(evt.data.delegatorList);
+                store.dispatch(setDelegatorList(evt.data.delegatorList));
                 break;
 
             case PROTOCOL.ADD_DELEGATOR_R:
                 const { code: addDelegatorStatus } = evt.data;
 
                 if (addDelegatorStatus !== SUCCESS) {
-                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ADD_DELEGATOR.replace("{addDelegatorStatus}", addDelegatorStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ADD_DELEGATOR.replace("{addDelegatorStatus}", addDelegatorStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 } else {
                     this.getDelegatorList();
                 }
@@ -320,17 +330,17 @@ class VoiceAPI {
                 const { code: deleteDelegatorStatus } = evt.data;
 
                 if (deleteDelegatorStatus === DELEGATOR_HAS_TOKEN) {
-                    toggleDialog(false);
-                    setToastMessage(langConfig.ERROR_MESSAGES.DELEGATOR_HAS_TOKEN);
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(toggleDialog(false));
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.DELEGATOR_HAS_TOKEN));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 } else if (deleteDelegatorStatus !== SUCCESS) {
-                    toggleDialog(false);
-                    setToastMessage(langConfig.ERROR_MESSAGES.FAIL_DELETE_DELEGATOR.replace("{deleteDelegatorStatus}", deleteDelegatorStatus));
-                    setToastVariant('error');
-                    toggleToast(true);
+                    store.dispatch(toggleDialog(false));
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_DELETE_DELEGATOR.replace("{deleteDelegatorStatus}", deleteDelegatorStatus)));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 } else {
-                    toggleDialog(false);
+                    store.dispatch(toggleDialog(false));
                     this.getDelegatorList();
                 }
                 break;
@@ -390,7 +400,7 @@ class VoiceAPI {
     }
 
     joinChannel(channelId) {
-        setCurrentChannelId(channelId);
+        store.dispatch(setCurrentChannelId(channelId));
 
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.CHANNEL_JOIN, bytes => {
             bytes.writeUnsignedInt(channelId);
@@ -469,7 +479,7 @@ class VoiceAPI {
     }
 
     deleteDelegator(loginName) {
-        this.writeBytes(Socket.createCMD(PROTOCOL.DELETE_DELEGATOR, bytes => {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.DELETE_DELEGATOR, bytes => {
             bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
         }));
     }

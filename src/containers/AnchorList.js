@@ -210,6 +210,8 @@ const AnchorList = ({
                 <DialogContent>
                     <UserForm
                         selectedUser={selectedAnchor}
+                        addUser={(...args) => voiceAPI.addAnchor(...args)}
+                        deleteUser={(...args) => voiceAPI.deleteAnchorz(...args)}
                         setOpenAddDialog={setOpenAddAnchorDialog}
                         userList={anchorList}
                         isEdit={isEdit}

@@ -198,8 +198,8 @@ const TelebetList = ({
         pageBorder: isAnswerCall
     });
 
-    const assignTokenToDelegator = function () {
-        voiceAPI.assignTokenToDelegator();
+    const assignTokenToDelegator = function (...args) {
+        voiceAPI.assignTokenToDelegator(...args);
     }
 
     const kickDelegator = function () {
@@ -230,7 +230,7 @@ const TelebetList = ({
     );
 }
 
-TelebetList.prototype = {
+TelebetList.propTypes = {
     classes: PropTypes.object.isRequired,
     channelList: PropTypes.array,
     isAnswerCall: PropTypes.bool,

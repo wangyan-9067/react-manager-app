@@ -5,8 +5,9 @@ import NullGateSocket from './NullGateSocket';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
 import { mapBetHistoryResult, reset } from '../../helpers/appUtils';
-import { setBetHistoryInfo, setBetHistory } from '../../actions/data';
+import { setBetHistoryInfo, setBetHistory, setBetHistoryUserPid } from '../../actions/data';
 import { toggleLoading } from '../../actions/app';
+import { store } from '../../store';
 
 class NullGateAPI {
     socket;
@@ -32,11 +33,11 @@ class NullGateAPI {
         return this.socket.isOpen();
     }
 
-    onSocketOpen() {
+    onSocketOpen = () => {
         this.login();
     }
 
-    onSocketPacket(evt) {
+    onSocketPacket = (evt) => {
         if (evt.$type !== Socket.EVENT_PACKET) {
             return;
         }
@@ -51,12 +52,12 @@ class NullGateAPI {
                 const rows = searchResult && searchResult.row ? searchResult.row : [];
                 const result = mapBetHistoryResult(evt.data.loginname, rows);
 
-                setBetHistoryInfo({
+                store.dispatch(setBetHistoryInfo({
                   numPerPage: info['num_per_page'][0],
                   total: info.total[0]
-                });
-                setBetHistory('billno', result);
-                toggleLoading(false);
+                }));
+                store.dispatch(setBetHistory('billno', result));
+                store.dispatch(toggleLoading(false));
               }
             break;
 
@@ -78,7 +79,7 @@ class NullGateAPI {
         const productId = fullLoginname.slice(0, 3);
         const loginname = fullLoginname.slice(3);
 
-        this.props.setBetHistoryUserPid(productId);
+        store.dispatch(setBetHistoryUserPid(productId));
 
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.GATE_FORWARD_MSG, bytes => {
             bytes.writeBytes(Socket.stringToBytes(fullLoginname, LOGIN_NAME));
