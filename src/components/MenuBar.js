@@ -236,9 +236,6 @@ class MenuBar extends React.Component {
                             <Tab label={langConfig.MENU_BAR_LABEL.ANCHOR_MANAGEMENT} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
                             <Tab label={<CallNotification count={incomingCallCount} label={langConfig.MENU_BAR_LABEL.MANAGER_OPERATION} />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
                             <Tab label={langConfig.MENU_BAR_LABEL.TABLE_MANAGEMENT} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
-                            {/* To suppress material-ui error */}
-                            <Tab label="管理經理" style={{ display: 'none' }} />
-                            <Tab label="管理代理" style={{ display: 'none' }} />
                         </Tabs>
                         <div className={grow1} />
                         <Button
