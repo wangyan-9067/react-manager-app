@@ -11,7 +11,10 @@ import Typography from '@material-ui/core/Typography';
 
 import { getLangConfig } from '../helpers/appUtils';
 
-const styles = {
+const styles = theme => ({
+  root: {
+    margin: theme.spacing.unit
+  },
 	card: {
 		borderRadius: '10px',
 		border: '3px solid #EDEDED',
@@ -66,7 +69,7 @@ const styles = {
       borderColor: '#FE0000',
     }
   }
-};
+});
 
 const AlreadyHaveToken = ({ classes, name, waitingTime, kickDelegator, tel }) => {
   const { card, tokenCard, cardContentRoot, cardContent, cardContentText, cardContentMainText, cardContentSubText, actionButton, kickButton } = classes;
@@ -137,7 +140,7 @@ const WaitingUserTile = ({ classes, item, assignTokenToDelegator, kickDelegator 
   });
 
   return (
-    <div>{panel}</div>
+    <div className={classes.root}>{panel}</div>
   );
 }
 

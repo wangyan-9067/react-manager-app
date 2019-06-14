@@ -9,7 +9,7 @@ import { getLangConfig } from '../helpers/appUtils';
 
 const styles = theme => ({
 	root: {
-		width: '100%'
+		width: '100%'		
 	},
 	title: {
 		color: '#666666',
@@ -42,7 +42,7 @@ const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegat
 
 	return (
 		<div className={root}>
-			<Typography color="inherit" align="left" className={title}>
+			<Typography color="inherit" align="left" className={title} gutterBottom>
 				{langConfig.WAITING_DELEGATOR}
 			</Typography>
 			<div className={listRoot}>

@@ -1,55 +1,16 @@
-import React, { Fragment, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
-import { withStyles, createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import VolumeUpIcon from '@material-ui/icons/VolumeUp';
-import CallEndIcon from '@material-ui/icons/CallEnd';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import { withStyles } from '@material-ui/core/styles';
 
 import GridListBase from '../components/GridListBase';
 import WaitingUser from '../components/WaitingUser';
+import AnswerCallPanel from '../components/AnswerCallPanel';
 import TelebetTile from './TelebetTile';
 import { setToastMessage, setToastVariant, toggleToast } from '../actions/app';
 import { setManagerAction, setIsAnswerCall, setIncomingCallCount } from '../actions/voice';
-import { MUTE_STATE, MANAGER_ACTION_TYPE, DATA_SERVER_VIDEO_STATUS } from '../constants';
-import { formatAmount } from '../helpers/utils';
-import { getLangConfig } from '../helpers/appUtils';
 
-const telebetListTheme = createMuiTheme({
-	shadows: new Array(25),
-	overrides: {
-		MuiToggleButton: {
-			root: {
-        '&$selected': {
-					color: '#FFFFFF',
-					backgroundColor: '#3970B0',
-					border: '3px solid #DF6C68',
-					'&:hover': {
-						color: '#FFFFFF',
-						backgroundColor: '#3970B0',
-						border: '3px solid #DF6C68'
-					}
-				},
-				'&:hover': {
-					color: '#FFFFFF',
-					backgroundColor: '#3970B0',
-					border: '3px solid #DF6C68'
-				}
-			}
-		}
-	}
-});
 
 const styles = theme => ({
   root: {
@@ -220,263 +181,6 @@ const styles = theme => ({
 	}
 });
 
-const changeTable = (event, table, setTableAssigned) => {
-	setTableAssigned(table);
-};
-
-const AnswerCallPanel = ({
-	classes,
-	currentChannelId,
-	channelList,
-	isAnchorCall,
-	leaveChannel,
-	assignTable,
-	assignTableToChannel,
-	toggleMuteChannel,
-	kickoutClientFromDataServer,
-	kickoutClient,
-	blacklistClient,
-	tableList,
-	setManagerAction,
-	setIsAnswerCall,
-	setToastMessage,
-	setToastVariant,
-	toggleToast,
-	player
-}) => {
-	const {
-		answerCallPanel,
-		answerCallPanelLeftRoot,
-		answerCallPanelLeftText,
-		answerCallPanelRightRoot,
-		answerCallPanelRight,
-		answerCallPanelRightText,
-		answerCallPanelRightTextValue,
-		actionButtonWrapper,
-		actionButton,
-		blacklistButton,
-		icon,
-		dialogPaper,
-		dialogActionButton,
-		dialogTitle,
-		dialogActionsRoot,
-		dialogActionsRootNoBorder,
-		dialogContent,
-		toggleButtonRoot,
-		toggleButtonDisabled,
-		toggleButtonLabel
-	} = classes;
-	const { MUTE, UNMUTE } = MUTE_STATE;
-	const currentChannel = channelList.find(channel => channel.channelId === currentChannelId);
-	const vidsInChannel = channelList.map(channel => channel.vid);
-	const langConfig = getLangConfig();
-	let latestPlayerBalance = 0;
-	if(currentChannel) {
-		latestPlayerBalance = currentChannel.clientBalance;
-		if(player.username !== '' && player.username === currentChannel.clientName ) latestPlayerBalance = player.balance;
-	}
-
-	// Error handling when currentChannel is not found in existing channel list
-	if (!currentChannel) {
-		setIsAnswerCall(false);
-		setToastMessage(langConfig.ERROR_MESSAGES.NO_CURRENT_CHANNEL);
-		setToastVariant('error');
-		toggleToast(true);
-	}
-
-	const { vid, clientName, anchorName, clientMute, anchorMute } = currentChannel;
-	// 'currentTable' is assigned a value but never used
-	// const currentTable = vid ? tableList.find(table => table.vid === vid) : null;	
-	const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
-	const [tableAssigned, setTableAssigned] = useState(vid);
-	const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
-	const [openBlacklistDialog, setOpenBlacklistDialog] = useState(false);
-
-	const { KICKOUT_CLIENT, BLACKLIST_CLIENT } = MANAGER_ACTION_TYPE;	
-
-	let line1Text;
-	let line2Text;
-	let clientMuteStatusTextDisplay;
-	let anchorMuteStatusTextDisplay;
-
-	if (isAnchorCall) {
-		line1Text = langConfig.TELEBET_LIST_LABEL.WITH_TABLE.replace("{vid}", vid);
-		line2Text = langConfig.TELEBET_LIST_LABEL.WITH_PLAYER_AND_ANCHOR.replace("{clientName}", clientName).replace("{anchorName}", anchorName)
-	} else {
-		line1Text = langConfig.TELEBET_LIST_LABEL.WITH_PLAYER;
-		line2Text = clientName;
-	}
-
-	clientMuteStatusTextDisplay = clientMute === MUTE ? langConfig.TELEBET_LIST_LABEL.PLAYER_MUTE_ON_GOINGING : '';
-	anchorMuteStatusTextDisplay = anchorMute === MUTE ? langConfig.TELEBET_LIST_LABEL.ANCHOR_MUTE_ON_GOINGING : '';
-
-	const answerCallPanelClass = classNames.bind(classes);
-	const clientMuteButtonClass = answerCallPanelClass({
-		actionButton: true,
-		mutingButton: clientMute === MUTE
-	});
-	const anchorMuteButtonClass = answerCallPanelClass({
-		actionButton: true,
-		mutingButton: anchorMute === MUTE,
-		show: isAnchorCall,
-		hide: !isAnchorCall
-	});
-	const answerCallPanelLeftClass = answerCallPanelClass({
-		answerCallPanelLeft: true,
-		answerCallPanelLeftAnchor: isAnchorCall
-	});
-	return (
-		<MuiThemeProvider theme={telebetListTheme}>
-			<Fragment>
-				<div className={answerCallPanel}>
-					<Card classes={{ root: answerCallPanelLeftRoot }}>
-						<CardContent className={answerCallPanelLeftClass}>
-							<Typography color="inherit" className={answerCallPanelLeftText}>{line1Text}</Typography>
-							<Typography color="inherit" className={answerCallPanelLeftText}>{line2Text}</Typography>
-							<Typography color="inherit" className={answerCallPanelLeftText}>{langConfig.TELEBET_LIST_LABEL.CONNECTED}  {clientMuteStatusTextDisplay}{anchorMuteStatusTextDisplay}</Typography>
-						</CardContent>
-					</Card>
-					<Card classes={{ root: answerCallPanelRightRoot }}>
-						<CardContent className={answerCallPanelRight}>
-							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.PLAYER}</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
-							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.BALANCE}</span><span className={answerCallPanelRightTextValue}>{latestPlayerBalance > 0 ? `$${formatAmount(latestPlayerBalance)}` : '-'}</span></Typography>
-							<Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.TABLE_VID}</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
-						</CardContent>
-					</Card>
-				</div>
-				<div className={actionButtonWrapper}>
-					<Button variant="contained" size="medium" color="inherit" className={clientMuteButtonClass} onClick={() => { toggleMuteChannel(currentChannelId, false, clientMute === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>{langConfig.BUTTON_LABEL.PLAYER_MUTE}</Button>
-					<Button variant="contained" size="medium" color="inherit" className={anchorMuteButtonClass} onClick={() => { toggleMuteChannel(currentChannelId, true, anchorMute === MUTE ? UNMUTE : MUTE) }}><VolumeUpIcon className={icon}/>{langConfig.BUTTON_LABEL.ANCHOR_MUTE}</Button>
-					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { leaveChannel(currentChannelId); }}><CallEndIcon className={icon} />{langConfig.BUTTON_LABEL.LEAVE_CHANNEL}</Button>
-					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { setOpenAssignTableDialog(true) }}>{langConfig.BUTTON_LABEL.ASSIGN_TABLE}</Button>
-					<Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { setOpenKickoutClientDialog(true) }}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
-					<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blacklistButton)} onClick={() => { setOpenBlacklistDialog(true) }}>{langConfig.BUTTON_LABEL.BLACKLIST_PLAYER}</Button>
-				</div>
-				{ /** Assign Table Dialog*/ }
-				<Dialog
-					open={openAssignTableDialog}
-					onClose={() => { setOpenAssignTableDialog(false)}}
-					aria-labelledby="responsive-dialog-title"
-					classes={{ paper: dialogPaper }}
-				>
-					<DialogTitle id="responsive-dialog-title">
-						<Typography color="inherit" className={dialogTitle}>{langConfig.TELEBET_LIST_LABEL.CHOOSE_TABLE}</Typography>
-					</DialogTitle>
-					<DialogContent>
-						<DialogContentText>
-							<ToggleButtonGroup
-								value={tableAssigned}
-								exclusive
-								onChange={(event, table) => {
-									if (!table) {
-										table = tableAssigned;
-									}
-									changeTable(event, table, setTableAssigned);
-								}}
-							>
-							{tableList.map((table, index) =>
-								<ToggleButton key={index} value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE || vidsInChannel.indexOf(table.vid) > -1} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
-									<Typography color="inherit" className={toggleButtonLabel}>{table.vid}</Typography>
-								</ToggleButton>
-							)}
-							</ToggleButtonGroup>
-						</DialogContentText>
-					</DialogContent>
-					<DialogActions classes={{ root: dialogActionsRoot }}>
-						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { assignTable(tableAssigned, clientName); setOpenAssignTableDialog(false); }}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
-						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenAssignTableDialog(false) }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
-					</DialogActions>
-				</Dialog>
-				{ /** Kickout Client Dialog*/ }
-				<Dialog
-					open={openKickoutClientDialog}
-					onClose={() => { setOpenKickoutClientDialog(false)}}
-					aria-labelledby="responsive-dialog-title"
-					classes={{ paper: dialogPaper }}
-				>
-					<DialogContent>
-						<DialogContentText><Typography color="inherit" className={dialogContent}>{langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", clientName)}</Typography></DialogContentText>
-					</DialogContent>
-					<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-						<Button
-							variant="contained"
-							size="medium"
-							color="primary"
-							className={classNames(actionButton, dialogActionButton)}
-							onClick={() => {	
-								console.log(KICKOUT_CLIENT, tableAssigned, clientName);							
-								setManagerAction(KICKOUT_CLIENT);
-								if (!tableAssigned) {
-									kickoutClient(currentChannelId);
-								} else {
-									kickoutClientFromDataServer(tableAssigned, clientName);
-								}
-
-								setOpenKickoutClientDialog(false);
-							}}
-						>
-							{langConfig.BUTTON_LABEL.CONFIRM}
-						</Button>
-						<Button variant="contained" size="medium" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenKickoutClientDialog(false) }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
-					</DialogActions>
-				</Dialog>
-				{ /** Blacklist Dialog*/ }
-				<Dialog
-					open={openBlacklistDialog}
-					onClose={() => { setOpenBlacklistDialog(false)}}
-					aria-labelledby="responsive-dialog-title"
-					classes={{ paper: dialogPaper }}
-				>
-					<DialogContent>
-						<DialogContentText><Typography color="inherit" className={dialogContent}>{langConfig.DIALOG_LABEL.CONFIRM_BACKLIST_PLAYER.replace("{clientName}", clientName)}</Typography></DialogContentText>
-					</DialogContent>
-					<DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-						<Button
-							variant="contained"
-							size="medium"
-							color="inherit"
-							className={classNames(actionButton, dialogActionButton)}
-							onClick={() => {
-								setManagerAction(BLACKLIST_CLIENT);
-
-								if (!tableAssigned) {
-									blacklistClient(currentChannelId);
-								} else {
-									kickoutClientFromDataServer(tableAssigned, clientName);
-								}
-
-								setOpenBlacklistDialog(false);
-							}}>
-								{langConfig.BUTTON_LABEL.CONFIRM}
-							</Button>
-						<Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={() => { setOpenBlacklistDialog(false) }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
-					</DialogActions>
-				</Dialog>
-			</Fragment>
-		</MuiThemeProvider>
-	);
-};
-
-AnswerCallPanel.prototype = {
-	classes: PropTypes.object.isRequired,
-	currentChannelId: PropTypes.number,
-	channelList: PropTypes.array,
-	isAnchorCall: PropTypes.bool,
-	leaveChannel: PropTypes.func,
-	assignTable: PropTypes.func,
-	assignTableToChannel: PropTypes.func,
-	toggleMuteChannel: PropTypes.func,
-	kickoutClientFromDataServer: PropTypes.func,
-	kickoutClient: PropTypes.func,
-	blacklistClient: PropTypes.func,
-	tableList: PropTypes.array,
-	setManagerAction: PropTypes.func,
-	setIsAnswerCall: PropTypes.func,
-	setToastMessage: PropTypes.func,
-	setToastVariant: PropTypes.func,
-	toggleToast: PropTypes.func
-};
-
 const TelebetList = ({
 	classes,
 	channelList,
@@ -512,47 +216,30 @@ const TelebetList = ({
 		pageBorder: isAnswerCall
 	});
 
-	// TODO: remove testing data
-	// channelList[3].clientName = 'TSThk456';
-	// channelList[3].clientState = 2;
-	// channelList[4].clientName = 'TSThk457';
-	// channelList[4].clientState = 2;
-	// channelList[4].anchorName = 'alice';
-	// channelList[4].anchorState = 1;
-	// channelList[4].vid = 'V010';
-	// channelList[1].clientName = 'hk789';
-	// channelList[1].anchorName = 'joyce';
-	// channelList[1].anchorState = 7;
-	// channelList[1].vid = 'V02';
-	// channelList[2].clientName = 'hk111';
-	// channelList[2].managerName = 'abc';
-	// channelList[2].anchorName = 'joyce';
-	// channelList[2].anchorState = 2;
-	// channelList[2].clientState = 2;
-
 	let panel;
 	if (isAnswerCall) {
+		const answerProps = {
+			classes: classes,
+			currentChannelId: currentChannelId,
+			channelList: channelList,
+			isAnchorCall: isAnchorCall,
+			leaveChannel: leaveChannel,
+			assignTable: assignTable,
+			assignTableToChannel: assignTableToChannel,
+			toggleMuteChannel: toggleMuteChannel,
+			kickoutClientFromDataServer: kickoutClientFromDataServer,
+			kickoutClient: kickoutClient,
+			blacklistClient: blacklistClient,
+			tableList: tableList,
+			setManagerAction: setManagerAction,
+			setIsAnswerCall: setIsAnswerCall,
+			setToastMessage: setToastMessage,
+			setToastVariant: setToastVariant,
+			toggleToast: toggleToast,
+			player: player,
+		}
 		panel = (
-			<AnswerCallPanel
-				classes={classes}
-				currentChannelId={currentChannelId}
-				channelList={channelList}
-				isAnchorCall={isAnchorCall}
-				leaveChannel={leaveChannel}
-				assignTable={assignTable}
-				assignTableToChannel={assignTableToChannel}
-				toggleMuteChannel={toggleMuteChannel}
-				kickoutClientFromDataServer={kickoutClientFromDataServer}
-				kickoutClient={kickoutClient}
-				blacklistClient={blacklistClient}
-				tableList={tableList}
-				setManagerAction={setManagerAction}
-				setIsAnswerCall={setIsAnswerCall}
-				setToastMessage={setToastMessage}
-				setToastVariant={setToastVariant}
-				toggleToast={toggleToast}
-				player={player}
-			/>
+			<AnswerCallPanel {...answerProps} />
 		);
 	} else {
 		panel = (

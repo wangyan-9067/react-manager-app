@@ -21,7 +21,7 @@ const joinRoom = (channelId, joinChannel, isAnchor, setIsAnchorCall, setIncoming
 
 const styles = theme => ({
 	cardBase: {
-		minHeight: '200px'
+		minHeight: '229px'
 	},
 	emptyCard: {
 		borderRadius: '16px',

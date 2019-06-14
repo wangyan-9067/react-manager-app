@@ -58,8 +58,7 @@ const TableList = ({
             toggleDialog(false);
           }}
           actionHandler={() => {
-            const { vid, clientName} = clientToKickOut; 
-            console.log(MANAGER_ACTION_TYPE.KICKOUT_CLIENT,vid, clientName)
+            const { vid, clientName} = clientToKickOut;             
             setManagerAction(MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
             kickoutClientFromDataServer(vid, clientName);
             toggleDialog(false);
@@ -97,7 +96,7 @@ const mapStateToProps = state => {
   const { anchorsOnDutyList, channelList } = voice;
   const { tableList, clientToKickOut, tableLimit } = data;
   const { openDialog } = app;
-	
+  
   return ({
     anchorsOnDutyList,
     channelList,
