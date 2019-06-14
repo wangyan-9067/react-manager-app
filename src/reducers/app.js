@@ -9,7 +9,7 @@ import {
   RESET_ACTION,
   TOGGLE_LOADING
 } from '../types';
-  
+
 const initialState = {
   message: '',
   variant: 'info',
@@ -52,7 +52,7 @@ export default function app(state = initialState, action) {
       return { ...state, managerCredential };
 
     case RESET_ACTION:
-      return initialState;
+      return {...initialState, message: state.message, variant: state.variant, duration: state.duration, open: state.open };
 
     case TOGGLE_LOADING:
       const showLoading = action.toggle;
@@ -62,4 +62,3 @@ export default function app(state = initialState, action) {
     	return state;
 	}
 };
-  

@@ -15,7 +15,7 @@ const CustomAvatar = ({ label, imgUrl }) => {
 	);
 }
 
-CustomAvatar.prototype = {
+CustomAvatar.propTypes = {
   label: PropTypes.string.isRequired,
   imgUrl: PropTypes.string
 };
