@@ -95,7 +95,7 @@ class VoiceAPI {
                     RTC.init(evt.data.voiceAppId);
 
                     this.getAnchorList();
-                    this.getAnchorsDutyList();
+                    // this.getAnchorsDutyList();
                     this.getManagerList();
                     this.getDelegatorList();
 
@@ -246,7 +246,6 @@ class VoiceAPI {
                 break;
 
             case PROTOCOL.ANCHORS_ON_DUTY_R:
-            console.log("anchorsOnDutyList", evt.data.anchorsOnDutyList);
                 store.dispatch(setAnchorsOnDutyList(evt.data.anchorsOnDutyList));
                 break;
 
@@ -365,10 +364,11 @@ class VoiceAPI {
     getAnchorList() {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHOR_ALL_QUERY_REQ));
     }
-
-    getAnchorsDutyList() {
-        this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHORS_ON_DUTY_REQUEST));
-    }
+    
+    //Not used
+    // getAnchorsDutyList() {
+    //     this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHORS_ON_DUTY_REQUEST));
+    // }
 
     getManagerList() {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.MANAGER_ALL_QUERY_REQ));
@@ -425,18 +425,18 @@ class VoiceAPI {
 
         this.sendManagerAction(action, channelId);
     }
+    //Not used
+    // setAnchorsDuty(anchorList) {
+    //     this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHORS_ON_DUTY_UPDATE, bytes => {
+    //         if (Array.isArray(anchorList) && anchorList.length > 0) {
+    //             bytes.writeUnsignedInt(anchorList.length);
 
-    setAnchorsDuty(anchorList) {
-        this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHORS_ON_DUTY_UPDATE, bytes => {
-            if (Array.isArray(anchorList) && anchorList.length > 0) {
-                bytes.writeUnsignedInt(anchorList.length);
-
-                for (let i = 0; i < anchorList.length; i++) {
-                    bytes.writeBytes(Socket.stringToBytes(anchorList[i], CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
-                }
-            }
-        }));
-    }
+    //             for (let i = 0; i < anchorList.length; i++) {
+    //                 bytes.writeBytes(Socket.stringToBytes(anchorList[i], CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+    //             }
+    //         }
+    //     }));
+    // }
 
     addAnchor(loginName, password, nickName, url) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHOR_ADD_REQ, bytes => {

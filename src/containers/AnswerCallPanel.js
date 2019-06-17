@@ -146,8 +146,6 @@ class AnswerCallPanel extends React.Component {
         const { currentChannelId } = this.props;
         const { tableAssigned } = this.state;
 
-        console.log(KICKOUT_CLIENT, tableAssigned, clientName);
-
         this.props.setManagerAction(KICKOUT_CLIENT);
 
         if (!tableAssigned) {

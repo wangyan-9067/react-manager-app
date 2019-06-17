@@ -29,7 +29,9 @@ const AnchorStatus = ({ classes, isBusy }) => {
         dot: isBusy ? busy : idle
       }}
       variant="dot"
-    />
+    >
+    <span />
+    </Badge>
   );
 }
 

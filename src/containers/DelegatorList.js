@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import classNames from 'classnames/bind';
+
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -49,27 +49,27 @@ const styles = () => ({
             borderColor: '#1F5FA6',
         }
     },
-    dutyButton: {
-        width: '120px',
-        margin: '0 20px',
-        padding: '2px 20px',
-        fontSize: '1.125rem',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        borderRadius: '16px',
-        backgroundColor: '#1F5FA6',
-        '&:hover': {
-            backgroundColor: '#1F5FA6',
-            borderColor: '#1F5FA6',
-        }
-    },
-    cancelButton: {
-        backgroundColor: '#AAAAAA',
-        '&:hover': {
-            backgroundColor: '#1F5FA6',
-            borderColor: '#1F5FA6',
-        }
-    },
+    // dutyButton: {
+    //     width: '120px',
+    //     margin: '0 20px',
+    //     padding: '2px 20px',
+    //     fontSize: '1.125rem',
+    //     fontWeight: 'bold',
+    //     color: '#FFFFFF',
+    //     borderRadius: '16px',
+    //     backgroundColor: '#1F5FA6',
+    //     '&:hover': {
+    //         backgroundColor: '#1F5FA6',
+    //         borderColor: '#1F5FA6',
+    //     }
+    // },
+    // cancelButton: {
+    //     backgroundColor: '#AAAAAA',
+    //     '&:hover': {
+    //         backgroundColor: '#1F5FA6',
+    //         borderColor: '#1F5FA6',
+    //     }
+    // },
     emptyAnchorCardRoot: {
         width: '100%'
     },
@@ -101,8 +101,6 @@ const DelegatorList = ({
         grow,
         headerText,
         operationButton,
-        dutyButton,
-        cancelButton,
         emptyAnchorCardRoot,
         emptyText,
         dialogPaper,
@@ -198,9 +196,6 @@ const DelegatorList = ({
                 }}
                 onClickHandler={onClickHandler}
             />
-            <div>
-                <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} onClick={() => { setSelected(); }}>{langConfig.BUTTON_LABEL.CANCEL_SELECT}</Button>
-            </div>
         </div>
     );
 }

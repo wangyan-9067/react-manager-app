@@ -208,8 +208,7 @@ const BetHistory = ({
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
     const prevRows = usePrevious(betHistoryList);
     const noRecordDisplay = rows.length === 0;
-    const langConfig = getLangConfig();
-    console.log(rows);
+    const langConfig = getLangConfig();    
     const handleChangePage = (event, page) => {
         const { loginname, gmCode } = betHistoryTableSearchFields;
         nullGateAPI.getBetHistory(loginname, gmCode, page + 1);
