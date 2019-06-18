@@ -16,7 +16,7 @@ import { formatAmount } from '../helpers/utils';
 
 const styles = theme => ({
 	cardBase: {
-		minHeight: '200px'
+		minHeight: '229px'
 	},
 	emptyCard: {
 		borderRadius: '16px',
@@ -89,10 +89,9 @@ const joinRoom = (channelId, joinChannel, isAnchor, setIsAnchorCall, setIncoming
 
 const FullChatroomCard = ({ classes, item, setIsAnchorCall, cardClass, joinChannel, isManagerReconnect, currentTable, setIncomingCallCount, incomingCallCount, player }) => {
 	const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
-	const { clientName, anchorState, anchorName, channelId, managerName, clientBalance, vid ,clientState} = item;
+	const { clientName, anchorState, anchorName, channelId, managerName, clientBalance, vid ,clientState} = item;	
 	let latestClientBalance = clientBalance;
-	if(player.username !== '' && player.username === clientName) latestClientBalance = player.balance;
-	console.log("===",player, item);
+	if(player.username !== '' && player.username === clientName) latestClientBalance = player.balance;	
 	const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;	
 	const langConfig = getLangConfig();
 	let renderButton = ''

@@ -208,10 +208,9 @@ const BetHistory = ({
     const [videoDialogOpen, setVideoDialogOpen] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(numPerPage);
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-    const prevRows = usePrevious(betHistoryList);
+    const prevRows = usePrevious(betHistoryList.slice());
     const noRecordDisplay = rows.length === 0;
-    const langConfig = getLangConfig();
-    console.log(rows);
+    const langConfig = getLangConfig();    
     const handleChangePage = (event, page) => {
         const { loginname, gmCode } = betHistoryTableSearchFields;
         nullGateAPI.getBetHistory(loginname, gmCode, page + 1);
@@ -342,7 +341,7 @@ const BetHistory = ({
 
 BetHistory.propTypes = {
     classes: PropTypes.object.isRequired,
-    betHistory: PropTypes.array,
+    betHistory: PropTypes.object,
     toggleToast: PropTypes.func,
     setToastMessage: PropTypes.func,
     setToastVariant: PropTypes.func,

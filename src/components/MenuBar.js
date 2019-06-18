@@ -258,6 +258,9 @@ class MenuBar extends React.Component {
                                             <Typography color="inherit" className={managerName}>{managerLoginname}</Typography>
                                         </Fragment>
                                     }
+                                    secondaryTypographyProps={{
+                                        component: "div"
+                                    }}
                                 />
                             </ListItem>
                         </List>

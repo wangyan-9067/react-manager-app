@@ -14,6 +14,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -145,8 +146,6 @@ class AnswerCallPanel extends React.Component {
         const { clientName } = this.getCurrentChannelInfo();
         const { currentChannelId } = this.props;
         const { tableAssigned } = this.state;
-
-        console.log(KICKOUT_CLIENT, tableAssigned, clientName);
 
         this.props.setManagerAction(KICKOUT_CLIENT);
 
@@ -299,8 +298,8 @@ class AnswerCallPanel extends React.Component {
                         </Card>
                     </div>
                     <div className={actionButtonWrapper}>
-                        <Button variant="contained" size="medium" color="inherit" className={clientMuteButtonClass} onClick={this.onClientMuteButtonClicked}><VolumeUpIcon className={icon} />{langConfig.BUTTON_LABEL.PLAYER_MUTE}</Button>
-                        <Button variant="contained" size="medium" color="inherit" className={anchorMuteButtonClass} onClick={this.onAnchorMuteButtonClicked}><VolumeUpIcon className={icon} />{langConfig.BUTTON_LABEL.ANCHOR_MUTE}</Button>
+                        <Button variant="contained" size="medium" color="inherit" className={clientMuteButtonClass} onClick={this.onClientMuteButtonClicked}>{clientMute === MUTE ? <VolumeOffIcon className={icon} /> : <VolumeUpIcon className={icon} />}{langConfig.BUTTON_LABEL.PLAYER_MUTE}</Button>
+                        <Button variant="contained" size="medium" color="inherit" className={anchorMuteButtonClass} onClick={this.onAnchorMuteButtonClicked}>{anchorMute === MUTE ? <VolumeOffIcon className={icon} /> : <VolumeUpIcon className={icon} />}{langConfig.BUTTON_LABEL.ANCHOR_MUTE}</Button>
                         <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onLeaveChannelClicked}><CallEndIcon className={icon} />{langConfig.BUTTON_LABEL.LEAVE_CHANNEL}</Button>
                         <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onOpenAssignTableDialogClicked}>{langConfig.BUTTON_LABEL.ASSIGN_TABLE}</Button>
                         <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onKickoutClientClicked}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>

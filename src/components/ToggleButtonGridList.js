@@ -79,7 +79,8 @@ ToggleButtonGridList.propTypes = {
 	exclusive: PropTypes.bool,
 	selectedValue: PropTypes.oneOfType([
     PropTypes.array,
-    PropTypes.object
+    PropTypes.object,
+    PropTypes.string,
   ]),
   onChangeHandler: PropTypes.func,
   onClickHandler: PropTypes.func

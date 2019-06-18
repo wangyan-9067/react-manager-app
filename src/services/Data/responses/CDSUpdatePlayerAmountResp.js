@@ -7,7 +7,6 @@ export default class CDSUpdatePlayerAmountResp extends Socket.ResponseBase {
 		bytes.readUnsignedShort();
 		bytes.readUnsignedShort();		
 		this.username = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_USER_NAME);
-		this.account = bytes.readDouble();
-		console.log(this)
+		this.account = bytes.readDouble();		
 	}
 }
