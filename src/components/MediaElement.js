@@ -1,16 +1,24 @@
 import React from 'react';
-import 'mediaelement/full';
+import 'mediaelement';
+import 'mediaelement/build/mediaelementplayer.min.css';
+// import 'mediaelement/build/mediaelement-flash-video.swf';
 
 
-
-class Video extends React.Component {
+class MediaElement extends React.Component {
     constructor() {
         super();
         this.video = React.createRef();
     }
 
     componentDidMount() {
-        new mejs.MediaElementPlayer(this.video.current, {
+        const { MediaElementPlayer } = global;
+
+        this.mediaElement = new MediaElementPlayer(this.video.current, {
+            renderers: ["native_flv", "html5", "native_hls", "flash_video"],
+            // pluginPath: './static/media/',
+            // plugins: ['flash', 'silverlight'],
+            clickToPlayPause: false,
+            pauseOtherPlayers: false,
             success: (mediaElement, originalNode, instance) => {
                 mediaElement.addEventListener('play', () => {
                     console.log('media element on play');
@@ -32,13 +40,17 @@ class Video extends React.Component {
         });
     }
 
+    componentWillUnmount() {
+        this.mediaElement.remove();
+    }
+
     render() {
         return (
             <video ref={this.video} width="320" height="240" controls="controls">
-                <source src="https://re.008cdn.com/record/mp4:GB022196170OO.flv" />
+                <source src="https://re.008cdn.com/record/mp4:GB022196170OO.flv" type="video/flv"/>
             </video>
         )
     }
 }
 
-export default Video;
+export default MediaElement;

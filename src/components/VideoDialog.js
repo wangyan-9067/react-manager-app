@@ -3,7 +3,7 @@ import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 
-import Video from './Video';
+import MediaElement from './MediaElement';
 
 class VideoDialog extends React.Component {
     render() {
@@ -12,7 +12,7 @@ class VideoDialog extends React.Component {
         return (
             <Dialog onClose={onClose} open={open}>
                 <DialogContent>
-                    <Video />
+                    <MediaElement />
                 </DialogContent>
             </Dialog>
         )

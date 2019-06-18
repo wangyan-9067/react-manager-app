@@ -13,7 +13,7 @@ const styles = () => ({
   }
 });
 
-const AudioButton = ({ classes, gmcode, toggleToast, setToastMessage, setToastVariant }) => {
+const AudioButton = ({ classes, gmcode, toggleToast, setToastMessage, setToastVariant, openVideoDialog }) => {
   const { playerIcon } = classes;
   const [ isPlaying, setIsPlaying ] = useState(false);
   const audioObject = useRef(null);
@@ -28,6 +28,7 @@ const AudioButton = ({ classes, gmcode, toggleToast, setToastMessage, setToastVa
           // TODO: put base url to config file
           player.src = `https://36.255.220.33/e-telebet/${gmcode}.aac`;
           setIsPlaying(!isPlaying);
+          openVideoDialog(gmcode);
 
           if (isPlaying) {
             player.pause();
