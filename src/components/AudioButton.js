@@ -23,12 +23,13 @@ const AudioButton = ({ classes, gmcode, toggleToast, setToastMessage, setToastVa
     <Fragment>
       <IconButton
         onClick={() => {
+          openVideoDialog(gmcode);
+          return;
           const player = audioObject.current;
 
           // TODO: put base url to config file
           player.src = `https://36.255.220.33/e-telebet/${gmcode}.aac`;
           setIsPlaying(!isPlaying);
-          openVideoDialog(gmcode);
 
           if (isPlaying) {
             player.pause();

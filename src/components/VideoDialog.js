@@ -12,7 +12,17 @@ class VideoDialog extends React.Component {
         return (
             <Dialog onClose={onClose} open={open}>
                 <DialogContent>
-                    <MediaElement />
+                    <MediaElement
+                        id="video1"
+                        width="320"
+                        height="320"
+                        sources={[
+                            {
+                                src: 'https://re.010cdn.com/record/mp4:GC0161961807Y.flv',
+                                type: 'video/flv'
+                            }
+                        ]}
+                    />
                 </DialogContent>
             </Dialog>
         )
