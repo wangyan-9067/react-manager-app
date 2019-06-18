@@ -51,17 +51,14 @@ const styles = () => ({
 const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
   const { root, title, grow, listRoot, primary, secondary } = classes;
   const langConfig = getLangConfig();
-  let onDutyAnchors;
-  if ((anchorList && anchorList.length) && (anchorsOnDutyList && anchorsOnDutyList.length)) {
-    onDutyAnchors = anchorsOnDutyList.map(dutyAnchor => {
-      const targetAnchor = anchorList.find(anchor => anchor.loginname === dutyAnchor.anchorName);
-      targetAnchor.vid = dutyAnchor.vid;
-      // targetAnchor.vid = anchorsOnDutyList.vid;
-
-
-      return targetAnchor;
-    });
-  }
+  // let onDutyAnchors;
+  // if ((anchorList && anchorList.length) && (anchorsOnDutyList && anchorsOnDutyList.length)) {
+  //   onDutyAnchors = anchorsOnDutyList.map(dutyAnchor => {
+  //     const targetAnchor = anchorList.find(anchor => anchor.loginname === dutyAnchor.anchorName);
+  //     targetAnchor.vid = dutyAnchor.vid;      
+  //     return targetAnchor;
+  //   });
+  // }
 
 	return (
 		<div className={root}>
@@ -71,7 +68,7 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
 
         {
           // eslint-disable-next-line
-          onDutyAnchors && onDutyAnchors.map((anchor, index) => {
+          anchorsOnDutyList && anchorsOnDutyList.map((anchor, index) => {
           if (anchor) {
             const { loginname, nickname, url, vid } = anchor;
 
@@ -97,7 +94,7 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
           }
         })}
         {
-          !onDutyAnchors && (
+          !anchorsOnDutyList && (
             <Typography align="left" color="inherit" className={secondary}>{langConfig.ANCHOR_LIST_LABEL.NO_ON_DUTY_ANCHOR}</Typography>
           )
         }

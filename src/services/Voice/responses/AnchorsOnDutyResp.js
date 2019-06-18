@@ -10,6 +10,7 @@ export default class AnchorsOnDutyResp extends Socket.ResponseBase {
 		for (let i = 0 ; i < this.count; i++) {
 			this.anchorsOnDutyList.push({
 				anchorName: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),
+				nickname: bytes.readUTFBytes(VALUE_LENGTH.NICK_NAME),
 				vid: bytes.readUTFBytes(VALUE_LENGTH.VID)
 			});
 		}

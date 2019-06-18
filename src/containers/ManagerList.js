@@ -50,27 +50,6 @@ const styles = () => ({
             borderColor: '#1F5FA6',
         }
     },
-    // dutyButton: {
-    //     width: '120px',
-    //     margin: '0 20px',
-    //     padding: '2px 20px',
-    //     fontSize: '1.125rem',
-    //     fontWeight: 'bold',
-    //     color: '#FFFFFF',
-    //     borderRadius: '16px',
-    //     backgroundColor: '#1F5FA6',
-    //     '&:hover': {
-    //         backgroundColor: '#1F5FA6',
-    //         borderColor: '#1F5FA6',
-    //     }
-    // },
-    // cancelButton: {
-    //     backgroundColor: '#AAAAAA',
-    //     '&:hover': {
-    //         backgroundColor: '#1F5FA6',
-    //         borderColor: '#1F5FA6',
-    //     }
-    // },
     emptyAnchorCardRoot: {
         width: '100%'
     },

@@ -94,8 +94,7 @@ class VoiceAPI {
                     store.dispatch(setUserLevel(evt.data.level));
                     RTC.init(evt.data.voiceAppId);
 
-                    this.getAnchorList();
-                    // this.getAnchorsDutyList();
+                    this.getAnchorList();                    
                     this.getManagerList();
                     this.getDelegatorList();
 
@@ -364,11 +363,6 @@ class VoiceAPI {
     getAnchorList() {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHOR_ALL_QUERY_REQ));
     }
-    
-    //Not used
-    // getAnchorsDutyList() {
-    //     this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHORS_ON_DUTY_REQUEST));
-    // }
 
     getManagerList() {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.MANAGER_ALL_QUERY_REQ));
@@ -425,18 +419,6 @@ class VoiceAPI {
 
         this.sendManagerAction(action, channelId);
     }
-    //Not used
-    // setAnchorsDuty(anchorList) {
-    //     this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHORS_ON_DUTY_UPDATE, bytes => {
-    //         if (Array.isArray(anchorList) && anchorList.length > 0) {
-    //             bytes.writeUnsignedInt(anchorList.length);
-
-    //             for (let i = 0; i < anchorList.length; i++) {
-    //                 bytes.writeBytes(Socket.stringToBytes(anchorList[i], CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
-    //             }
-    //         }
-    //     }));
-    // }
 
     addAnchor(loginName, password, nickName, url) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHOR_ADD_REQ, bytes => {
