@@ -78,6 +78,7 @@
   "TABLE_OWNER": "桌主:",
   "CARD_TYPE": "牌靴:",
   "GAME_STATUS": "游戏状态:",
+  "GAME_TIME": "开局时间:",
   "KICKOUT_CLIENT": "踢走桌主",
   "USER_FORM": {
     "LOGIN_NAME_EMPTY": "必须输入用户名",
