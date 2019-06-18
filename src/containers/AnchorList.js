@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import classNames from 'classnames/bind';
 
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -16,7 +15,6 @@ import UserForm from '../components/UserForm';
 import ToggleButtonGridList from '../components/ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 import { setManagerAction, setFormValues } from '../actions/voice';
-import { compareArray } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 import { MANAGER_ACTION_TYPE } from '../constants';
 import voiceAPI from '../services/Voice/voiceAPI';
@@ -53,27 +51,6 @@ const styles = () => ({
             borderColor: '#1F5FA6',
         }
     },
-    dutyButton: {
-        width: '120px',
-        margin: '0 20px',
-        padding: '2px 20px',
-        fontSize: '1.125rem',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        borderRadius: '16px',
-        backgroundColor: '#1F5FA6',
-        '&:hover': {
-            backgroundColor: '#1F5FA6',
-            borderColor: '#1F5FA6',
-        }
-    },
-    cancelButton: {
-        backgroundColor: '#AAAAAA',
-        '&:hover': {
-            backgroundColor: '#1F5FA6',
-            borderColor: '#1F5FA6',
-        }
-    },
     emptyAnchorCardRoot: {
         width: '100%'
     },
@@ -90,16 +67,6 @@ const styles = () => ({
         fontWeight: 'bold'
     }
 });
-
-const usePrevious = value => {
-    const ref = useRef();
-
-    useEffect(() => {
-        ref.current = value;
-    });
-
-    return ref.current;
-}
 
 const AnchorList = ({
     classes,
@@ -118,15 +85,12 @@ const AnchorList = ({
         root,
         grow,
         headerText,
-        operationButton,
-        dutyButton,
-        cancelButton,
+        operationButton,        
         emptyAnchorCardRoot,
         emptyText,
         dialogPaper,
         dialogTitle
     } = classes;
-    const prevAnchorsOnDutyList = usePrevious(anchorsOnDutyList);
     const { ADD_ANCHOR, EDIT_ANCHOR } = MANAGER_ACTION_TYPE;
     const langConfig = getLangConfig();
 
@@ -143,31 +107,9 @@ const AnchorList = ({
 
     let panel;
     let selectedAnchor;
-
     if (selected && !Array.isArray(selected)) {
         selectedAnchor = anchorList.find(anchor => anchor.value === selected);
     }
-
-    if (Array.isArray(anchorList) && anchorList.length === 0) {
-        panel = (
-            <Card className={emptyAnchorCardRoot}>
-                <CardContent>
-                    <Typography color="inherit" className={emptyText}>{langConfig.ANCHOR_LIST_LABEL.NO_RECORD}</Typography>
-                </CardContent>
-            </Card>
-        );
-    }
-
-    useEffect(() => {
-        const flattenArrays = {
-            prev: prevAnchorsOnDutyList && prevAnchorsOnDutyList.map(anchor => anchor.anchorName),
-            current: anchorsOnDutyList && anchorsOnDutyList.map(anchor => anchor.anchorName)
-        }
-
-        if (!compareArray(flattenArrays.prev, flattenArrays.current)) {
-            setSelected(flattenArrays.current);
-        }
-    });
 
     useEffect(() => {
         if (firstUpdate.current) {
@@ -182,20 +124,31 @@ const AnchorList = ({
         }
     }, [isEdit]);
 
+    if (Array.isArray(anchorList) && anchorList.length === 0) {
+        panel = (
+            <Card className={emptyAnchorCardRoot}>
+                <CardContent>
+                    <Typography color="inherit" className={emptyText}>{langConfig.ANCHOR_LIST_LABEL.NO_RECORD}</Typography>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    useEffect(() => {
+        if (selected && isEdit) {
+            setOpenAddAnchorDialog(true);
+        }
+    }, [selected, isEdit]);
     return (
         <div className={root}>
             <Typography color="inherit" align="left" className={headerText}>{langConfig.ANCHOR_LIST_LABEL.SELECT_ANCHOR}</Typography>
             <div className={grow} />
-            <Button variant="contained" size="medium" color="inherit" disabled={isEdit} className={operationButton} onClick={() => { setOpenAddAnchorDialog(true); setManagerAction(ADD_ANCHOR); }}>{langConfig.BUTTON_LABEL.ADD_ANCHOR}</Button>
-            <Button
-                variant="contained"
-                size="medium"
-                color="inherit"
-                className={operationButton}
-                onClick={() => {
-                    setSelected();
-                    setIsEdit(!isEdit);
-                }}>{langConfig.BUTTON_LABEL.EDIT}</Button>
+            <Button variant="contained" size="medium" color="inherit" className={operationButton} onClick={() => { 
+                setSelected();
+                setIsEdit(false);
+                setOpenAddAnchorDialog(true); 
+                setManagerAction(ADD_ANCHOR);
+            }}>{langConfig.BUTTON_LABEL.ADD_ANCHOR}</Button>
             {panel}
             <Dialog
                 open={openAddAnchorDialog}
@@ -224,20 +177,18 @@ const AnchorList = ({
             </Dialog>
             <ToggleButtonGridList
                 list={anchorList}
-                exclusive={isEdit}
+                exclusive={true}
                 selectedValue={selected}
                 onChangeHandler={value => {
                     if (!value) {
                         return;
                     }
                     setSelected(value);
+                    setIsEdit(true);
                 }}
                 onClickHandler={onClickHandler}
             />
-            <div>
-                <Button variant="contained" size="medium" color="inherit" className={dutyButton} disabled={isEdit} onClick={() => { voiceAPI.setAnchorsDuty(selected); voiceAPI.getAnchorsDutyList(); }}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
-                <Button variant="contained" size="medium" color="inherit" className={classNames(dutyButton, cancelButton)} disabled={isEdit} onClick={() => { setSelected(); }}>{langConfig.BUTTON_LABEL.CANCEL_SELECT}</Button>
-            </div>
+            
         </div>
     );
 }

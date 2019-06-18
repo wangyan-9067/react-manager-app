@@ -270,7 +270,8 @@ class UserForm extends React.Component {
             }
 
             if (tel.isValid) {
-                if (!validator.isNumeric(tel.value)) {
+                // if (!validator.isNumeric(tel.value)) {
+                if (!validator.matches(tel.value, /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g)) {
                     isGood = this.setField(tel, false, langConfig.USER_FORM.PHONE_NUMERIC);
                 } else {
                     this.resetField(tel);
@@ -448,9 +449,9 @@ class UserForm extends React.Component {
                                         classes={{ underline: inputUnderline }}
                                         className={input}
                                         inputProps={{
-                                            'aria-label': 'tel',
+                                            'aria-label': 'tel'
                                         }}
-                                        type="tel"
+                                        type="tel"                                        
                                         name="tel"
                                         placeholder=""
                                         value={tel.value}

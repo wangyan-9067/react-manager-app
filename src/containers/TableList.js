@@ -37,8 +37,7 @@ class TableList extends React.Component {
 
     kickoutClient = () => {
         const { vid, clientName } = this.props.clientToKickOut;
-
-        console.log(MANAGER_ACTION_TYPE.KICKOUT_CLIENT, vid, clientName)
+        
         this.props.setManagerAction(MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
         dataAPI.kickoutClientFromDataServer(vid, clientName);
         this.closeDialog();
