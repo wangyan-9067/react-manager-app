@@ -56,6 +56,8 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
     onDutyAnchors = anchorsOnDutyList.map(dutyAnchor => {
       const targetAnchor = anchorList.find(anchor => anchor.loginname === dutyAnchor.anchorName);
       targetAnchor.vid = dutyAnchor.vid;
+      // targetAnchor.vid = anchorsOnDutyList.vid;
+
 
       return targetAnchor;
     });
