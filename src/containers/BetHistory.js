@@ -17,8 +17,8 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import Typography from '@material-ui/core/Typography';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 
-import AudioButton from '../components/AudioButton';
 import { toggleToast, setToastMessage, setToastVariant } from '../actions/app';
 import { setBetHistoryTablePageIndex } from '../actions/data';
 import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
@@ -126,6 +126,9 @@ const styles = theme => ({
     },
     lossClass: {
         color: '#13C636'
+    },
+    playerIcon: {
+        color: '#3970B0'
     }
 });
 
@@ -201,13 +204,13 @@ const BetHistory = ({
 }) => {
     let betHistoryList = convertObjectListToArrayList(betHistory.byHash);
 
-    const { root, cellRoot, cellWidth, tableWrapper, table } = classes;
+    const { root, cellRoot, cellWidth, tableWrapper, table, playerIcon } = classes;
     const { numPerPage, total } = betHistoryInfo;
     const [rows, setRows] = useState(betHistoryList);
     const [page, setPage] = useState(betHistoryTablePageIndex);
     const [videoDialogOpen, setVideoDialogOpen] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(numPerPage);
-    const [gmcode, setGmcode] = useState(null);
+    const [row, setRow] = useState({});
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
     const prevRows = usePrevious(betHistoryList.slice());
     const noRecordDisplay = rows.length === 0;
@@ -226,8 +229,8 @@ const BetHistory = ({
         setVideoDialogOpen(false);
     }
 
-    const openVideoDialog = (gmcode) => {
-        setGmcode(gmcode);
+    const openVideoDialog = (row) => {
+        setRow(row);
         setVideoDialogOpen(true);
     }
 
@@ -292,7 +295,7 @@ const BetHistory = ({
                                         <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.gmcode}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.betTime}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{langConfig.BANKER} {row.bankerVal} {langConfig.PLAYER} {row.playerVal}</TableCell>
-                                        <TableCell classes={{ root: cellRoot }} align="center"><AudioButton gmcode={row.gmcode} toggleToast={toggleToast} setToastMessage={setToastMessage} setToastVariant={setToastVariant} openVideoDialog={openVideoDialog}/></TableCell>
+                                        <TableCell classes={{ root: cellRoot }} align="center"><IconButton classes={{ root: playerIcon }} onClick={() => openVideoDialog(row)}><PlayCircleFilledIcon /></IconButton></TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{betHistoryUserPid + row.name}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{remark.length > 1 ? remark[1] : '-'}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
@@ -302,11 +305,6 @@ const BetHistory = ({
                                     </TableRow>
                                 );
                             })}
-                            {/* {emptyRows > 0 && (
-              <TableRow style={{ height: 48 * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
-            )} */}
                             {noRecordDisplay && (
                                 <TableRow>
                                     <TableCell colSpan={12}>
@@ -336,7 +334,7 @@ const BetHistory = ({
                     </Table>
                 </div>
             </Paper>
-            <VideoDialog open={videoDialogOpen} onClose={closeVideoDialog} gmcode={gmcode}/>
+            <VideoDialog open={videoDialogOpen} onClose={closeVideoDialog} row={row}/>
         </Fragment>
     );
 };
