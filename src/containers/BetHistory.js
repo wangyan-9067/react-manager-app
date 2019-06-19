@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
@@ -17,14 +17,15 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import Typography from '@material-ui/core/Typography';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 
-import AudioButton from '../components/AudioButton';
 import { toggleToast, setToastMessage, setToastVariant } from '../actions/app';
 import { setBetHistoryTablePageIndex } from '../actions/data';
 import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 import { PLAYTYPE } from '../constants';
 import nullGateAPI from '../services/NullGate/nullGateAPI';
+import VideoDialog from '../components/VideoDialog';
 
 const actionsStyles = theme => ({
     root: {
@@ -125,6 +126,9 @@ const styles = theme => ({
     },
     lossClass: {
         color: '#13C636'
+    },
+    playerIcon: {
+        color: '#3970B0'
     }
 });
 
@@ -200,15 +204,17 @@ const BetHistory = ({
 }) => {
     let betHistoryList = convertObjectListToArrayList(betHistory.byHash);
 
-    const { root, cellRoot, cellWidth, tableWrapper, table } = classes;
+    const { root, cellRoot, cellWidth, tableWrapper, table, playerIcon } = classes;
     const { numPerPage, total } = betHistoryInfo;
     const [rows, setRows] = useState(betHistoryList);
     const [page, setPage] = useState(betHistoryTablePageIndex);
+    const [videoDialogOpen, setVideoDialogOpen] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(numPerPage);
+    const [row, setRow] = useState({});
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
     const prevRows = usePrevious(betHistoryList.slice());
     const noRecordDisplay = rows.length === 0;
-    const langConfig = getLangConfig();    
+    const langConfig = getLangConfig();
     const handleChangePage = (event, page) => {
         const { loginname, gmCode } = betHistoryTableSearchFields;
         nullGateAPI.getBetHistory(loginname, gmCode, page + 1);
@@ -218,6 +224,15 @@ const BetHistory = ({
     const handleChangeRowsPerPage = event => {
         setRowsPerPage(event.target.value);
     };
+
+    const closeVideoDialog = () => {
+        setVideoDialogOpen(false);
+    }
+
+    const openVideoDialog = (row) => {
+        setRow(row);
+        setVideoDialogOpen(true);
+    }
 
     useEffect(() => {
         const flattenArrays = {
@@ -241,88 +256,86 @@ const BetHistory = ({
     });
 
     return (
-        <Paper className={root}>
-            <div className={tableWrapper}>
-                <Table className={table}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.BILL_NO}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.GAME_CODE}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.TIME}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.RESULT}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.REPLAY}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.PLAYER}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.ANCHOR}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.PLAY_TYPE}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.TOTAL_BET}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.FLAG}</TableCell>
-                            <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.GAME_STATUS}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows.map(row => {
-                            const betHistoryClasses = classNames.bind(classes);
-                            const profitClasses = betHistoryClasses({
-                                profitClass: row.profit > 0,
-                                lossClass: row.profit < 0
-                            });
-                            var remark = row.remark;
-                            if (remark) {
-                                remark = remark.split(",");
-                                if (remark.length > 0) {
-                                    remark = remark[0].split(":");
-                                }
-                            }
-                            return (
-                                <TableRow key={row.billno}>
-                                    <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.billno}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.gmcode}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.betTime}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} align="center">{langConfig.BANKER} {row.bankerVal} {langConfig.PLAYER} {row.playerVal}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} align="center"><AudioButton gmcode={row.gmcode} toggleToast={toggleToast} setToastMessage={setToastMessage} setToastVariant={setToastVariant} /></TableCell>
-                                    <TableCell classes={{ root: cellRoot }} align="center">{betHistoryUserPid + row.name}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} align="center">{remark.length > 1 ? remark[1] : '-'}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} align="center">{formatAmount(row.amount)}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} className={profitClasses} align="center">{row.profit > 0 ? '+' : ''}{formatAmount(row.profit)}</TableCell>
-                                    <TableCell classes={{ root: cellRoot }} align="center">{row.flag === 0 ? langConfig.BET_HISTORY_LABEL.FLAG_STATUS.UNPAID : langConfig.BET_HISTORY_LABEL.FLAG_STATUS.PAID}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                        {/* {emptyRows > 0 && (
-              <TableRow style={{ height: 48 * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
-            )} */}
-                        {noRecordDisplay && (
+        <Fragment>
+            <Paper className={root}>
+                <div className={tableWrapper}>
+                    <Table className={table}>
+                        <TableHead>
                             <TableRow>
-                                <TableCell colSpan={12}>
-                                    <Typography color="inherit" align="center">{langConfig.BET_HISTORY_LABEL.NO_RECORD}</Typography>
-                                </TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.BILL_NO}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.GAME_CODE}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.TIME}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.RESULT}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.REPLAY}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.PLAYER}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.ANCHOR}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.PLAY_TYPE}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.TOTAL_BET}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.FLAG}</TableCell>
+                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.GAME_STATUS}</TableCell>
                             </TableRow>
-                        )}
-                    </TableBody>
-                    <TableFooter>
-                        <TableRow>
-                            <TablePagination
-                                rowsPerPageOptions={[]}
-                                colSpan={12}
-                                // count={rows.length}
-                                count={total}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                SelectProps={{
-                                    native: true,
-                                }}
-                                onChangePage={handleChangePage}
-                                onChangeRowsPerPage={handleChangeRowsPerPage}
-                                ActionsComponent={TablePaginationActionsWrapped}
-                            />
-                        </TableRow>
-                    </TableFooter>
-                </Table>
-            </div>
-        </Paper>
+                        </TableHead>
+                        <TableBody>
+                            {rows.map(row => {
+                                const betHistoryClasses = classNames.bind(classes);
+                                const profitClasses = betHistoryClasses({
+                                    profitClass: row.profit > 0,
+                                    lossClass: row.profit < 0
+                                });
+                                var remark = row.remark;
+                                if (remark) {
+                                    remark = remark.split(",");
+                                    if (remark.length > 0) {
+                                        remark = remark[0].split(":");
+                                    }
+                                }
+                                return (
+                                    <TableRow key={row.billno}>
+                                        <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.billno}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.gmcode}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.betTime}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} align="center">{langConfig.BANKER} {row.bankerVal} {langConfig.PLAYER} {row.playerVal}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} align="center"><IconButton classes={{ root: playerIcon }} onClick={() => openVideoDialog(row)}><PlayCircleFilledIcon /></IconButton></TableCell>
+                                        <TableCell classes={{ root: cellRoot }} align="center">{betHistoryUserPid + row.name}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} align="center">{remark.length > 1 ? remark[1] : '-'}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} align="center">{formatAmount(row.amount)}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} className={profitClasses} align="center">{row.profit > 0 ? '+' : ''}{formatAmount(row.profit)}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} align="center">{row.flag === 0 ? langConfig.BET_HISTORY_LABEL.FLAG_STATUS.UNPAID : langConfig.BET_HISTORY_LABEL.FLAG_STATUS.PAID}</TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                            {noRecordDisplay && (
+                                <TableRow>
+                                    <TableCell colSpan={12}>
+                                        <Typography color="inherit" align="center">{langConfig.BET_HISTORY_LABEL.NO_RECORD}</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[]}
+                                    colSpan={12}
+                                    // count={rows.length}
+                                    count={total}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                    onChangePage={handleChangePage}
+                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActionsWrapped}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </div>
+            </Paper>
+            <VideoDialog open={videoDialogOpen} onClose={closeVideoDialog} row={row}/>
+        </Fragment>
     );
 };
 
