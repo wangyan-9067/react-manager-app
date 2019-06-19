@@ -96,7 +96,7 @@ class DataAPI {
                             dealerName,
                             gameCode,
                             gmType,
-                            gameStatus: status
+                            gameStatus: status                            
                         }));
                     });
                 }
@@ -118,7 +118,8 @@ class DataAPI {
                     gameCode: evt.data.gmcode,
                     tableOwner: evt.data.username,
                     status: evt.data.videoStatus,
-                    dealerName: evt.data.deal
+                    dealerName: evt.data.deal,
+                    startDatetime: new Date()//虛擬屬性         
                 }));
                 break;
 

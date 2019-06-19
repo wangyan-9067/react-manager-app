@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
@@ -10,6 +10,9 @@ import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
+
+import Moment from 'react-moment';
+
 
 import PopoverList from './PopoverList';
 import TextList from './TextList';
@@ -55,6 +58,28 @@ const styles = {
 		alignItems: 'center'
 	}
 };
+
+const Stopwatch = ({ datetime, duration }) => {
+	const tempDate = new Date(0,0,0,0,0,0);
+	const now = new Date();
+	const [time, setTime] = useState(new Date(tempDate.getTime()+now.getTime()-datetime.getTime()+duration));
+	const tick = () => {
+		setTime(new Date(time.getTime()+duration));
+	}
+	let timer;
+
+	useEffect(() => {
+		timer = setInterval(() => tick(), 1000);
+
+		return () => {
+      clearInterval(timer);
+    }
+	})
+
+	return (
+		<Moment format="HH:mm:ss">{time}</Moment>
+	);
+}
 
 const getTableStatus = status => {
 	const { FREE, CONTRACTED } = DATA_SERVER_VIDEO_STATUS;
@@ -188,7 +213,7 @@ DataItem.proptype = {
 
 const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList, tableLimit }) => {
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
-	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum } = item;
+	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum, startDatetime } = item;	
 	const currentChannel = channelList.find(channel => channel.vid === vid);
 	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorState === 2 ? currentChannel.anchorName : '-';
 	const tableLimitList = getTableLimitList(vid, tableLimit);
@@ -228,6 +253,9 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 				}
 				<Typography color="inherit"><span>{langConfig.TABLE_OWNER}</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>				
 				<Typography color="inherit"><span>{langConfig.GAME_STATUS}</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.GAME_TIME}</span><span className={tableValue}>
+					{ gameStatus === 1 ? <Stopwatch datetime={startDatetime} duration={1000}/> : '-' }
+					</span></Typography>
 			</CardContent>
 			<CardActions>
 				<Button

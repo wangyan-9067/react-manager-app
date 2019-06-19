@@ -78,6 +78,7 @@
   "TABLE_OWNER": "桌主:",
   "CARD_TYPE": "牌靴:",
   "GAME_STATUS": "游戏状态:",
+  "GAME_TIME": "开局时间:",
   "KICKOUT_CLIENT": "踢走桌主",
   "USER_FORM": {
     "LOGIN_NAME_EMPTY": "必须输入用户名",
@@ -90,7 +91,8 @@
     "ICON_URL_EMPTY": "必须输入照片URL",
     "LEVEL_EMPTY": "必须输入权限",
     "PHONE_EMPTY": "必须输入电话",
-    "PHONE_NUMERIC": "电话必须是numeric",
+    "ENTER_PHONE_NUMBER": "电话号码",
+    "PHONE_NUMERIC": "电话号码格式不正确",
     "LOGIN_NAME": "用户名",
     "NICK_NAME": "昵称",
     "PASSWORD": "密码",
