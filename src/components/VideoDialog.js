@@ -33,7 +33,7 @@ class VideoDialog extends React.Component {
                                 sources={[
                                     {
                                         src: 'https://re.010cdn.com/record/mp4:GC0161961807Y.flv',
-                                        // TODO use this: src: `${CONFIG[ENV].VIDEO_URL}${row.gmcode}.flv`,
+                                        // TODO use this: src: `${CONFIG.VIDEO_URL[ENV]}${row.gmcode}.flv`,
                                         type: 'video/flv'
                                     }
                                 ]}
@@ -59,7 +59,7 @@ class VideoDialog extends React.Component {
                                 muted=""
                                 sources={[
                                     {
-                                        src: `${CONFIG[ENV].AUDIO_URL}${row.gmcode}.aac`,
+                                        src: `${CONFIG.AUDIO_URL[ENV]}${row.gmcode}.aac`,
                                         type: 'audio/aac'
                                     }
                                 ]}
