@@ -220,7 +220,7 @@ class VoiceAPI {
                     store.dispatch(setToastVariant('error'));
                     store.dispatch(toggleToast(true));
                 } else {
-                    let functionParams = [formValues.loginname, formValues.password, formValues.nickname, formValues.iconUrl, 0];
+                    let functionParams = [formValues.loginname, formValues.password, formValues.nickname, "", 0];
 
                     if (managerAction === ADD_ANCHOR) {
                         dataAPI.addAnchorToDataServer(...functionParams);
@@ -420,13 +420,13 @@ class VoiceAPI {
         this.sendManagerAction(action, channelId);
     }
 
-    addAnchor(loginName, password, nickName, url) {
+    addAnchor(loginName, password, nickName, url = "") {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.ANCHOR_ADD_REQ, bytes => {
             bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
             bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.VALUE_LENGTH.PASSWORD));
             bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.VALUE_LENGTH.NICK_NAME));
-            bytes.writeUnsignedInt(url.length);
-            bytes.writeBytes(Socket.stringToBytes(url, url.length));
+            bytes.writeUnsignedInt(loginName.length);
+            bytes.writeBytes(Socket.stringToBytes(loginName, loginName.length));
         }));
     }
 

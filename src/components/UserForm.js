@@ -147,7 +147,7 @@ class UserForm extends React.Component {
 
         if (this.formIsValid()) {
             const { loginname, nickname, password, iconUrl, level, tel } = this.state;
-            const { addUser, setOpenAddDialog, isManager, isDelegator } = this.props;
+            const { addUser, setOpenAddDialog, isManager, isDelegator, isAnchor } = this.props;
 
             this.setFormValues({
                 loginname: loginname.value,
@@ -162,6 +162,8 @@ class UserForm extends React.Component {
                 addUser(loginname.value, password.value, nickname.value, iconUrl.value, level.value);
             } else if (isDelegator) {
                 addUser(loginname.value, password.value, tel.value);
+            } else if (isAnchor) {
+                addUser(loginname.value, password.value, nickname.value);
             } else {
                 addUser(loginname.value, password.value, nickname.value, iconUrl.value);
             }
@@ -191,7 +193,7 @@ class UserForm extends React.Component {
         const iconUrl = { ...this.state.iconUrl };
         const level = { ...this.state.level };
         const tel = { ...this.state.tel };
-        const { isEdit, userList, isManager, isDelegator } = this.props;
+        const { isEdit, userList, isManager, isDelegator, isAnchor } = this.props;
         const langConfig = getLangConfig();
 
         let isGood = true;
@@ -246,7 +248,7 @@ class UserForm extends React.Component {
             }
         }
 
-        if (!isDelegator) {
+        if (!isDelegator && !isAnchor) {
             if (validator.isEmpty(iconUrl.value)) {
                 isGood = this.setField(iconUrl, false, langConfig.USER_FORM.ICON_URL_EMPTY);
             } else {
@@ -321,7 +323,7 @@ class UserForm extends React.Component {
 
     render() {
         const { loginname, nickname, password, passwordConfirm, iconUrl, level, tel } = this.state;
-        const { classes, setOpenAddDialog, isEdit, deleteUser, openDialog, toggleDialog, isManager, isDelegator } = this.props;
+        const { classes, setOpenAddDialog, isEdit, deleteUser, openDialog, toggleDialog, isManager, isDelegator, isAnchor } = this.props;        
         const {
             managerActionDialog,
             managerActionFormLabel,
@@ -406,7 +408,7 @@ class UserForm extends React.Component {
                                 />
                                 <FormHelperText id="component-error-text">{passwordConfirm.message}</FormHelperText>
                             </FormControl>
-                            {!isDelegator && (
+                            {(!isDelegator && !isAnchor) && (
                                 <FormControl classes={{ root: formControlRoot }} className={formControl} error={!iconUrl.isValid}>
                                     <div className={managerActionFormLabel}>{langConfig.USER_FORM.ICON_URL}</div>
                                     <Input

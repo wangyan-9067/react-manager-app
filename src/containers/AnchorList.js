@@ -100,15 +100,10 @@ const AnchorList = ({
         }
     };
 
-    anchorList.map(anchor => {
-        anchor.value = anchor.loginname;
-        return anchor;
-    });
-
     let panel;
     let selectedAnchor;
     if (selected && !Array.isArray(selected)) {
-        selectedAnchor = anchorList.find(anchor => anchor.value === selected);
+        selectedAnchor = anchorList.find(anchor => anchor.loginname === selected);
     }
 
     useEffect(() => {
@@ -171,6 +166,8 @@ const AnchorList = ({
                         openDialog={openDialog}
                         toggleDialog={toggleDialog}
                         isManager={false}
+                        isAnchor={true}
+                        isDelegator={false}
                         setFormValues={setFormValues}
                     />
                 </DialogContent>
