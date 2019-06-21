@@ -13,33 +13,43 @@ class MediaElement extends React.Component {
     componentDidMount() {
         const { MediaElementPlayer } = global;
 
-        this.mediaElement = new MediaElementPlayer(this.videoRef.current, {
+        this.player = new MediaElementPlayer(this.videoRef.current, {
             renderers: ["native_flv", "html5"],
             clickToPlayPause: false,
             pauseOtherPlayers: false,
             success: (mediaElement, originalNode, instance) => {
-                this.player = instance;
-                mediaElement.addEventListener('play', () => {
-                    console.log('media element on play');
-                });
+                this.mediaElement = mediaElement;
 
-                mediaElement.addEventListener('error', () => {
-                    console.log('media element on error');
-                });
-
-                mediaElement.addEventListener('ended', () => {
-                    console.log('media element on ended');
-                });
-
-                mediaElement.addEventListener('signal', () => {
-                    console.log('media element on signal');
-                });
+                mediaElement.addEventListener('play', this.onPlay);
+                mediaElement.addEventListener('error', this.onError);
+                mediaElement.addEventListener('ended', this.onEnded);
+                mediaElement.addEventListener('signal', this.onSignal);
             }
         });
     }
 
     componentWillUnmount() {
-        this.mediaElement.remove();
+        this.mediaElement.removeEventListener('play', this.onPlay);
+        this.mediaElement.removeEventListener('error', this.onError);
+        this.mediaElement.removeEventListener('ended', this.onEnded);
+        this.mediaElement.removeEventListener('signal', this.onSignal);
+        this.player.remove();
+    }
+
+    onPlay = () => {
+        console.log('media element on play');
+    }
+
+    onError = () => {
+        console.log('media element on error');
+    }
+
+    onEnded = () => {
+        console.log('media element on ended');
+    }
+
+    onSignal = () => {
+        console.log('media element on signal');
     }
 
     render() {
