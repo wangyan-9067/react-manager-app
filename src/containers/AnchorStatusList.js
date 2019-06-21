@@ -49,7 +49,7 @@ const styles = () => ({
 });
 
 const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
-  const { root, title, grow, listRoot, primary, secondary } = classes;
+  const { root, title, grow, listRoot, primary, secondary } = classes; 
   const langConfig = getLangConfig();
 	return (
 		<div className={root}>
@@ -61,7 +61,7 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
           // eslint-disable-next-line
           anchorsOnDutyList && anchorsOnDutyList.map((anchor, index) => {
           if (anchor) {
-            const { loginname, nickname, url, vid } = anchor;
+            const { anchorName, nickname, url, vid } = anchor;
 
             return (
               <ListItem key={index}>
@@ -69,11 +69,11 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
                 <ListItemAvatar>
                   <CustomAvatar
                     imgUrl={url}
-                    label={loginname}
+                    label={anchorName}
                   />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={nickname}
+                  primary={`${anchorName}(${nickname})`}
                   secondary={vid ? vid : langConfig.ANCHOR_LIST_LABEL.FREE}
                   classes={{
                     primary: primary,

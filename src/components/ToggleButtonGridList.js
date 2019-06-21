@@ -63,7 +63,7 @@ const ToggleButtonGridList = ({ classes, list, exclusive, selectedValue, onChang
           <ToggleButton 
             key={index}
             classes={{ root: toggleButtonRoot, label: toggleButtonLabel }}
-            value={item.value}
+            value={item.loginname}
           >
             <UserTile item={item} />
           </ToggleButton>

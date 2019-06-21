@@ -189,6 +189,7 @@ class DataAPI {
 
             case PROTOCOL.CDS_ACTION_R:
                 const { code: cdsActionStatus } = evt.data;
+
                 let message = '';
 
                 if (cdsActionStatus !== SUCCESS) {
@@ -292,7 +293,7 @@ class DataAPI {
             bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
             bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
             bytes.writeByte(flag);
-            bytes.writeBytes(Socket.stringToBytes(url, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
         }));
     }
 
@@ -304,7 +305,7 @@ class DataAPI {
             bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
             bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
             bytes.writeByte(flag);
-            bytes.writeBytes(Socket.stringToBytes(url, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
         }));
     }
 
@@ -316,7 +317,7 @@ class DataAPI {
         }));
     }
 
-    addManagerToDataServer(loginName, password, nickName, url, flag) {
+    addManagerToDataServer(loginName, password, nickName, url="", flag) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_ADD_MANAGER, bytes => {
             bytes.writeUnsignedShort();
             bytes.writeUnsignedShort();
@@ -324,11 +325,11 @@ class DataAPI {
             bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
             bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
             bytes.writeByte(flag);
-            bytes.writeBytes(Socket.stringToBytes(url, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
         }));
     }
 
-    updateManagerToDataServer(loginName, password, nickName, url, flag) {
+    updateManagerToDataServer(loginName, password, nickName, url="", flag) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_UPDATE_MANAGER, bytes => {
             bytes.writeUnsignedShort();
             bytes.writeUnsignedShort();
@@ -336,7 +337,7 @@ class DataAPI {
             bytes.writeBytes(Socket.stringToBytes(nickName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_NICK_NAME));
             bytes.writeBytes(Socket.stringToBytes(password, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_PSW));
             bytes.writeByte(flag);
-            bytes.writeBytes(Socket.stringToBytes(url, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
+            bytes.writeBytes(Socket.stringToBytes(loginName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_URL));
         }));
     }
 
