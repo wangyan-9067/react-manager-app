@@ -268,13 +268,14 @@ const StyledTelebetTile = withStyles(styles)(TelebetTile);
 const mapStateToProps = state => {
     const { voiceAppId, incomingCallCount } = state.voice;
     const { managerCredential } = state.app;
-    const { player } = state.data;
+    const { player, anchorBets } = state.data;
 
     return ({
         voiceAppId,
         managerCredential,
         incomingCallCount,
-        player
+        player,
+        anchorBets
     });
 };
 

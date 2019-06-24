@@ -211,13 +211,16 @@ DataItem.proptype = {
 	item: PropTypes.object.isRequired
 };
 
-const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList, tableLimit }) => {
+const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList, tableLimit, anchorBets, jettons }) => {
 	const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
 	const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum, startDatetime } = item;	
 	const currentChannel = channelList.find(channel => channel.vid === vid);
 	const currentAnchorName = isObject(currentChannel) && currentChannel.anchorState === 2 ? currentChannel.anchorName : '-';
 	const tableLimitList = getTableLimitList(vid, tableLimit);
 	const langConfig = getLangConfig();
+	
+	const totalNotValidBet = anchorBets && anchorBets[vid] ? anchorBets[vid].totalNotValidBet : '-'
+	const totalPayout = jettons && jettons[vid] ? jettons[vid].totalPayout : '-'
 	const tableLimitDisplay = tableLimitList.length > 0 ? (
 		<PopoverList buttonText={langConfig.TABLE_LIMIT_LIST}>
 			<TextList list={tableLimitList} dataItem={DataItem} />
@@ -253,9 +256,9 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 				}
 				<Typography color="inherit"><span>{langConfig.TABLE_OWNER}</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>				
 				<Typography color="inherit"><span>{langConfig.GAME_STATUS}</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
-				<Typography color="inherit"><span>{langConfig.GAME_TIME}</span><span className={tableValue}>
-					{ gameStatus === 1 ? <Stopwatch datetime={startDatetime} duration={1000}/> : '-' }
-					</span></Typography>
+				<Typography color="inherit"><span>{langConfig.GAME_TIME}</span><span className={tableValue}>{ gameStatus === 1 ? <Stopwatch datetime={startDatetime} duration={1000}/> : '-' }</span></Typography>
+				<Typography color="inherit"><span>{langConfig.GAME_TOTAL_BET}</span><span className={tableValue}>{totalNotValidBet}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.GAME_TOTAL_PAYOUT}</span><span className={tableValue}>{totalPayout}</span></Typography>
 			</CardContent>
 			<CardActions>
 				<Button
@@ -286,7 +289,9 @@ TableTile.propTypes = {
 	toggleDialog: PropTypes.func,
 	setKickoutClient: PropTypes.func,
 	channelList: PropTypes.array,
-	tableLimit: PropTypes.object
+	tableLimit: PropTypes.object,
+	anchorBets: PropTypes.object,
+	jettons: PropTypes.object,
 };
 
 export default withStyles(styles)(TableTile);

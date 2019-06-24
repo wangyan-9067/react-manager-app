@@ -53,16 +53,17 @@ class TableList extends React.Component {
             toggleDialog,
             setKickoutClient,
             tableLimit,
+            anchorBets,
+            jettons
         } = this.props;
         const { root, emptyText } = classes;
         const langConfig = getLangConfig();
-        let panel;
-
-        if (isNonEmptyArray(tableList)) {
+        let panel;        
+        if (isNonEmptyArray(tableList)) {            
             panel = (
                 <Fragment>
                     <GridListBase list={tableList} bgColor={GRID_ITEM_BG_COLOR}>
-                        <TableTile anchorsOnDutyList={anchorsOnDutyList} toggleDialog={toggleDialog} setKickoutClient={setKickoutClient} channelList={channelList} tableLimit={tableLimit} />
+                        <TableTile anchorsOnDutyList={anchorsOnDutyList} toggleDialog={toggleDialog} setKickoutClient={setKickoutClient} channelList={channelList} tableLimit={tableLimit} anchorBets={anchorBets} jettons={jettons}/>
                     </GridListBase>
                     <DialogWrapper
                         isOpen={openDialog}
@@ -91,7 +92,9 @@ TableList.propTypes = {
     toggleDialog: PropTypes.func,
     setKickoutClient: PropTypes.func,
     clientToKickOut: PropTypes.object,
-    tableLimit: PropTypes.object
+    tableLimit: PropTypes.object,
+    anchorBets: PropTypes.object,
+    jettons: PropTypes.object
 };
 
 const StyledTableList = withStyles(styles)(TableList);
@@ -99,23 +102,24 @@ const StyledTableList = withStyles(styles)(TableList);
 const mapStateToProps = state => {
     const { voice, data, app } = state;
     const { anchorsOnDutyList, channelList } = voice;
-    const { tableList, clientToKickOut, tableLimit } = data;
-    const { openDialog } = app;
-
+    const { tableList, clientToKickOut, tableLimit, anchorBets, jettons } = data;
+    const { openDialog } = app;    
     return ({
         anchorsOnDutyList,
         channelList,
         tableList,
         clientToKickOut,
         openDialog,
-        tableLimit
+        tableLimit,
+        anchorBets,
+        jettons
     });
 };
 
 const mapDispatchToProps = dispatch => ({
     toggleDialog: toggle => dispatch(toggleDialog(toggle)),
     setManagerAction: action => dispatch(setManagerAction(action)),
-    setKickoutClient: data => dispatch(setKickoutClient(data))
+    setKickoutClient: data => dispatch(setKickoutClient(data))    
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledTableList);

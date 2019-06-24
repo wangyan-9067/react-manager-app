@@ -15,6 +15,8 @@ import CDSControlReqVideoResp from './responses/CDSControlReqVideoResp';
 import CDSBetListResp from './responses/CDSBetListResp';
 import CDSTableLimitResp from './responses/CDSTableLimitResp';
 import CDSActionResp from './responses/CDSActionResp';
+import CDSAnchorBetResp from './responses/CDSAnchorBetResp';
+import CDSJettonResp from './responses/CDSJettonResp';
 import { CONFIG, ENV } from '../../config';
 
 import {
@@ -31,7 +33,9 @@ import {
 	CDS_BET_LIST,
 	CDS_TABLE_LIMIT,
 	CDS_ACTION_R,
-	CDS_UPDATE_PLAYER_AMOUNT_R
+	CDS_UPDATE_PLAYER_AMOUNT_R,
+	CDS_ANCHOR_BET_R,
+	CDS_JETTON_R
 } from '../../protocols';
 
 export default class DataSocket extends Socket.WebSocketBase {
@@ -63,5 +67,7 @@ export default class DataSocket extends Socket.WebSocketBase {
 		this.respClazzMap.set(CDS_BET_LIST, CDSBetListResp);
 		this.respClazzMap.set(CDS_TABLE_LIMIT, CDSTableLimitResp);
 		this.respClazzMap.set(CDS_ACTION_R, CDSActionResp);
+		this.respClazzMap.set(CDS_ANCHOR_BET_R, CDSAnchorBetResp);
+		this.respClazzMap.set(CDS_JETTON_R, CDSJettonResp);
 	}
 }
