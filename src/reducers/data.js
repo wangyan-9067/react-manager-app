@@ -8,7 +8,9 @@ import {
 	SET_BET_HISTORY_USER_PID,
 	SET_BET_HISTORY_TABLE_PAGE_INDEX,
 	SET_BET_HISTORY_SEARCH_FIELDS,
-	UPDATE_PLAYER_BALANCE
+	UPDATE_PLAYER_BALANCE,
+	SET_ANCHOR_BET,
+	SET_TABLE_JETTON
 } from '../types';
   
 const initialState = {
@@ -38,7 +40,9 @@ const initialState = {
 	player: {
 		username: '',
 		balance: 0
-	}
+	},
+	anchorBets: {},
+	jettons: {}
 };
 
 export default function data(state = initialState, action) {
@@ -140,7 +144,14 @@ export default function data(state = initialState, action) {
 			} }; 
 		case RESET_ACTION:
       return initialState;
-
+    case SET_ANCHOR_BET:
+    	let tempAnchorBets = state.anchorBets;
+    	tempAnchorBets[action.data.vid] = action.data;    	
+    	return { ...state, anchorBets: tempAnchorBets};
+    case SET_TABLE_JETTON:
+	    let tempJettons = state.jettons;
+    	tempJettons[action.data.vid] = action.data;   
+    	return { ...state, jettons: tempJettons};
     default:
     	return state;
 	}

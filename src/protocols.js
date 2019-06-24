@@ -66,6 +66,8 @@ export const CDS_ADD_ANCHOR = 0x09003d;
 export const CDS_REMOVE_ANCHOR = 0x09003e;
 export const CDS_UPDATE_ANCHOR = 0x09003f;
 export const CDS_ACTION_R = 0x090040;
+export const CDS_ANCHOR_BET_R = 0x09b003;
+export const CDS_JETTON_R = 0x080032;
 
 // Null Gate
 export const GATE_REQUEST_CACHE = 0x4054a;

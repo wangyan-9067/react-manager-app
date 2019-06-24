@@ -10,7 +10,7 @@ import {
     setToastVariant,
     setToastDuration
 } from '../../actions/app';
-import { setTableList, setTableLimit, setPlayerBalance } from '../../actions/data';
+import { setTableList, setTableLimit, setPlayerBalance, setAnchorBet, setTableJetton } from '../../actions/data';
 import { setFormValues } from '../../actions/voice';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
@@ -56,11 +56,11 @@ class DataAPI {
     }
 
     onDataSocketPacket = (evt) => {
+        console.log('[DataSocket]', evt.data);
         if (evt.$type !== Socket.EVENT_PACKET) {
             return;
         }
 
-        console.log('[DataSocket]', evt.data);
 
         const { SUCCESS, ERR_NO_LOGIN } = CONSTANTS.GAME_SERVER_RESPONSE_CODES;
         const { tableList } = store.getState().data;
@@ -264,7 +264,28 @@ class DataAPI {
                     balance: evt.data.account
                 }));
                 break;
-
+            case PROTOCOL.CDS_ANCHOR_BET_R:            
+                store.dispatch(setAnchorBet({                    
+                    vid: evt.data.vid,                    
+                    totalNotValidBet: evt.data.totalNotValidBet,                                        
+                }))
+                break;
+            case PROTOCOL.CDS_JETTON_R:            
+                store.dispatch(setTableJetton({
+                    vid: evt.data.vid,                    
+                    totalPayout: evt.data.totalPayout,                    
+                }))
+                break;
+            case PROTOCOL.CDS_BET_LIST:
+                store.dispatch(setAnchorBet({                    
+                    vid: evt.data.vid,                    
+                    totalNotValidBet: evt.data.totalNotValidBet,                                        
+                }))
+                store.dispatch(setTableJetton({                    
+                    vid: evt.data.vid,                    
+                    totalPayout: evt.data.totalPayout,                                        
+                }))
+                break;
             default:
                 break;
         }

@@ -10,6 +10,8 @@ export default class CDSBetListResp extends Socket.ResponseBase {
     this.vid = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID);
     this.gmcode = bytes.readUTFBytes(DATA_SERVER_VALUE_LENGTH.VL_GAME_CODE);
     this.totalBetNumber = bytes.readUnsignedInt();
+    this.totalNotValidBet = bytes.readDouble();
+    this.totalPayout = bytes.readDouble();
     this.betList = [];
 
     for (let i = 0 ; i < this.totalBetNumber; i++) {
