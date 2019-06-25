@@ -56,6 +56,12 @@ const styles = {
 	},
 	fieldWrapper: {
 		alignItems: 'center'
+	},
+	greenColor: {
+		color: '#13C636'
+	},
+	redColor: {
+		color: '#F82021'
 	}
 };
 
@@ -219,8 +225,21 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 	const tableLimitList = getTableLimitList(vid, tableLimit);
 	const langConfig = getLangConfig();
 	
-	const totalNotValidBet = anchorBets && anchorBets[vid] ? anchorBets[vid].totalNotValidBet : '-'
-	const totalPayout = jettons && jettons[vid] ? jettons[vid].totalPayout : '-'
+	const totalNotValidBet = tableOwner && (anchorBets && anchorBets[vid]) ? anchorBets[vid].totalNotValidBet : '-'
+	const totalPayout = tableOwner && (jettons && jettons[vid]) ? jettons[vid].totalPayout : '-';
+
+	let textColor = '';
+	let totalPayoutText = '-';
+	if(totalPayout > 0) {
+		textColor = classes.greenColor;
+		totalPayoutText = "+"+totalPayout;
+	} else if(totalPayout < 0) {
+		textColor = classes.redColor;
+		totalPayoutText = totalPayout;
+	} else {
+		totalPayoutText = '-';
+	}
+
 	const tableLimitDisplay = tableLimitList.length > 0 ? (
 		<PopoverList buttonText={langConfig.TABLE_LIMIT_LIST}>
 			<TextList list={tableLimitList} dataItem={DataItem} />
@@ -258,7 +277,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 				<Typography color="inherit"><span>{langConfig.GAME_STATUS}</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
 				<Typography color="inherit"><span>{langConfig.GAME_TIME}</span><span className={tableValue}>{ gameStatus === 1 ? <Stopwatch datetime={startDatetime} duration={1000}/> : '-' }</span></Typography>
 				<Typography color="inherit"><span>{langConfig.GAME_TOTAL_BET}</span><span className={tableValue}>{totalNotValidBet}</span></Typography>
-				<Typography color="inherit"><span>{langConfig.GAME_TOTAL_PAYOUT}</span><span className={tableValue}>{totalPayout}</span></Typography>
+				<Typography color="inherit"><span>{langConfig.GAME_TOTAL_PAYOUT}</span><span className={classNames(tableValue, textColor)}>{totalPayoutText}</span></Typography>
 			</CardContent>
 			<CardActions>
 				<Button
