@@ -17,8 +17,7 @@ class NullGateAPI {
 
         this.socket.addEventListener(Socket.EVENT_OPEN, this.onSocketOpen);
         this.socket.addEventListener(Socket.EVENT_PACKET, this.onSocketPacket);
-        this.socket.addEventListener(Socket.EVENT_CLOSE, this.onSocketClose);
-        this.socket.addEventListener(Socket.EVENT_DIE, this.onSocketClose);
+        this.socket.addEventListener(Socket.EVENT_DIE, this.onSocketDie);
     }
 
     connect() {
@@ -66,7 +65,7 @@ class NullGateAPI {
           }
     }
 
-    onSocketClose() {
+    onSocketDie() {
         reset();
     }
 

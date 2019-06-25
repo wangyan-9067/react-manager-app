@@ -42,8 +42,7 @@ class VoiceAPI {
 
         this.socket.addEventListener(Socket.EVENT_OPEN, this.onVoiceSocketOpen);
         this.socket.addEventListener(Socket.EVENT_PACKET, this.onVoiceSocketPacket);
-        this.socket.addEventListener(Socket.EVENT_CLOSE, this.onVoiceSocketClose);
-        this.socket.addEventListener(Socket.EVENT_DIE, this.onVoiceSocketClose);
+        this.socket.addEventListener(Socket.EVENT_DIE, this.onVoiceSocketDie);
     }
 
     connect() {
@@ -68,7 +67,7 @@ class VoiceAPI {
         }
     }
 
-    onVoiceSocketClose() {
+    onVoiceSocketDie() {
         RTC.leaveRoom();
         reset();
     }
@@ -94,11 +93,13 @@ class VoiceAPI {
                     store.dispatch(setUserLevel(evt.data.level));
                     RTC.init(evt.data.voiceAppId);
 
-                    this.getAnchorList();                    
+                    this.getAnchorList();
                     this.getManagerList();
                     this.getDelegatorList();
 
-                    dataAPI.connect();
+                    if (!dataAPI.isOpen()) {
+                        dataAPI.connect();
+                    }
                 } else {
                     switch (loginStatus) {
                         case REPEAT_LOGIN:

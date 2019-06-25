@@ -27,8 +27,7 @@ class DataAPI {
 
         this.socket.addEventListener(Socket.EVENT_OPEN, this.onDataSocketOpen);
         this.socket.addEventListener(Socket.EVENT_PACKET, this.onDataSocketPacket);
-        this.socket.addEventListener(Socket.EVENT_CLOSE, this.onDataSocketClose);
-        this.socket.addEventListener(Socket.EVENT_DIE, this.onDataSocketClose);
+        this.socket.addEventListener(Socket.EVENT_DIE, this.onDataSocketDie);
     }
 
     connect() {
@@ -51,7 +50,7 @@ class DataAPI {
         }
     }
 
-    onDataSocketClose() {
+    onDataSocketDie() {
         reset();
     }
 
@@ -80,7 +79,10 @@ class DataAPI {
                 } else {
                     store.dispatch(toggleToast(false));
                     store.dispatch(setIsUserAuthenticated(true));
-                    nullGateAPI.connect();
+
+                    if (!nullGateAPI.isOpen()) {
+                        nullGateAPI.connect();
+                    }
                 }
                 break;
 
@@ -96,7 +98,7 @@ class DataAPI {
                             dealerName,
                             gameCode,
                             gmType,
-                            gameStatus: status                            
+                            gameStatus: status
                         }));
                     });
                 }
@@ -119,7 +121,7 @@ class DataAPI {
                     tableOwner: evt.data.username,
                     status: evt.data.videoStatus,
                     dealerName: evt.data.deal,
-                    startDatetime: new Date()//虛擬屬性         
+                    startDatetime: new Date()//虛擬屬性
                 }));
                 break;
 
@@ -264,26 +266,26 @@ class DataAPI {
                     balance: evt.data.account
                 }));
                 break;
-            case PROTOCOL.CDS_ANCHOR_BET_R:            
-                store.dispatch(setAnchorBet({                    
-                    vid: evt.data.vid,                    
-                    totalNotValidBet: evt.data.totalNotValidBet,                                        
+            case PROTOCOL.CDS_ANCHOR_BET_R:
+                store.dispatch(setAnchorBet({
+                    vid: evt.data.vid,
+                    totalNotValidBet: evt.data.totalNotValidBet,
                 }))
                 break;
-            case PROTOCOL.CDS_JETTON_R:            
+            case PROTOCOL.CDS_JETTON_R:
                 store.dispatch(setTableJetton({
-                    vid: evt.data.vid,                    
-                    totalPayout: evt.data.totalPayout,                    
+                    vid: evt.data.vid,
+                    totalPayout: evt.data.totalPayout,
                 }))
                 break;
             case PROTOCOL.CDS_BET_LIST:
-                store.dispatch(setAnchorBet({                    
-                    vid: evt.data.vid,                    
-                    totalNotValidBet: evt.data.totalNotValidBet,                                        
+                store.dispatch(setAnchorBet({
+                    vid: evt.data.vid,
+                    totalNotValidBet: evt.data.totalNotValidBet,
                 }))
-                store.dispatch(setTableJetton({                    
-                    vid: evt.data.vid,                    
-                    totalPayout: evt.data.totalPayout,                                        
+                store.dispatch(setTableJetton({
+                    vid: evt.data.vid,
+                    totalPayout: evt.data.totalPayout,
                 }))
                 break;
             default:

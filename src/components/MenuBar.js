@@ -198,7 +198,7 @@ class MenuBar extends React.Component {
         const {
             classes,
             incomingCallCount,
-            managerCredential: { managerLoginname },
+            managerCredential,
             managerLevel,
             setBetHistorySearchFields
         } = this.props;
@@ -224,6 +224,7 @@ class MenuBar extends React.Component {
             version
         } = classes;
         const langConfig = getLangConfig();
+        const { managerLoginname } = managerCredential || {};
 
         return (
             <div className={root}>
