@@ -63,7 +63,7 @@ class DataAPI {
 
         const { SUCCESS, ERR_NO_LOGIN } = CONSTANTS.GAME_SERVER_RESPONSE_CODES;
         const { tableList } = store.getState().data;
-        const { currentChannelId, managerAction } = store.getState().voice;
+        const { currentChannelId } = store.getState().voice;
 
         switch (evt.data.respId) {
             case PROTOCOL.CDS_OPERATOR_LOGIN_R:
@@ -173,11 +173,7 @@ class DataAPI {
                 const { reason: kickoutReason } = evt.data;
 
                 if (kickoutReason === SUCCESS || kickoutReason === ERR_NO_LOGIN) {
-                    if (managerAction === CONSTANTS.MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
-                        voiceAPI.kickoutClient(currentChannelId);
-                    } else {
-                        voiceAPI.blacklistClient(currentChannelId);
-                    }
+                    this.voiceKicioutClient();
                 } else {
                     store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason)));
                     store.dispatch(setToastVariant('error'));
@@ -383,13 +379,30 @@ class DataAPI {
     }
 
     kickoutClientFromDataServer(vid, clientName) {
-        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
-            bytes.writeUnsignedShort();
-            bytes.writeUnsignedShort();
-            bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-            bytes.writeBytes(Socket.stringToBytes(clientName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-            bytes.writeByte(0);
-        }));
+        let { tableList } = store.getState().data;
+        let table = tableList.filter(table => table.vid === vid)[0];
+
+        if (table && table.tableOwner === clientName) {
+            this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
+                bytes.writeUnsignedShort();
+                bytes.writeUnsignedShort();
+                bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+                bytes.writeBytes(Socket.stringToBytes(clientName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+                bytes.writeByte(0);
+            }));
+        } else {
+            this.voiceKicioutClient();
+        }
+    }
+
+    voiceKicioutClient() {
+        let { managerAction, currentChannelId } = store.getState().voice;
+
+        if (managerAction === CONSTANTS.MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
+            voiceAPI.kickoutClient(currentChannelId);
+        } else {
+            voiceAPI.blacklistClient(currentChannelId);
+        }
     }
 }
 
