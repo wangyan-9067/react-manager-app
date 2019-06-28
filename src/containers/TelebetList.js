@@ -202,8 +202,8 @@ const TelebetList = ({
         voiceAPI.assignTokenToDelegator(...args);
     }
 
-    const kickDelegator = function () {
-        voiceAPI.kickDelegator();
+    const kickDelegator = function (...args) {
+        voiceAPI.kickDelegator(...args);
     }
 
     let panel;
