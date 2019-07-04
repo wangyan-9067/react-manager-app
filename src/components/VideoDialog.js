@@ -32,8 +32,7 @@ class VideoDialog extends React.Component {
                                 height="240"
                                 sources={[
                                     {
-                                        src: 'https://re.010cdn.com/record/mp4:GC0161961807Y.flv',
-                                        // TODO use this: src: `${CONFIG.VIDEO_URL[ENV]}${row.gmcode}.flv`,
+                                        src: `${CONFIG.VIDEO_URL[ENV]}${row.gmcode}.flv`,
                                         type: 'video/flv'
                                     }
                                 ]}
@@ -45,7 +44,7 @@ class VideoDialog extends React.Component {
                                 height="240"
                                 sources={[
                                     {
-                                        src: 'https://re.010cdn.com/record/mp4:GC002196180DZ.flv',
+                                        src: `${CONFIG.VIDEO_URL[ENV]}${row.gmcode}.flv`,
                                         type: 'video/flv'
                                     }
                                 ]}
