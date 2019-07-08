@@ -300,6 +300,16 @@ class VoiceAPI {
                 }
                 break;
 
+            case PROTOCOL.ASSIGN_TABLE_TO_CHANNEL_R:
+                const { code: assignTableStatus } = evt.data;
+
+                if (assignTableStatus !== SUCCESS) {
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES[`ASSIGN_TABLE_ERROR_${assignTableStatus}`]));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
+                }
+                break;
+
             case PROTOCOL.KICK_DELEGATOR_R:
                 const { code: kickDelegatorStatus } = evt.data;
 
@@ -380,10 +390,10 @@ class VoiceAPI {
         }));
     }
 
-    assignTableToChannel(channelId, vid) {
+    assignTableToChannel(name, vid) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.ASSIGN_TABLE_TO_CHANNEL, bytes => {
-            bytes.writeUnsignedInt(channelId);
             bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.VALUE_LENGTH.VID));
+            bytes.writeBytes(Socket.stringToBytes(name, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
         }));
     }
 

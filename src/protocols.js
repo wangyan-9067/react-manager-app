@@ -6,6 +6,7 @@ export const CHANNEL_JOIN = 0x0bb204;
 export const CHANNEL_JOIN_R = 0x0bb205;
 export const MANAGER_ACTION = 0x0bb206;
 export const ASSIGN_TABLE_TO_CHANNEL = 0x0bb208;
+export const ASSIGN_TABLE_TO_CHANNEL_R = 0x0bb208;
 export const MANAGER_ACTION_R = 0x0bb209;
 export const MANAGER_LOGOUT = 0x0bb20a;
 export const ANCHORS_ON_DUTY_UPDATE = 0x0bb20b;

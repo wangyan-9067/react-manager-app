@@ -9,7 +9,7 @@ import { getLangConfig } from '../helpers/appUtils';
 
 const styles = theme => ({
 	root: {
-		width: '100%'		
+		width: '100%'
 	},
 	title: {
 		color: '#666666',
@@ -36,7 +36,7 @@ const styles = theme => ({
 	}
 });
 
-const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegator }) => {
+const WaitingUser = ({ classes, waitingList, openAssignTableDialog }) => {
 	const { root, title, listRoot, gridListRoot } = classes;
 	const langConfig = getLangConfig();
 
@@ -47,7 +47,7 @@ const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegat
 			</Typography>
 			<div className={listRoot}>
 				<GridListBase list={waitingList} customCols={6} gridListRootClass={gridListRoot}>
-					<WaitingUserTile assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
+					<WaitingUserTile openAssignTableDialog={openAssignTableDialog} />
 				</GridListBase>
 			</div>
 		</div>
@@ -57,8 +57,7 @@ const WaitingUser = ({ classes, waitingList, assignTokenToDelegator, kickDelegat
 WaitingUser.propTypes = {
 	classes: PropTypes.object.isRequired,
 	waitingList: PropTypes.array,
-	assignTokenToDelegator: PropTypes.func,
-	kickDelegator: PropTypes.func
+	openAssignTableDialog: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(WaitingUser);

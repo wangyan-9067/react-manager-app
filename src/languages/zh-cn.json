@@ -1,228 +1,230 @@
 {
-  "FAIL_TO_PLAY_RECORD_AUDIO": "录音不能播放!",
-  "BUTTON_LABEL": {
-    "LOGIN": "登入",
-    "LOGOUT": "登出",
-    "CONFIRM": "确定",
-    "CANCEL": "取消",
-    "DELETE": "删除",
-    "DEAL_IN": "已接入",
-    "KICKOUT": "踢走",
-    "ASSIGN_TOKEN": "派筹",
-    "ADD_ANCHOR": "新增主播",
-    "EDIT": "编辑",
-    "ADD": "新增",
-    "CANCEL_SELECT": "取消选取",
-    "ADD_DELEGATOR": "新增代理",
-    "ADD_MANAGER": "新增经理",
-    "PLAYER_MUTE": "玩家静音",
-    "ANCHOR_MUTE": "主播静音",
-    "LEAVE_CHANNEL": "挂断",
-    "ASSIGN_TABLE": "配对",
-    "KICKOUT_PLAYER": "踢走玩家",
-    "BLACKLIST_PLAYER": "列入黑名单",
-    "JOIN_CHANNEL": "接听",
-    "JOIN_CHANNEL_2": "{name}接听中",
-    "CONTINUE_CHANNEL": "继续接听"
-  },
-  "NO_TABLE_INFO": "没有桌台资讯",
-  "MENU_BAR_LABEL": {
-    "ANCHOR_MANAGEMENT": "主播排班",
-    "MANAGER_OPERATION": "经理操作",
-    "TABLE_MANAGEMENT": "桌台状态",
-    "MANAGER_MANAGEMENT": "管理经理",
-    "DELEGATOR_MANAGEMENT": "管理代理",
-    "BET_HISTORY": "游戏记录",
-    "MANAGER": "经理:"
-  },
-  "SEARCH_FORM_LABEL": {
-    "LOGIN_NAME_PLACEHOLDER": "输入玩家名查询",
-    "GM_CODE_PLACEHOLDER": "输入局号查询",
-    "LOGIN_NAME_VALIDATE": "必须输入玩家名",
-    "GM_CODE_VALIDATE": "搜寻局号也必须输入玩家名"
-  },
-  "TABLE_STATUS_LABEL": {
-    "FREE": "可进桌 / 可包桌",
-    "CONTRACTED": "包桌中"
-  },
-  "GAME_STATUS_LABEL": {
-    "CLOSED": "游戏关闭",
-    "CAN_BET": "可以下注",
-		"DISPATCH_CARD":"正在发牌",
-		"LAST_CALL":"Last Call",
-		"TURN_CARD":"正在眯牌",
-		"NEW_SHOE":"洗牌",
-		"PAUSE_BET":"暂停下注"
-  },
-  "PLAY_TYPE_LABEL": {
+    "FAIL_TO_PLAY_RECORD_AUDIO": "录音不能播放!",
+    "BUTTON_LABEL": {
+        "LOGIN": "登入",
+        "LOGOUT": "登出",
+        "CONFIRM": "确定",
+        "CANCEL": "取消",
+        "DELETE": "删除",
+        "DEAL_IN": "已接入",
+        "KICKOUT": "踢走",
+        "ASSIGN_TOKEN": "派筹",
+        "ADD_ANCHOR": "新增主播",
+        "EDIT": "编辑",
+        "ADD": "新增",
+        "CANCEL_SELECT": "取消选取",
+        "ADD_DELEGATOR": "新增代理",
+        "ADD_MANAGER": "新增经理",
+        "PLAYER_MUTE": "玩家静音",
+        "ANCHOR_MUTE": "主播静音",
+        "LEAVE_CHANNEL": "挂断",
+        "ASSIGN_TABLE": "配对",
+        "KICKOUT_PLAYER": "踢走玩家",
+        "BLACKLIST_PLAYER": "列入黑名单",
+        "JOIN_CHANNEL": "接听",
+        "JOIN_CHANNEL_2": "{name}接听中",
+        "CONTINUE_CHANNEL": "继续接听"
+    },
+    "NO_TABLE_INFO": "没有桌台资讯",
+    "MENU_BAR_LABEL": {
+        "ANCHOR_MANAGEMENT": "主播排班",
+        "MANAGER_OPERATION": "经理操作",
+        "TABLE_MANAGEMENT": "桌台状态",
+        "MANAGER_MANAGEMENT": "管理经理",
+        "DELEGATOR_MANAGEMENT": "管理代理",
+        "BET_HISTORY": "游戏记录",
+        "MANAGER": "经理:"
+    },
+    "SEARCH_FORM_LABEL": {
+        "LOGIN_NAME_PLACEHOLDER": "输入玩家名查询",
+        "GM_CODE_PLACEHOLDER": "输入局号查询",
+        "LOGIN_NAME_VALIDATE": "必须输入玩家名",
+        "GM_CODE_VALIDATE": "搜寻局号也必须输入玩家名"
+    },
+    "TABLE_STATUS_LABEL": {
+        "FREE": "可进桌 / 可包桌",
+        "CONTRACTED": "包桌中"
+    },
+    "GAME_STATUS_LABEL": {
+        "CLOSED": "游戏关闭",
+        "CAN_BET": "可以下注",
+        "DISPATCH_CARD": "正在发牌",
+        "LAST_CALL": "Last Call",
+        "TURN_CARD": "正在眯牌",
+        "NEW_SHOE": "洗牌",
+        "PAUSE_BET": "暂停下注"
+    },
+    "PLAY_TYPE_LABEL": {
+        "BANKER": "庄",
+        "PLAYER": "閑",
+        "TIE": "和",
+        "BANKER_PAIR": "闲对",
+        "PLAYER_PAIR": "庄对",
+        "BIG": "大",
+        "SMALL": "小",
+        "BANKER_NO_COMMISSION": "庄免佣",
+        "BANKER_DRAGON_BONUS": "庄龙宝",
+        "PLAYER_DRAGON_BONUS": "闲龙宝",
+        "SUPER_SIX": "超级六",
+        "ANY_PAIR": "任意对子",
+        "PERFECT_PAIR": "完美对子"
+    },
+    "TABLE_LIMIT_LIST": "限红列表",
+    "SEAT_NUMBER": "座位数:",
+    "GAME_CODE": "局号:",
+    "DEALER": "荷官:",
+    "ANCHOR": "主播:",
+    "TABLE_LIMIT": "限红:",
+    "TABLE_OWNER": "桌主:",
+    "CARD_TYPE": "牌靴:",
+    "GAME_STATUS": "游戏状态:",
+    "GAME_TIME": "开局时间:",
+    "GAME_TOTAL_BET": "总投注:",
+    "GAME_TOTAL_PAYOUT": "总派彩:",
+    "KICKOUT_CLIENT": "踢走桌主",
+    "USER_FORM": {
+        "LOGIN_NAME_EMPTY": "必须输入用户名",
+        "LOGIN_NAME_ALPHANUMERIC": "用户名必须是alphanumeric",
+        "LOGIN_NAME_ALREADY_REGISTERED": "用户名已经被注册",
+        "NICK_NAME_EMPTY": "必须输入昵称",
+        "PASSWORD_EMPTY": "必须输入密码",
+        "PASSWORD_CONFIRM_EMPTY": "请确认密码",
+        "PASSWORD_DOES_NOT_MATCH": "密碼輸入不符合",
+        "ICON_URL_EMPTY": "必须输入照片URL",
+        "LEVEL_EMPTY": "必须输入权限",
+        "PHONE_EMPTY": "必须输入电话",
+        "ENTER_PHONE_NUMBER": "电话号码",
+        "PHONE_NUMERIC": "电话号码格式不正确",
+        "LOGIN_NAME": "用户名",
+        "NICK_NAME": "昵称",
+        "PASSWORD": "密码",
+        "PASSWORD_CONFIRM": "确认密码",
+        "ICON_URL": "照片URL",
+        "LEVEL": "权限",
+        "PHONE": "电话",
+        "LEVEL_OPTION": {
+            "NORMAL": "普通经理",
+            "ADMIN": "admin经理"
+        }
+    },
+    "DIALOG_LABEL": {
+        "CONFIRM_DELETE": "确定要删除吗?",
+        "CONFIRM_KICKOUT_TABLE_OWNER": "确定要踢走桌主吗?",
+        "CONFIRM_KICKOUT_PLAYER": "要把{clientName}踢出桌台吗?",
+        "CONFIRM_BACKLIST_PLAYER": "要把{clientName}列入黑名单吗?"
+    },
+    "WAITING_DELEGATOR": "轮候中代理",
+    "ANCHOR_LIST_LABEL": {
+        "NO_RECORD": "没有主播记录!",
+        "SELECT_ANCHOR": "请选取值班主播",
+        "ANCHOR_INFO": "主播资料",
+        "ANCHOR_LIST": "主播列表",
+        "NO_ON_DUTY_ANCHOR": "没有值班主播",
+        "FREE": "待机中"
+    },
+    "BET_HISTORY_LABEL": {
+        "BILL_NO": "订单号",
+        "GAME_CODE": "局号",
+        "TIME": "时间",
+        "RESULT": "结果",
+        "REPLAY": "重播",
+        "PLAYER": "玩家",
+        "ANCHOR": "主播",
+        "PLAY_TYPE": "玩法",
+        "TOTAL_BET": "总投注",
+        "FLAG": "派彩",
+        "GAME_STATUS": "状态",
+        "FLAG_STATUS": {
+            "PAID": "已派彩",
+            "UNPAID": "未派彩"
+        },
+        "NO_RECORD": "没有游戏记录! 请输入玩家名搜寻!"
+    },
     "BANKER": "庄",
     "PLAYER": "閑",
-    "TIE": "和",
-    "BANKER_PAIR": "闲对",
-    "PLAYER_PAIR": "庄对",
-    "BIG": "大",
-    "SMALL": "小",
-    "BANKER_NO_COMMISSION": "庄免佣",
-    "BANKER_DRAGON_BONUS": "庄龙宝",
-    "PLAYER_DRAGON_BONUS": "闲龙宝",
-    "SUPER_SIX": "超级六",
-    "ANY_PAIR": "任意对子",
-    "PERFECT_PAIR": "完美对子"
-  },
-  "TABLE_LIMIT_LIST": "限红列表",
-  "SEAT_NUMBER": "座位数:",
-  "GAME_CODE": "局号:",
-  "DEALER": "荷官:",
-  "ANCHOR": "主播:",
-  "TABLE_LIMIT": "限红:",
-  "TABLE_OWNER": "桌主:",
-  "CARD_TYPE": "牌靴:",
-  "GAME_STATUS": "游戏状态:",
-  "GAME_TIME": "开局时间:",
-  "GAME_TOTAL_BET": "总投注:",
-  "GAME_TOTAL_PAYOUT": "总派彩:",
-  "KICKOUT_CLIENT": "踢走桌主",
-  "USER_FORM": {
-    "LOGIN_NAME_EMPTY": "必须输入用户名",
-    "LOGIN_NAME_ALPHANUMERIC": "用户名必须是alphanumeric",
-    "LOGIN_NAME_ALREADY_REGISTERED": "用户名已经被注册",
-    "NICK_NAME_EMPTY": "必须输入昵称",
-    "PASSWORD_EMPTY": "必须输入密码",
-    "PASSWORD_CONFIRM_EMPTY": "请确认密码",
-    "PASSWORD_DOES_NOT_MATCH": "密碼輸入不符合",
-    "ICON_URL_EMPTY": "必须输入照片URL",
-    "LEVEL_EMPTY": "必须输入权限",
-    "PHONE_EMPTY": "必须输入电话",
-    "ENTER_PHONE_NUMBER": "电话号码",
-    "PHONE_NUMERIC": "电话号码格式不正确",
-    "LOGIN_NAME": "用户名",
-    "NICK_NAME": "昵称",
-    "PASSWORD": "密码",
-    "PASSWORD_CONFIRM": "确认密码",
-    "ICON_URL": "照片URL",
-    "LEVEL": "权限",
-    "PHONE": "电话",
-    "LEVEL_OPTION": {
-      "NORMAL": "普通经理",
-      "ADMIN": "admin经理"
+    "DELEGATOR_LIST_LABEL": {
+        "NO_RECORD": "没有代理记录!",
+        "SELECT_DELEGATOR": "请选取需要编辑的代理",
+        "DELEGATOR_INFO": "代理资料"
+    },
+    "LOGIN_FORM_LABEL": {
+        "MANAGER_LOGIN_EMPTY": "必须输入用户名",
+        "MANAGER_LOGIN_ALPHANUMERIC": "用户名必须是alphanumeric",
+        "MANAGER_PASSWORD_EMPTY": "必须输入密码",
+        "MANAGER_LOGIN": "经理:",
+        "MANAGER_PASSWORD": "密码:"
+    },
+    "SYSTEM_MESSAGES": {
+        "CONNECTING": "连线中......",
+        "DISCONNECT": "连线中断."
+    },
+    "ERROR_MESSAGES": {
+        "NO_APP_ID": "[VoiceServer] 没有AppId, 请联络管理员",
+        "REPEAT_LOGIN": "经理重覆登入",
+        "PWD_ERROR": "用户名/密码错误!",
+        "NO_USER": "没有此用户!",
+        "VOICE_SERVER_LOGIN_FAIL": "[VoiceServer] 无法登入, 请联络管理员! (code: {loginStatus})",
+        "DATA_SERVER_LOGIN_FAIL": "[DataServer] 無法登入, 請聯絡管理員! (code: {loginStatus})",
+        "NO_CURRENT_CHANNEL": "因为系统问题, 所以暂时不能接听电话, 请联络管理员!",
+        "USER_OPERATION_FAIL": "[DataServer] 无法{message}! (code: {cdsActionStatus})",
+        "USER_OPERATION": {
+            "ADD_ANCHOR": "加入主播",
+            "EDIT_ANCHOR": "编辑主播",
+            "DELETE_ANCHOR": "删除主播",
+            "ADD_MANAGER": "加入经理",
+            "EDIT_MANAGER": "编辑经理",
+            "DELETE_MANAGER": "删除经理"
+        },
+        "FAIL_KICKOUT_PLAYER": "无法将玩家踢出桌台/加入黑名单! (Reason: {kickoutReason})",
+        "FAIL_ASSIGN_TABLE_TO_PLAYER": "无法将玩家{username}配对到桌台!",
+        "FAIL_ASSIGN_TABLE_TO_PLAYER_IMMEDIATE": "无法将玩家配对到桌台! (code: {assignTableStatus})",
+        "FAIL_DELETE_DELEGATOR": "无法删除代理! (code: {deleteDelegatorStatus})",
+        "DELEGATOR_HAS_TOKEN": "代理已拿筹, 不能删除此代理记录!",
+        "FAIL_ADD_DELEGATOR": "无法加入代理! (code: {addDelegatorStatus})",
+        "FAIL_KICKOUT_DELEGATOR": "不能成功踢走代理, 请联络管理员! (code: {kickDelegatorStatus})",
+        "FAIL_ASSIGN_TOKEN": "不能成功派筹, 请联络管理员! (code: {assignTokenStatus})",
+        "DELEGATOR_IS_OFFLINE": "代理并不在线!",
+        "VOICE_SERVER_FAIL_DELETE_MANAGER": "[VoiceServer] 无法删除经理! (code: {managerDeleteStatus})",
+        "VOICE_SERVER_FAIL_MANAGER_OPERATION": "[VoiceServer] 無法{managerAction}經理! (code: {managerAddStatus})",
+        "VOICE_SERVER_FAIL_DELETE_ANCHOR": "[VoiceServer] 无法删除主播! (code: {anchorDeleteStatus})",
+        "VOICE_SERVER_FAIL_ANCHOR_OPERATION": "[VoiceServer] 无法{managerAction}主播! (code: {anchorAddStatus})",
+        "FAIL_MANAGER_ACTION": "经理操作不能执行! (code: {actionStatus})",
+        "ASSIGN_TABLE_ERROR_307": "无法派筹，没有空余桌台。",
+        "ASSIGN_TABLE_ERROR_310": "无法派筹，玩家已经包了另一张桌台。"
+    },
+    "MANAGER_LIST_LABEL": {
+        "NO_RECORD": "没有经理记录!",
+        "SELECT_MANAGER": "请选取需要编辑的经理",
+        "MANAGER_INFO": "经理资料"
+    },
+    "TABLE_LIST_LABEL": {
+        "NO_RECORD": "没有桌台资讯!"
+    },
+    "TELEBET_LIST_LABEL": {
+        "WITH_TABLE": "与 {vid}",
+        "WITH_PLAYER_AND_ANCHOR": "玩家 {clientName} 主播 {anchorName}",
+        "WITH_PLAYER": "与玩家",
+        "PLAYER_MUTE_ON_GOINGING": "(玩家静音中)",
+        "ANCHOR_MUTE_ON_GOINGING": "(主播静音中)",
+        "CONNECTED": "通讯中...",
+        "PLAYER": "玩家:",
+        "BALANCE": "余额:",
+        "TABLE_VID": "桌号:",
+        "CHOOSE_TABLE": "选择桌台"
+    },
+    "TELEBET_TILE_LABEL": {
+        "CONNECTING": "连接中",
+        "CONNECTED": "接入中",
+        "PLAYING": "游戏中",
+        "ANCHOR_STATE_ACTIONS": {
+            "CHANGE_ANCHOR": "更换主播",
+            "CHANGE_DEALER": "更换荷官",
+            "CHANGE_TABLE": "更换桌台",
+            "ANNOYING": "骚扰",
+            "ADVERTISEMENT": "卖广告"
+        },
+        "REASON": "理由:",
+        "ANCHOR": "主播",
+        "PLAYER": "玩家"
     }
-  },
-  "DIALOG_LABEL": {
-    "CONFIRM_DELETE": "确定要删除吗?",
-    "CONFIRM_KICKOUT_TABLE_OWNER": "确定要踢走桌主吗?",
-    "CONFIRM_KICKOUT_PLAYER": "要把{clientName}踢出桌台吗?",
-    "CONFIRM_BACKLIST_PLAYER": "要把{clientName}列入黑名单吗?"
-  },
-  "WAITING_DELEGATOR": "轮候中代理",
-  "ANCHOR_LIST_LABEL": {
-    "NO_RECORD": "没有主播记录!",
-    "SELECT_ANCHOR": "请选取值班主播",
-    "ANCHOR_INFO": "主播资料",
-    "ANCHOR_LIST": "主播列表",
-    "NO_ON_DUTY_ANCHOR": "没有值班主播",
-    "FREE": "待机中"
-  },
-  "BET_HISTORY_LABEL": {
-    "BILL_NO": "订单号",
-    "GAME_CODE": "局号",
-    "TIME": "时间",
-    "RESULT": "结果",
-    "REPLAY": "重播",
-    "PLAYER": "玩家",
-    "ANCHOR": "主播",
-    "PLAY_TYPE": "玩法",
-    "TOTAL_BET": "总投注",
-    "FLAG": "派彩",
-    "GAME_STATUS": "状态",
-    "FLAG_STATUS": {
-      "PAID": "已派彩",
-      "UNPAID": "未派彩" 
-    },
-    "NO_RECORD": "没有游戏记录! 请输入玩家名搜寻!"
-  },
-  "BANKER": "庄",
-  "PLAYER": "閑",
-  "DELEGATOR_LIST_LABEL": {
-    "NO_RECORD": "没有代理记录!",
-    "SELECT_DELEGATOR": "请选取需要编辑的代理",
-    "DELEGATOR_INFO": "代理资料"
-  },
-  "LOGIN_FORM_LABEL": {
-    "MANAGER_LOGIN_EMPTY": "必须输入用户名",
-    "MANAGER_LOGIN_ALPHANUMERIC": "用户名必须是alphanumeric",
-    "MANAGER_PASSWORD_EMPTY": "必须输入密码",
-    "MANAGER_LOGIN": "经理:",
-    "MANAGER_PASSWORD": "密码:"
-  },
-  "SYSTEM_MESSAGES": {
-    "CONNECTING": "连线中......",
-    "DISCONNECT": "连线中断."
-  },
-  "ERROR_MESSAGES": {
-    "NO_APP_ID": "[VoiceServer] 没有AppId, 请联络管理员",
-    "REPEAT_LOGIN": "经理重覆登入",
-    "PWD_ERROR": "用户名/密码错误!",
-    "NO_USER": "没有此用户!",
-    "VOICE_SERVER_LOGIN_FAIL": "[VoiceServer] 无法登入, 请联络管理员! (code: {loginStatus})",
-    "DATA_SERVER_LOGIN_FAIL": "[DataServer] 無法登入, 請聯絡管理員! (code: {loginStatus})",
-    "NO_CURRENT_CHANNEL": "因为系统问题, 所以暂时不能接听电话, 请联络管理员!",
-    "USER_OPERATION_FAIL": "[DataServer] 无法{message}! (code: {cdsActionStatus})",
-    "USER_OPERATION": {
-      "ADD_ANCHOR": "加入主播",
-      "EDIT_ANCHOR": "编辑主播",
-      "DELETE_ANCHOR": "删除主播",
-      "ADD_MANAGER": "加入经理",
-      "EDIT_MANAGER": "编辑经理",
-      "DELETE_MANAGER": "删除经理"
-    },
-    "FAIL_KICKOUT_PLAYER": "无法将玩家踢出桌台/加入黑名单! (Reason: {kickoutReason})",
-    "FAIL_ASSIGN_TABLE_TO_PLAYER": "无法将玩家{username}配对到桌台!",
-    "FAIL_ASSIGN_TABLE_TO_PLAYER_IMMEDIATE": "无法将玩家配对到桌台! (code: {assignTableStatus})",
-    "FAIL_DELETE_DELEGATOR": "无法删除代理! (code: {deleteDelegatorStatus})",
-    "DELEGATOR_HAS_TOKEN": "代理已拿筹, 不能删除此代理记录!",
-    "FAIL_ADD_DELEGATOR": "无法加入代理! (code: {addDelegatorStatus})",
-    "FAIL_KICKOUT_DELEGATOR": "不能成功踢走代理, 请联络管理员! (code: {kickDelegatorStatus})",
-    "FAIL_ASSIGN_TOKEN": "不能成功派筹, 请联络管理员! (code: {assignTokenStatus})",
-    "DELEGATOR_IS_OFFLINE": "代理并不在线!",
-    "VOICE_SERVER_FAIL_DELETE_MANAGER": "[VoiceServer] 无法删除经理! (code: {managerDeleteStatus})",
-    "VOICE_SERVER_FAIL_MANAGER_OPERATION": "[VoiceServer] 無法{managerAction}經理! (code: {managerAddStatus})",
-    "VOICE_SERVER_FAIL_DELETE_ANCHOR": "[VoiceServer] 无法删除主播! (code: {anchorDeleteStatus})",
-    "VOICE_SERVER_FAIL_ANCHOR_OPERATION": "[VoiceServer] 无法{managerAction}主播! (code: {anchorAddStatus})",
-    "FAIL_MANAGER_ACTION": "经理操作不能执行! (code: {actionStatus})"    
-  },
-  "MANAGER_LIST_LABEL": {
-    "NO_RECORD": "没有经理记录!",
-    "SELECT_MANAGER": "请选取需要编辑的经理",
-    "MANAGER_INFO": "经理资料"
-  },
-  "TABLE_LIST_LABEL": {
-    "NO_RECORD": "没有桌台资讯!"
-  },
-  "TELEBET_LIST_LABEL": {
-    "WITH_TABLE": "与 {vid}",
-    "WITH_PLAYER_AND_ANCHOR": "玩家 {clientName} 主播 {anchorName}",
-    "WITH_PLAYER": "与玩家",
-    "PLAYER_MUTE_ON_GOINGING": "(玩家静音中)",
-    "ANCHOR_MUTE_ON_GOINGING": "(主播静音中)",
-    "CONNECTED": "通讯中...",
-    "PLAYER": "玩家:",
-    "BALANCE": "余额:",
-    "TABLE_VID": "桌号:",
-    "CHOOSE_TABLE": "选择桌台"
-  },
-  "TELEBET_TILE_LABEL" : {
-    "CONNECTING": "连接中",
-    "CONNECTED": "接入中",
-    "PLAYING": "游戏中",
-    "ANCHOR_STATE_ACTIONS": {
-      "CHANGE_ANCHOR": "更换主播",
-      "CHANGE_DEALER": "更换荷官",
-      "CHANGE_TABLE": "更换桌台",
-      "ANNOYING": "骚扰",
-      "ADVERTISEMENT": "卖广告"
-    },
-    "REASON": "理由:",
-    "ANCHOR": "主播",
-    "PLAYER": "玩家"
-  }
 }

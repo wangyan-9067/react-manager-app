@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
@@ -9,8 +9,8 @@ import AnswerCallPanel from '../containers/AnswerCallPanel';
 import GridListBase from '../components/GridListBase';
 import WaitingUser from '../components/WaitingUser';
 import TelebetTile from './TelebetTile';
+import AssignTableDialog from './AssignTableDialog';
 import { setIncomingCallCount } from '../actions/voice';
-import voiceAPI from '../services/Voice/voiceAPI';
 
 const styles = theme => ({
     root: {
@@ -162,72 +162,73 @@ const styles = theme => ({
     },
     hide: {
         display: 'none'
-    },
-    toggleButtonRoot: {
-        height: '50px',
-        margin: '5px',
-        color: '#FFFFFF',
-        backgroundColor: '#3970B0',
-        border: '3px solid #3970B0'
-    },
-    toggleButtonDisabled: {
-        backgroundColor: '#F4F4F4',
-        color: '#D5D5D5',
-        border: '3px solid #F4F4F4'
-    },
-    toggleButtonLabel: {
-        fontSize: '1rem',
-        fontWeight: 'bold'
     }
 });
 
-const TelebetList = ({
-    classes,
-    channelList,
-    joinChannel,
-    isAnswerCall,
-    waitingList,
-    tableList,
-    setIncomingCallCount
-}) => {
-    const { separator, tile } = classes;
+class TelebetList extends React.Component {
+    state = {
+        openAssignTableDialog: false,
+        assignName: ''
+    };
 
-    const telebetListClasses = classNames.bind(classes);
-    const classList = telebetListClasses({
-        root: true,
-        pageBorder: isAnswerCall
-    });
-
-    const assignTokenToDelegator = function (...args) {
-        voiceAPI.assignTokenToDelegator(...args);
+    closeAssignTableDialog = () => {
+        this.setState({
+            openAssignTableDialog: false,
+            assignName: ''
+        })
     }
 
-    const kickDelegator = function (...args) {
-        voiceAPI.kickDelegator(...args);
+    openAssignTableDialog = (name) => {
+        this.setState({
+            openAssignTableDialog: true,
+            assignName: name
+        });
     }
 
-    let panel;
-    if (isAnswerCall) {
-        panel = (
-            <AnswerCallPanel classes={classes} />
+    render() {
+        const {
+            classes,
+            channelList,
+            joinChannel,
+            isAnswerCall,
+            waitingList,
+            tableList,
+            setIncomingCallCount
+        } = this.props;
+        const { separator, tile } = classes;
+
+        const telebetListClasses = classNames.bind(classes);
+        const classList = telebetListClasses({
+            root: true,
+            pageBorder: isAnswerCall
+        });
+
+        let panel;
+        if (isAnswerCall) {
+            panel = (
+                <AnswerCallPanel classes={classes} />
+            );
+        } else {
+            panel = (
+                <GridListBase list={channelList} tileClass={tile}>
+                    <TelebetTile joinChannel={joinChannel} tableList={tableList} setIncomingCallCount={setIncomingCallCount} />
+                </GridListBase>
+            );
+        }
+
+        return (
+            <Fragment>
+            <div className={classList}>
+                {panel}
+                <div className={separator} />
+                {!isAnswerCall &&
+                    <WaitingUser waitingList={waitingList} openAssignTableDialog={this.openAssignTableDialog} />
+                }
+            </div>
+            <AssignTableDialog openAssignTableDialog={this.state.openAssignTableDialog} closeAssignTableDialog={this.closeAssignTableDialog} name={this.state.assignName}/>
+            </Fragment>
         );
-    } else {
-        panel = (
-            <GridListBase list={channelList} tileClass={tile}>
-                <TelebetTile joinChannel={joinChannel} tableList={tableList} setIncomingCallCount={setIncomingCallCount} />
-            </GridListBase>
-        );
     }
-
-    return (
-        <div className={classList}>
-            {panel}
-            <div className={separator} />
-            {!isAnswerCall &&
-                <WaitingUser waitingList={waitingList} assignTokenToDelegator={assignTokenToDelegator} kickDelegator={kickDelegator} />
-            }
-        </div>
-    );
 }
 
 TelebetList.propTypes = {

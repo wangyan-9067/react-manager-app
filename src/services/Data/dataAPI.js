@@ -154,7 +154,7 @@ class DataAPI {
                 const { code: assignTableStatus } = evt.data;
 
                 if (assignTableStatus === SUCCESS) {
-                    voiceAPI.assignTableToChannel(currentChannelId, evt.data.vid);
+                    voiceAPI.assignTableToChannel(evt.data.username, evt.data.vid);
                 } else {
                     store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_ASSIGN_TABLE_TO_PLAYER_IMMEDIATE.replace("{assignTableStatus}", assignTableStatus)));
                     store.dispatch(setToastVariant('error'));
