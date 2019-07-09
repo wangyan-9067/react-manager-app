@@ -6,15 +6,12 @@ import classNames from 'classnames/bind';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import Typography from '@material-ui/core/Typography';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 
+import ConfirmationDialog from '../components/ConfirmationDialog';
 import { getLangConfig } from '../helpers/appUtils';
 import { MUTE_STATE, MANAGER_ACTION_TYPE } from '../constants';
 import { formatAmount } from '../helpers/utils';
@@ -147,11 +144,7 @@ class AnswerCallPanel extends React.Component {
             actionButtonWrapper,
             actionButton,
             blacklistButton,
-            icon,
-            dialogPaper,
-            dialogActionButton,
-            dialogActionsRootNoBorder,
-            dialogContent
+            icon
         } = classes;
         const { MUTE } = MUTE_STATE;
         const currentChannel = this.getCurrentChannelInfo();
@@ -172,12 +165,6 @@ class AnswerCallPanel extends React.Component {
         }
 
         const { vid, clientName, anchorName, clientMute, anchorMute } = currentChannel;
-        // 'currentTable' is assigned a value but never used
-        // const currentTable = vid ? tableList.find(table => table.vid === vid) : null;
-        // const [openAssignTableDialog, setOpenAssignTableDialog] = useState(false);
-        // const [tableAssigned, setTableAssigned] = useState(vid);
-        // const [openKickoutClientDialog, setOpenKickoutClientDialog] = useState(false);
-        // const [openBlacklistDialog, setOpenBlacklistDialog] = useState(false);
 
         let line1Text;
         let line2Text;
@@ -238,50 +225,17 @@ class AnswerCallPanel extends React.Component {
                     <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blacklistButton)} onClick={this.onBlackListClicked}>{langConfig.BUTTON_LABEL.BLACKLIST_PLAYER}</Button>
                 </div>
                 { /** Kickout Client Dialog*/}
-                <Dialog
+                <ConfirmationDialog
                     open={this.state.openKickoutClientDialog}
                     onClose={this.closeKickoutDialog}
-                    aria-labelledby="responsive-dialog-title"
-                    classes={{ paper: dialogPaper }}
-                >
-                    <DialogContent>
-                        <DialogContentText><Typography color="inherit" className={dialogContent}>{langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", clientName)}</Typography></DialogContentText>
-                    </DialogContent>
-                    <DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-                        <Button
-                            variant="contained"
-                            size="medium"
-                            color="primary"
-                            className={classNames(actionButton, dialogActionButton)}
-                            onClick={this.kickoutClient}
-                        >
-                            {langConfig.BUTTON_LABEL.CONFIRM}
-                        </Button>
-                        <Button variant="contained" size="medium" className={classNames(actionButton, dialogActionButton)} onClick={this.closeKickoutDialog}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
-                    </DialogActions>
-                </Dialog>
+                    onConfirm={this.kickoutClient}
+                    message={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", clientName)} />
                 { /** Blacklist Dialog*/}
-                <Dialog
+                <ConfirmationDialog
                     open={this.state.openBlacklistDialog}
                     onClose={this.closeBlacklistDialog}
-                    aria-labelledby="responsive-dialog-title"
-                    classes={{ paper: dialogPaper }}
-                >
-                    <DialogContent>
-                        <DialogContentText><Typography color="inherit" className={dialogContent}>{langConfig.DIALOG_LABEL.CONFIRM_BACKLIST_PLAYER.replace("{clientName}", clientName)}</Typography></DialogContentText>
-                    </DialogContent>
-                    <DialogActions classes={{ root: dialogActionsRootNoBorder }}>
-                        <Button
-                            variant="contained"
-                            size="medium"
-                            color="inherit"
-                            className={classNames(actionButton, dialogActionButton)}
-                            onClick={this.blacklistClient}>
-                            {langConfig.BUTTON_LABEL.CONFIRM}
-                        </Button>
-                        <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={this.closeBlacklistDialog}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
-                    </DialogActions>
-                </Dialog>
+                    onConfirm={this.blacklistClient}
+                    message={langConfig.DIALOG_LABEL.CONFIRM_BACKLIST_PLAYER.replace("{clientName}", clientName)} />
             </Fragment>
         );
     }

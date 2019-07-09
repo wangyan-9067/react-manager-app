@@ -34,6 +34,10 @@ const styles = theme => ({
         color: '#666666',
         textAlign: 'left'
     },
+    cardActions: {
+        display: 'block',
+        textAlign: 'center'
+    },
     cardContentText: {
         fontSize: '16px'
     },
@@ -71,8 +75,8 @@ const styles = theme => ({
     }
 });
 
-const WaitingForToken = ({ classes, item, waitingTime, openAssignTableDialog }) => {
-    const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButton } = classes;
+const WaitingForToken = ({ classes, item, waitingTime, openAssignTableDialog, openKickLineupDialog }) => {
+    const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButton, cardActions } = classes;
     const langConfig = getLangConfig();
     const { name, balance, limit: { min, max } } = item;
 
@@ -82,8 +86,9 @@ const WaitingForToken = ({ classes, item, waitingTime, openAssignTableDialog }) 
                 <Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} noWrap={true} align="center">{name}</Typography>
                 <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{balance}</Typography>
                 <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{`${min} - ${max}`}</Typography>
-                <CardActions>
-                    <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={() => { openAssignTableDialog(name); }}>{langConfig.BUTTON_LABEL.ASSIGN_TOKEN}</Button>
+                <CardActions className={cardActions}>
+                    <Button variant="contained" size="small" color="inherit" className={actionButton} onClick={() => { openAssignTableDialog(name); }}>{langConfig.BUTTON_LABEL.ASSIGN_TOKEN}</Button>
+                    <Button variant="contained" size="small" color="inherit" className={actionButton} onClick={() => { openKickLineupDialog(name); }}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
                 </CardActions>
                 <Typography color="inherit" className={cardContentText} noWrap={true} align="center">{waitingTime}</Typography>
             </CardContent>
@@ -95,17 +100,19 @@ WaitingForToken.propTypes = {
     classes: PropTypes.object.isRequired,
     item: PropTypes.object,
     waitingTime: PropTypes.string,
-    openAssignTableDialog: PropTypes.func.isRequired
+    openAssignTableDialog: PropTypes.func.isRequired,
+    openKickLineupDialog: PropTypes.func.isRequired
 };
 
-const WaitingUserTile = ({ classes, item, assignTokenToDelegator, openAssignTableDialog, kickDelegator }) => {
+const WaitingUserTile = ({ classes, item, openAssignTableDialog, openKickLineupDialog }) => {
     const [waitingTime, setWaitingTime] = useState({});
     const { waitingStartTime } = item;
     let panel = <WaitingForToken
         classes={classes}
         item={item}
         waitingTime={waitingTime[item.name]}
-        openAssignTableDialog={openAssignTableDialog} />;
+        openAssignTableDialog={openAssignTableDialog}
+        openKickLineupDialog={openKickLineupDialog} />;
 
     useEffect(() => {
         const updatedWaitingTime = {};
@@ -121,7 +128,8 @@ const WaitingUserTile = ({ classes, item, assignTokenToDelegator, openAssignTabl
 WaitingUserTile.propTypes = {
     classes: PropTypes.object.isRequired,
     item: PropTypes.object,
-    openAssignTableDialog: PropTypes.func.isRequired
+    openAssignTableDialog: PropTypes.func.isRequired,
+    openKickLineupDialog: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(WaitingUserTile);

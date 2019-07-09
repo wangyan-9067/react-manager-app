@@ -29,7 +29,7 @@ import {
     MANAGER_KICKOUT_R,
     WAITING_LIST_R,
     ASSIGN_TOKEN_TO_DELEGATOR_R,
-    KICK_DELEGATOR_R,
+    KICK_LINEUP_PLAYER_R,
     ADD_DELEGATOR_R,
     DELETE_DELEGATOR_R,
     QUERY_ALL_DELEGATOR_R,
@@ -68,7 +68,7 @@ export default class VoiceSocket extends Socket.WebSocketBase {
         this.respClazzMap.set(WAITING_LIST_R, WaitingListResp);
         this.respClazzMap.set(ASSIGN_TABLE_TO_CHANNEL_R, CodeResp);
         this.respClazzMap.set(ASSIGN_TOKEN_TO_DELEGATOR_R, CodeResp);
-        this.respClazzMap.set(KICK_DELEGATOR_R, CodeResp);
+        this.respClazzMap.set(KICK_LINEUP_PLAYER_R, CodeResp);
         this.respClazzMap.set(ADD_DELEGATOR_R, CodeResp);
         this.respClazzMap.set(DELETE_DELEGATOR_R, CodeResp);
         this.respClazzMap.set(QUERY_ALL_DELEGATOR_R, QueryAllDelegatorResp);

@@ -15,3 +15,5 @@ function combineStyles(...styles) {
 
 export { combineStyles };
 export { default as dialogStyles } from './dialog';
+export { default as toggoleButtons, toggleButtonTheme } from './toggleButton';
+export { default as buttonStyles } from './button';

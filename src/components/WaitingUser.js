@@ -36,7 +36,7 @@ const styles = theme => ({
 	}
 });
 
-const WaitingUser = ({ classes, waitingList, openAssignTableDialog }) => {
+const WaitingUser = ({ classes, waitingList, openAssignTableDialog, openKickLineupDialog }) => {
 	const { root, title, listRoot, gridListRoot } = classes;
 	const langConfig = getLangConfig();
 
@@ -46,8 +46,8 @@ const WaitingUser = ({ classes, waitingList, openAssignTableDialog }) => {
 				{langConfig.WAITING_DELEGATOR}
 			</Typography>
 			<div className={listRoot}>
-				<GridListBase list={waitingList} customCols={6} gridListRootClass={gridListRoot}>
-					<WaitingUserTile openAssignTableDialog={openAssignTableDialog} />
+				<GridListBase list={waitingList} customCols={4} gridListRootClass={gridListRoot}>
+					<WaitingUserTile openAssignTableDialog={openAssignTableDialog} openKickLineupDialog={openKickLineupDialog} />
 				</GridListBase>
 			</div>
 		</div>
@@ -57,7 +57,8 @@ const WaitingUser = ({ classes, waitingList, openAssignTableDialog }) => {
 WaitingUser.propTypes = {
 	classes: PropTypes.object.isRequired,
 	waitingList: PropTypes.array,
-	openAssignTableDialog: PropTypes.func.isRequired
+	openAssignTableDialog: PropTypes.func.isRequired,
+	openKickLineupDialog: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(WaitingUser);

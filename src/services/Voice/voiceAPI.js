@@ -310,11 +310,11 @@ class VoiceAPI {
                 }
                 break;
 
-            case PROTOCOL.KICK_DELEGATOR_R:
-                const { code: kickDelegatorStatus } = evt.data;
+            case PROTOCOL.KICK_LINEUP_PLAYER_R:
+                const { code: kickLineupPlayerStatus } = evt.data;
 
-                if (kickDelegatorStatus !== SUCCESS) {
-                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_DELEGATOR.replace("{kickDelegatorStatus}", kickDelegatorStatus)));
+                if (kickLineupPlayerStatus !== SUCCESS) {
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_DELEGATOR.replace("{kickLineupPlayerStatus}", kickLineupPlayerStatus)));
                     store.dispatch(setToastVariant('error'));
                     store.dispatch(toggleToast(true));
                 }
@@ -484,9 +484,9 @@ class VoiceAPI {
         }));
     }
 
-    kickDelegator(delegatorName) {
-        this.socket.writeBytes(Socket.createCMD(PROTOCOL.KICK_DELEGATOR, bytes => {
-            bytes.writeBytes(Socket.stringToBytes(delegatorName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+    kickPlayer(playerName) {
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.KICK_LINEUP_PLAYER, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(playerName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
         }));
     }
 }

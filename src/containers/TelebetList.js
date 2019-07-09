@@ -10,7 +10,10 @@ import GridListBase from '../components/GridListBase';
 import WaitingUser from '../components/WaitingUser';
 import TelebetTile from './TelebetTile';
 import AssignTableDialog from './AssignTableDialog';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 import { setIncomingCallCount } from '../actions/voice';
+import { getLangConfig } from '../helpers/appUtils';
+import voiceAPI from '../services/Voice/voiceAPI';
 
 const styles = theme => ({
     root: {
@@ -168,7 +171,8 @@ const styles = theme => ({
 class TelebetList extends React.Component {
     state = {
         openAssignTableDialog: false,
-        assignName: ''
+        assignName: '',
+        openKickLineupDialog: false
     };
 
     closeAssignTableDialog = () => {
@@ -183,6 +187,24 @@ class TelebetList extends React.Component {
             openAssignTableDialog: true,
             assignName: name
         });
+    }
+
+    openKickLineupDialog = (name) => {
+        this.setState({
+            openKickLineupDialog: true,
+            assignName: name
+        });
+    }
+
+    closeKickLineupDialog = () => {
+        this.setState({
+            openKickLineupDialog: false,
+            assignName: ''
+        });
+    }
+
+    kickLineupPlayer = () => {
+        voiceAPI.kickPlayer(this.state.assignName);
     }
 
     render() {
@@ -202,6 +224,7 @@ class TelebetList extends React.Component {
             root: true,
             pageBorder: isAnswerCall
         });
+        const langConfig = getLangConfig();
 
         let panel;
         if (isAnswerCall) {
@@ -222,10 +245,15 @@ class TelebetList extends React.Component {
                 {panel}
                 <div className={separator} />
                 {!isAnswerCall &&
-                    <WaitingUser waitingList={waitingList} openAssignTableDialog={this.openAssignTableDialog} />
+                    <WaitingUser waitingList={waitingList} openAssignTableDialog={this.openAssignTableDialog} openKickLineupDialog={this.openKickLineupDialog} />
                 }
             </div>
             <AssignTableDialog openAssignTableDialog={this.state.openAssignTableDialog} closeAssignTableDialog={this.closeAssignTableDialog} name={this.state.assignName}/>
+            <ConfirmationDialog
+                open={this.state.openKickLineupDialog}
+                onClose={this.closeKickLineupDialog}
+                message={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", this.state.assignName)}
+                onConfirm={this.kickLineupPlayer} />
             </Fragment>
         );
     }

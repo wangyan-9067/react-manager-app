@@ -181,7 +181,7 @@
         "FAIL_DELETE_DELEGATOR": "无法删除代理! (code: {deleteDelegatorStatus})",
         "DELEGATOR_HAS_TOKEN": "代理已拿筹, 不能删除此代理记录!",
         "FAIL_ADD_DELEGATOR": "无法加入代理! (code: {addDelegatorStatus})",
-        "FAIL_KICKOUT_DELEGATOR": "不能成功踢走代理, 请联络管理员! (code: {kickDelegatorStatus})",
+        "FAIL_KICKOUT_DELEGATOR": "不能成功踢走排队玩家, 请联络管理员! (code: {kickLineupPlayerStatus})",
         "FAIL_ASSIGN_TOKEN": "不能成功派筹, 请联络管理员! (code: {assignTokenStatus})",
         "DELEGATOR_IS_OFFLINE": "代理并不在线!",
         "VOICE_SERVER_FAIL_DELETE_MANAGER": "[VoiceServer] 无法删除经理! (code: {managerDeleteStatus})",

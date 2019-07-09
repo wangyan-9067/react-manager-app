@@ -1,82 +1,23 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { combineStyles, dialogStyles } from '../styles';
+import { combineStyles, dialogStyles, toggoleButtons, toggleButtonTheme, buttonStyles } from '../styles';
 
 import dataAPI from '../services/Data/dataAPI';
 import { getLangConfig } from '../helpers/appUtils';
 import { DATA_SERVER_VIDEO_STATUS } from '../constants';
-
-
-const telebetListTheme = createMuiTheme({
-    shadows: new Array(25),
-    overrides: {
-        MuiToggleButton: {
-            root: {
-                '&$selected': {
-                    color: '#FFFFFF',
-                    backgroundColor: '#3970B0',
-                    border: '3px solid #DF6C68',
-                    '&:hover': {
-                        color: '#FFFFFF',
-                        backgroundColor: '#3970B0',
-                        border: '3px solid #DF6C68'
-                    }
-                },
-                '&:hover': {
-                    color: '#FFFFFF',
-                    backgroundColor: '#3970B0',
-                    border: '3px solid #DF6C68'
-                }
-            }
-        }
-    }
-});
-
-const styles = {
-    actionButton: {
-        margin: '5px',
-        padding: '3px 20px',
-        borderRadius: '60px',
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#0F58A7',
-        '&:hover': {
-            backgroundColor: '#0F58A7',
-            borderColor: '#0F58A7',
-        }
-    },
-    toggleButtonRoot: {
-        height: '50px',
-        margin: '5px',
-        color: '#FFFFFF',
-        backgroundColor: '#3970B0',
-        border: '3px solid #3970B0'
-    },
-    toggleButtonDisabled: {
-        backgroundColor: '#F4F4F4',
-        color: '#D5D5D5',
-        border: '3px solid #F4F4F4'
-    },
-    toggleButtonLabel: {
-        fontSize: '1rem',
-        fontWeight: 'bold'
-    }
-};
 
 class AssignTableDialog extends React.Component {
     state = {
@@ -107,7 +48,7 @@ class AssignTableDialog extends React.Component {
         const vidsInChannel = channelList.map(channel => channel.vid);
 
         return (
-            <MuiThemeProvider theme={telebetListTheme}>
+            <MuiThemeProvider theme={toggleButtonTheme}>
                 <Dialog
                     open={this.props.openAssignTableDialog}
                     onClose={this.closeAssignTableDialog}
@@ -162,7 +103,6 @@ const mapStateToProps = state => {
     });
 };
 
-const mapDispatchToProps = dispatch => ({
-});
+const combinedStyles = combineStyles(dialogStyles, toggoleButtons, buttonStyles);
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(combineStyles(dialogStyles, styles))(AssignTableDialog));
+export default connect(mapStateToProps, null)(withStyles(combinedStyles)(AssignTableDialog));
