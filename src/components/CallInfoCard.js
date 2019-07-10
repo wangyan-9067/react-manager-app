@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -9,14 +9,14 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
+import DurationClock from './DurationClock';
 import { USER_STATE } from '../constants';
-import { getLangConfig } from '../helpers/appUtils';
+import { getLangConfig, isAnchorCalling, isClientCalling } from '../helpers/appUtils';
 import { formatAmount } from '../helpers/utils';
 
-const joinRoom = (channelId, joinChannel, isAnchor, setIsAnchorCall, setIncomingCallCount, incomingCallCount) => {
-    setIsAnchorCall(isAnchor);
+const joinRoom = (channelId, joinChannel, isAnchorCall, setIsAnchorCall) => {
+    setIsAnchorCall(isAnchorCall);
     joinChannel(channelId);
-    setIncomingCallCount(incomingCallCount - 1)
 };
 
 const styles = theme => ({
@@ -87,14 +87,24 @@ const styles = theme => ({
 });
 
 
-const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName, cardClass, roleClass, joinChannel, currentTable, setIncomingCallCount, incomingCallCount, isConnecting, currentManagerName, player }) => {
+const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTable, currentManagerName, player }) => {
     const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
     const { channelId, anchorState, managerName, clientBalance, clientName, anchorName, clientState, vid } = item;
+    const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CONNECTED, CONNECTING } = USER_STATE;
+    const langConfig = getLangConfig();
+    const cardClass = isClientCalling(item) ? 'card' : isAnchorCalling(item) ? 'anchorCard' : 'playingCard';
+    const [waitingStartTime, setWaitingStartTime] = useState(0);
+
+    useEffect(() => {
+        if (clientState === CONNECTING) {
+            setWaitingStartTime((new Date()).getTime() / 1000);
+        }
+    }, [clientState]);
+
+    let anchorStateText = '';
     let latestClientBalance = clientBalance;
     if (player.username !== '' && player.username === clientName) latestClientBalance = player.balance;
-    const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT } = USER_STATE;
-    const langConfig = getLangConfig();
-    let anchorStateText = '';
+
     switch (anchorState) {
         case CHANGE_ANCHOR:
             anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.CHANGE_ANCHOR;
@@ -137,14 +147,26 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
             <CardContent className={cardContent}>
                 {vid && <Typography color="inherit" className={cardContentText}>{vid}</Typography>}
                 {anchorName && <Typography className={classNames(cardContentText, anchorTextColorClass)}>{langConfig.TELEBET_TILE_LABEL.ANCHOR} <span className={client}>{anchorName}</span> {anchorState === 1 ? langConfig.TELEBET_TILE_LABEL.CONNECTING : langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography>}
-                {clientName && <Typography color="inherit" className={classNames(cardContentText, clientTextColorClass)}>{langConfig.TELEBET_TILE_LABEL.PLAYER} <span className={client}>{clientName}</span> {clientState === 1 ? langConfig.TELEBET_TILE_LABEL.CONNECTING : langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography>}
+                {
+                    clientName && <Typography color="inherit" className={classNames(cardContentText, clientTextColorClass)}>
+                        {langConfig.TELEBET_TILE_LABEL.PLAYER}
+                        <span className={client}>{clientName}</span>
+                        {clientState === CONNECTING && langConfig.TELEBET_TILE_LABEL.CONNECTING}
+                        {clientState === CONNECTING && <DurationClock waitingStartTime={waitingStartTime}/>}
+                        {clientState === CONNECTED && langConfig.TELEBET_TILE_LABEL.PLAYING}
+                    </Typography>
+                }
                 {[CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT].indexOf(anchorState) > -1 && anchorStateText ? (
                     <Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.REASON} {anchorStateText}</Typography>
                 ) : null}
                 <Typography color="inherit" className={cardContentText}>{latestClientBalance > 0 ? `$${formatAmount(latestClientBalance)}` : '-'}</Typography>
             </CardContent>
             <CardActions>
-                <Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled={!!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchor, setIsAnchorCall, setIncomingCallCount, incomingCallCount) }}>{langConfig.BUTTON_LABEL.JOIN_CHANNEL}</Button>
+                <Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled={!!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchorCalling(item), setIsAnchorCall) }}>
+                    {!managerName && langConfig.BUTTON_LABEL.JOIN_CHANNEL}
+                    {(managerName && managerName === currentManagerName) && langConfig.BUTTON_LABEL.CONTINUE_CHANNEL}
+                    {(managerName && managerName !== currentManagerName) && langConfig.BUTTON_LABEL.JOIN_CHANNEL_2.replace("{name}", managerName)}
+                </Button>
             </CardActions>
         </Card>
     );
@@ -153,12 +175,6 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, isAnchor, role, roleName
 CallInfoCard.propTypes = {
     classes: PropTypes.object.isRequired,
     item: PropTypes.object,
-    setIsAnchorCall: PropTypes.func,
-    isAnchor: PropTypes.bool,
-    role: PropTypes.string,
-    roleName: PropTypes.string,
-    cardClass: PropTypes.string,
-    roleClass: PropTypes.string,
     joinChannel: PropTypes.func,
     currentTable: PropTypes.object
 };

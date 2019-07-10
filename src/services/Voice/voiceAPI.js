@@ -32,7 +32,7 @@ import * as CONSTANTS from '../../constants';
 import langConfig from '../../languages/zh-cn.json';
 import dataAPI from '../Data/dataAPI';
 import { isObject } from '../../helpers/utils';
-import { reset } from '../../helpers/appUtils';
+import { reset, isAnchorCalling, isClientCalling } from '../../helpers/appUtils';
 
 class VoiceAPI {
     socket;
@@ -155,14 +155,17 @@ class VoiceAPI {
                 }
 
                 channelList.forEach(channel => {
-                    const { clientName, anchorName, clientState, anchorState, managerName } = channel;
-                    const isCallingManager = CONSTANTS.CALLING_MANAGER_STATES.findIndex(state => state === anchorState) !== -1;
-                    const clientConnecting = clientName && !anchorName && clientState === CONNECTING && !managerName;
-                    const anchorConnecting = clientName && anchorName && isCallingManager && anchorState === CONNECTING && !managerName;
-                    const clientDealIn = clientName && !anchorName && clientState === CONNECTED & !managerName;
-                    const anchorDealIn = clientName && anchorName && isCallingManager & !managerName;
+                    // const { clientName, anchorName, clientState, anchorState, managerName } = channel;
+                    // const isCallingManager = CONSTANTS.CALLING_MANAGER_STATES.findIndex(state => state === anchorState) !== -1;
+                    // const clientConnecting = clientName && !anchorName && clientState === CONNECTING && !managerName;
+                    // const anchorConnecting = clientName && anchorName && isCallingManager && anchorState === CONNECTING && !managerName;
+                    // const clientDealIn = clientName && !anchorName && clientState === CONNECTED & !managerName;
+                    // const anchorDealIn = clientName && anchorName && isCallingManager & !managerName;
 
-                    if (clientConnecting || anchorConnecting || clientDealIn || anchorDealIn) {
+                    // if (clientConnecting || anchorConnecting || clientDealIn || anchorDealIn) {
+                    //     callCnt++;
+                    // }
+                    if (isAnchorCalling(channel) || isClientCalling(channel)) {
                         callCnt++;
                     }
                 });

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import classNames from 'classnames/bind';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -10,6 +9,7 @@ import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 
 import { getLangConfig } from '../helpers/appUtils';
+import DurationClock from '../components/DurationClock';
 
 const styles = theme => ({
     root: {
@@ -75,7 +75,7 @@ const styles = theme => ({
     }
 });
 
-const WaitingForToken = ({ classes, item, waitingTime, openAssignTableDialog, openKickLineupDialog }) => {
+const WaitingForToken = ({ classes, item, waitingStartTime, openAssignTableDialog, openKickLineupDialog }) => {
     const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButton, cardActions } = classes;
     const langConfig = getLangConfig();
     const { name, balance, limit: { min, max } } = item;
@@ -90,7 +90,9 @@ const WaitingForToken = ({ classes, item, waitingTime, openAssignTableDialog, op
                     <Button variant="contained" size="small" color="inherit" className={actionButton} onClick={() => { openAssignTableDialog(name); }}>{langConfig.BUTTON_LABEL.ASSIGN_TOKEN}</Button>
                     <Button variant="contained" size="small" color="inherit" className={actionButton} onClick={() => { openKickLineupDialog(name); }}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
                 </CardActions>
-                <Typography color="inherit" className={cardContentText} noWrap={true} align="center">{waitingTime}</Typography>
+                <Typography color="inherit" className={cardContentText} noWrap={true} align="center">
+                    <DurationClock waitingStartTime={waitingStartTime} />
+                </Typography>
             </CardContent>
         </Card>
     );
@@ -105,20 +107,13 @@ WaitingForToken.propTypes = {
 };
 
 const WaitingUserTile = ({ classes, item, openAssignTableDialog, openKickLineupDialog }) => {
-    const [waitingTime, setWaitingTime] = useState({});
     const { waitingStartTime } = item;
     let panel = <WaitingForToken
         classes={classes}
         item={item}
-        waitingTime={waitingTime[item.name]}
+        waitingStartTime={waitingStartTime}
         openAssignTableDialog={openAssignTableDialog}
         openKickLineupDialog={openKickLineupDialog} />;
-
-    useEffect(() => {
-        const updatedWaitingTime = {};
-        updatedWaitingTime[item.name] = moment.utc(moment().diff(moment(waitingStartTime * 1000))).format("HH:mm:ss");
-        setWaitingTime({ ...waitingTime, ...updatedWaitingTime });
-    });
 
     return (
         <div className={classes.root}>{panel}</div>

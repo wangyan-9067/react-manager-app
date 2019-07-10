@@ -11,7 +11,6 @@ import WaitingUser from '../components/WaitingUser';
 import TelebetTile from './TelebetTile';
 import AssignTableDialog from './AssignTableDialog';
 import ConfirmationDialog from '../components/ConfirmationDialog';
-import { setIncomingCallCount } from '../actions/voice';
 import { getLangConfig } from '../helpers/appUtils';
 import voiceAPI from '../services/Voice/voiceAPI';
 
@@ -214,8 +213,7 @@ class TelebetList extends React.Component {
             joinChannel,
             isAnswerCall,
             waitingList,
-            tableList,
-            setIncomingCallCount
+            tableList
         } = this.props;
         const { separator, tile } = classes;
 
@@ -234,7 +232,7 @@ class TelebetList extends React.Component {
         } else {
             panel = (
                 <GridListBase list={channelList} tileClass={tile}>
-                    <TelebetTile joinChannel={joinChannel} tableList={tableList} setIncomingCallCount={setIncomingCallCount} />
+                    <TelebetTile joinChannel={joinChannel} tableList={tableList} />
                 </GridListBase>
             );
         }
@@ -264,8 +262,7 @@ TelebetList.propTypes = {
     channelList: PropTypes.array,
     isAnswerCall: PropTypes.bool,
     waitingList: PropTypes.array,
-    tableList: PropTypes.array,
-    setIncomingCallCount: PropTypes.func
+    tableList: PropTypes.array
 }
 
 const StyledTelebetList = withStyles(styles)(TelebetList);
@@ -292,8 +289,4 @@ const mapStateToProps = state => {
     });
 };
 
-const mapDispatchToProps = dispatch => ({
-    setIncomingCallCount: count => dispatch(setIncomingCallCount(count))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(StyledTelebetList);
+export default connect(mapStateToProps, null)(StyledTelebetList);

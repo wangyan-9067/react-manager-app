@@ -4,7 +4,21 @@ import dataAPI from '../services/Data/dataAPI';
 import nullGateAPI from '../services/NullGate/nullGateAPI';
 import { setManagerCredential, setIsUserAuthenticated, resetAction } from '../actions/app';
 import { store } from '../store';
+import { USER_STATE } from '../constants';
 
+export function isAnchorCalling(item) {
+    const { anchorState } = item;
+    const { CONNECTED } = USER_STATE;
+
+    return anchorState > CONNECTED;
+}
+
+export function isClientCalling(item) {
+    const { clientState, anchorState } = item;
+    const { CONNECTED } = USER_STATE;
+
+    return clientState === CONNECTED && anchorState < CONNECTED;
+}
 
 export const mapBetHistoryResult = (loginname, result) => {
     return result.map(item => {
