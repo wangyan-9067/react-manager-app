@@ -13,6 +13,7 @@ import DurationClock from './DurationClock';
 import { USER_STATE } from '../constants';
 import { getLangConfig, isAnchorCalling, isClientCalling } from '../helpers/appUtils';
 import { formatAmount } from '../helpers/utils';
+import {combineStyles, buttonStyles } from '../styles';
 
 const joinRoom = (channelId, joinChannel, isAnchorCall, setIsAnchorCall) => {
     setIsAnchorCall(isAnchorCall);
@@ -22,12 +23,6 @@ const joinRoom = (channelId, joinChannel, isAnchorCall, setIsAnchorCall) => {
 const styles = theme => ({
     cardBase: {
         minHeight: '200px'
-    },
-    emptyCard: {
-        borderRadius: '16px',
-        border: '3px solid #F5F5F5',
-        padding: '30px',
-        backgroundColor: '#F5F5F5'
     },
     disabledCard: {
         borderRadius: '16px',
@@ -56,19 +51,6 @@ const styles = theme => ({
     cardContent: {
         color: '#818181'
     },
-    cardActionButton: {
-        margin: '0 auto',
-        padding: '3px 40px',
-        borderRadius: '60px',
-        fontSize: '20px',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#3970B0',
-        '&:hover': {
-            backgroundColor: '#3970B0',
-            borderColor: '#3970B0',
-        }
-    },
     cardContentText: {
         fontSize: '24px'
     },
@@ -88,7 +70,7 @@ const styles = theme => ({
 
 
 const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTable, currentManagerName, player }) => {
-    const { cardBase, cardContent, cardContentText, client, cardActionButton } = classes;
+    const { cardBase, cardContent, cardContentText, client, actionButton } = classes;
     const { channelId, anchorState, managerName, clientBalance, clientName, anchorName, clientState, vid } = item;
     const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CONNECTED, CONNECTING } = USER_STATE;
     const langConfig = getLangConfig();
@@ -162,7 +144,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
                 <Typography color="inherit" className={cardContentText}>{latestClientBalance > 0 ? `$${formatAmount(latestClientBalance)}` : '-'}</Typography>
             </CardContent>
             <CardActions>
-                <Button variant="contained" size="medium" color="inherit" className={cardActionButton} disabled={!!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchorCalling(item), setIsAnchorCall) }}>
+                <Button variant="contained" size="medium" color="inherit" className={actionButton} disabled={!!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchorCalling(item), setIsAnchorCall) }}>
                     {!managerName && langConfig.BUTTON_LABEL.JOIN_CHANNEL}
                     {(managerName && managerName === currentManagerName) && langConfig.BUTTON_LABEL.CONTINUE_CHANNEL}
                     {(managerName && managerName !== currentManagerName) && langConfig.BUTTON_LABEL.JOIN_CHANNEL_2.replace("{name}", managerName)}
@@ -180,4 +162,4 @@ CallInfoCard.propTypes = {
 };
 
 
-export default withStyles(styles)(CallInfoCard);
+export default withStyles(combineStyles(buttonStyles, styles))(CallInfoCard);

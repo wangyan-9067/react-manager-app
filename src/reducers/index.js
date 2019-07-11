@@ -4,9 +4,9 @@ import voice from './voice';
 import data from './data';
 
 const rootReducer = combineReducers({
-  app,
-  voice,
-  data
+    app,
+    voice,
+    data
 });
 
 export default rootReducer;

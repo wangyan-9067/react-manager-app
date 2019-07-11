@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import GridListBase from '../components/GridListBase';
 import TableTile from '../components/TableTile';
-import DialogWrapper from '../components/DialogWrapper';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 import { toggleDialog } from '../actions/app';
 import { setKickoutClient } from '../actions/data';
 import { setManagerAction } from '../actions/voice';
@@ -37,7 +37,7 @@ class TableList extends React.Component {
 
     kickoutClient = () => {
         const { vid, clientName } = this.props.clientToKickOut;
-        
+
         this.props.setManagerAction(MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
         dataAPI.kickoutClientFromDataServer(vid, clientName);
         this.closeDialog();
@@ -58,18 +58,18 @@ class TableList extends React.Component {
         } = this.props;
         const { root, emptyText } = classes;
         const langConfig = getLangConfig();
-        let panel;        
-        if (isNonEmptyArray(tableList)) {            
+        let panel;
+        if (isNonEmptyArray(tableList)) {
             panel = (
                 <Fragment>
                     <GridListBase list={tableList} bgColor={GRID_ITEM_BG_COLOR}>
                         <TableTile anchorsOnDutyList={anchorsOnDutyList} toggleDialog={toggleDialog} setKickoutClient={setKickoutClient} channelList={channelList} tableLimit={tableLimit} anchorBets={anchorBets} jettons={jettons}/>
                     </GridListBase>
-                    <DialogWrapper
-                        isOpen={openDialog}
-                        onCloseHandler={this.closeDialog}
-                        actionHandler={this.kickoutClient}
-                        content={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_TABLE_OWNER}
+                    <ConfirmationDialog
+                        open={openDialog}
+                        onClose={this.closeDialog}
+                        onConfirm={this.kickoutClient}
+                        message={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_TABLE_OWNER}
                     />
                 </Fragment>
             );
@@ -103,7 +103,7 @@ const mapStateToProps = state => {
     const { voice, data, app } = state;
     const { anchorsOnDutyList, channelList } = voice;
     const { tableList, clientToKickOut, tableLimit, anchorBets, jettons } = data;
-    const { openDialog } = app;    
+    const { openDialog } = app;
     return ({
         anchorsOnDutyList,
         channelList,
@@ -119,7 +119,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     toggleDialog: toggle => dispatch(toggleDialog(toggle)),
     setManagerAction: action => dispatch(setManagerAction(action)),
-    setKickoutClient: data => dispatch(setKickoutClient(data))    
+    setKickoutClient: data => dispatch(setKickoutClient(data))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledTableList);

@@ -63,7 +63,6 @@ class DataAPI {
 
         const { SUCCESS, ERR_NO_LOGIN } = CONSTANTS.GAME_SERVER_RESPONSE_CODES;
         const { tableList } = store.getState().data;
-        const { currentChannelId } = store.getState().voice;
 
         switch (evt.data.respId) {
             case PROTOCOL.CDS_OPERATOR_LOGIN_R:

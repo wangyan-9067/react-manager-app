@@ -20,52 +20,6 @@ const styles = {
         border: '3px solid #F5F5F5',
         padding: '30px',
         backgroundColor: '#F5F5F5'
-    },
-    card: {
-        borderRadius: '16px',
-        border: '3px solid #FD0100',
-        padding: '30px 10px',
-        backgroundColor: '#F5F5F5'
-    },
-    anchorCard: {
-        borderRadius: '16px',
-        border: '3px solid #3970B0',
-        padding: '30px 10px',
-        backgroundColor: '#F5F5F5'
-    },
-    playingCard: {
-        borderRadius: '16px',
-        border: '3px solid #F5F5F5',
-        padding: '30px 10px',
-        backgroundColor: '#F5F5F5'
-    },
-    cardContent: {
-        color: '#818181'
-    },
-    cardActionButton: {
-        margin: '0 auto',
-        padding: '3px 40px',
-        borderRadius: '60px',
-        fontSize: '20px',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#3970B0',
-        '&:hover': {
-            backgroundColor: '#3970B0',
-            borderColor: '#3970B0',
-        }
-    },
-    cardContentText: {
-        fontSize: '24px'
-    },
-    client: {
-        fontWeight: 'bold',
-    },
-    player: {
-        color: '#FD0100'
-    },
-    anchor: {
-        color: '#3970B0'
     }
 };
 

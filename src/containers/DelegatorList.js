@@ -16,6 +16,7 @@ import ToggleButtonGridList from '../components/ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 import { getLangConfig } from '../helpers/appUtils';
 import voiceAPI from '../services/Voice/voiceAPI';
+import { combineStyles, dialogStyles, buttonStyles } from '../styles';
 
 const styles = () => ({
     root: {
@@ -36,33 +37,12 @@ const styles = () => ({
         fontWeight: 'bold',
         marginTop: '0.3rem'
     },
-    operationButton: {
-        width: '120px',
-        margin: '0 5px',
-        padding: '3px 20px',
-        fontSize: '1.125rem',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#1F5FA6',
-        '&:hover': {
-            backgroundColor: '#1F5FA6',
-            borderColor: '#1F5FA6',
-        }
-    },
     emptyAnchorCardRoot: {
         width: '100%'
     },
     emptyText: {
         fontSize: '1.1rem',
         color: '#656565'
-    },
-    dialogPaper: {
-        width: '100%'
-    },
-    dialogTitle: {
-        color: '#656565',
-        fontSize: '1.25rem',
-        fontWeight: 'bold'
     }
 });
 
@@ -79,7 +59,7 @@ const DelegatorList = ({
         root,
         grow,
         headerText,
-        operationButton,
+        addUserButton,
         emptyAnchorCardRoot,
         emptyText,
         dialogPaper,
@@ -129,7 +109,7 @@ const DelegatorList = ({
                 variant="contained"
                 size="medium"
                 color="inherit"
-                className={operationButton}
+                className={addUserButton}
                 onClick={() => {
                     setSelected();
                     setIsEdit(false);
@@ -186,7 +166,7 @@ DelegatorList.proptype = {
     toggleDialog: PropTypes.func
 };
 
-const StyledDelegatorList = withStyles(styles)(DelegatorList);
+const StyledDelegatorList = withStyles(combineStyles(dialogStyles, buttonStyles, styles))(DelegatorList);
 
 const mapStateToProps = state => {
     const { delegatorList } = state.voice;

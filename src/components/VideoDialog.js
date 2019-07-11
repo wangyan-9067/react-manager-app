@@ -10,11 +10,11 @@ import Grid from '@material-ui/core/Grid';
 import MediaElement from './MediaElement';
 import { CONFIG, ENV } from '../config';
 
-const styles = theme => ({
+const styles = {
     dialogPaper: {
         maxWidth: '700px'
     }
-  });
+};
 
 class VideoDialog extends React.Component {
     render() {

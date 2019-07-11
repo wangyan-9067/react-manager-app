@@ -14,111 +14,111 @@ import WarningIcon from '@material-ui/icons/Warning';
 import { withStyles } from '@material-ui/core/styles';
 
 const variantIcon = {
-  success: CheckCircleIcon,
-  warning: WarningIcon,
-  error: ErrorIcon,
-  info: InfoIcon,
+    success: CheckCircleIcon,
+    warning: WarningIcon,
+    error: ErrorIcon,
+    info: InfoIcon,
 };
 
 const styles = theme => ({
-  success: {
-    backgroundColor: green[600],
-  },
-  error: {
-    backgroundColor: theme.palette.error.dark,
-  },
-  info: {
-    backgroundColor: theme.palette.primary.dark,
-  },
-  warning: {
-    backgroundColor: amber[700],
-  },
-  icon: {
-    fontSize: 20,
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing.unit,
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-  },
+    success: {
+        backgroundColor: green[600],
+    },
+    error: {
+        backgroundColor: theme.palette.error.dark,
+    },
+    info: {
+        backgroundColor: theme.palette.primary.dark,
+    },
+    warning: {
+        backgroundColor: amber[700],
+    },
+    icon: {
+        fontSize: 20,
+    },
+    iconVariant: {
+        opacity: 0.9,
+        marginRight: theme.spacing.unit,
+    },
+    message: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 });
 
 const MessageBarContent = ({ classes, className, message, isOpen, onClose, variant, duration, ...other }) => {
-  const Icon = variantIcon[variant];
+    const Icon = variantIcon[variant];
 
-  return (
-    <Snackbar
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}
-      open={isOpen}
-      autoHideDuration={duration}
-      onClose={onClose}
-    >
-      <SnackbarContent
-        className={classNames(classes[variant], className)}
-        aria-describedby="client-snackbar"
-        message={
-          <span id="client-snackbar" className={classes.message}>
-            <Icon className={classNames(classes.icon, classes.iconVariant)} />
-            {message}
-          </span>
-        }
-        action={[
-          <IconButton
-            key="close"
-            aria-label="Close"
-            color="inherit"
-            className={classes.close}
-            onClick={onClose}
-          >
-            <CloseIcon className={classes.icon} />
-          </IconButton>,
-        ]}
-        {...other}
-      />
-    </Snackbar>
-  );
+    return (
+        <Snackbar
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+            }}
+            open={isOpen}
+            autoHideDuration={duration}
+            onClose={onClose}
+        >
+            <SnackbarContent
+                className={classNames(classes[variant], className)}
+                aria-describedby="client-snackbar"
+                message={
+                    <span id="client-snackbar" className={classes.message}>
+                        <Icon className={classNames(classes.icon, classes.iconVariant)} />
+                        {message}
+                    </span>
+                }
+                action={[
+                    <IconButton
+                        key="close"
+                        aria-label="Close"
+                        color="inherit"
+                        className={classes.close}
+                        onClick={onClose}
+                    >
+                        <CloseIcon className={classes.icon} />
+                    </IconButton>,
+                ]}
+                {...other}
+            />
+        </Snackbar>
+    );
 }
 
 MessageBarContent.propTypes = {
-  classes: PropTypes.object.isRequired,
-  className: PropTypes.string,
-  message: PropTypes.node.isRequired,
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func,
-  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
-  duration: PropTypes.number
+    classes: PropTypes.object.isRequired,
+    className: PropTypes.string,
+    message: PropTypes.node.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func,
+    variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
+    duration: PropTypes.number
 };
 
 const MessageBarContentWrapper = withStyles(styles)(MessageBarContent);
 
 const MessageBar = ({ className, variant, message, duration, isOpen, onClose }) => {
-  return (
-    <div>
-      <MessageBarContentWrapper
-        variant={variant || 'success'}
-        className={className || ''}
-        message={message || ''}
-        duration={duration || null}
-        isOpen={isOpen || false}
-        onClose={onClose}
-      />
-    </div>
-  );
+    return (
+        <div>
+            <MessageBarContentWrapper
+                variant={variant || 'success'}
+                className={className || ''}
+                message={message || ''}
+                duration={duration || null}
+                isOpen={isOpen || false}
+                onClose={onClose}
+            />
+        </div>
+    );
 }
 
 MessageBar.propTypes = {
-  className: PropTypes.object,
-  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
-  message: PropTypes.string.isRequired,
-  duration: PropTypes.number,
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func
+    className: PropTypes.object,
+    variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
+    message: PropTypes.string.isRequired,
+    duration: PropTypes.number,
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func
 };
 
 export default MessageBar;

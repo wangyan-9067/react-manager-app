@@ -17,6 +17,7 @@ import { setManagerAction, setFormValues } from '../actions/voice';
 import { MANAGER_ACTION_TYPE } from '../constants';
 import { getLangConfig } from '../helpers/appUtils';
 import voiceAPI from '../services/Voice/voiceAPI';
+import { combineStyles, dialogStyles, buttonStyles } from '../styles';
 
 const styles = () => ({
     root: {
@@ -37,33 +38,12 @@ const styles = () => ({
         fontWeight: 'bold',
         marginTop: '0.3rem'
     },
-    operationButton: {
-        width: '120px',
-        margin: '0 5px',
-        padding: '3px 20px',
-        fontSize: '1.125rem',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#1F5FA6',
-        '&:hover': {
-            backgroundColor: '#1F5FA6',
-            borderColor: '#1F5FA6',
-        }
-    },
     emptyAnchorCardRoot: {
         width: '100%'
     },
     emptyText: {
         fontSize: '1.1rem',
         color: '#656565'
-    },
-    dialogPaper: {
-        width: '100%'
-    },
-    dialogTitle: {
-        color: '#656565',
-        fontSize: '1.25rem',
-        fontWeight: 'bold'
     }
 });
 
@@ -83,7 +63,7 @@ const ManagerList = ({
         root,
         grow,
         headerText,
-        operationButton,
+        addUserButton,
         emptyAnchorCardRoot,
         emptyText,
         dialogPaper,
@@ -146,7 +126,7 @@ const ManagerList = ({
                 variant="contained"
                 size="medium"
                 color="inherit"
-                className={operationButton}
+                className={addUserButton}
                 onClick={() => {
                     setSelected();
                     setIsEdit(false);
@@ -193,7 +173,7 @@ const ManagerList = ({
                     setIsEdit(true);
                 }}
                 onClickHandler={onClickHandler}
-            />           
+            />
         </div>
     );
 }
@@ -207,7 +187,7 @@ ManagerList.proptype = {
     setFormValues: PropTypes.func
 };
 
-const StyledManagerList = withStyles(styles)(ManagerList);
+const StyledManagerList = withStyles(combineStyles(dialogStyles, buttonStyles, styles))(ManagerList);
 
 const mapStateToProps = state => {
     const { managerList } = state.voice;
