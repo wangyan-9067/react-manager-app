@@ -20,8 +20,6 @@ const styles = theme => ({
         flexWrap: 'wrap',
         justifyContent: 'space-around',
         overflow: 'hidden',
-        // padding: '5px',
-        // backgroundColor: '#FFFFFF',
         borderRadius: '10px'
     },
     pageBorder: {
@@ -32,95 +30,7 @@ const styles = theme => ({
         top: 0,
         left: 0,
         width: '100%',
-        height: '100%',
-        // backgroundColor: '#F5F5F5',
-        // borderRadius: '16px',
-        // minHeight: '200px'
-    },
-    answerCallPanel: {
-        display: 'flex',
-        borderRadius: '10px',
-        width: '90%',
-        margin: '50px 0 35px 0'
-    },
-    answerCallPanelLeftRoot: {
-        width: '70%',
-        borderRadius: '10px 0px 0px 10px'
-    },
-    answerCallPanelLeft: {
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#FD0100',
-        color: '#FFFFFF',
-        padding: '30px 0'
-    },
-    answerCallPanelLeftAnchor: {
-        backgroundColor: '#1779E6'
-    },
-    answerCallPanelLeftText: {
-        fontWeight: 'bold',
-        fontSize: '2rem'
-    },
-    answerCallPanelRightRoot: {
-        width: '30%',
-        borderRadius: '0px 10px 10px 0px'
-    },
-    answerCallPanelRight: {
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        textAlign: 'left',
-        backgroundColor: '#D8D8D8',
-        color: '#797979',
-        padding: '35px 30px 0 30px'
-    },
-    answerCallPanelRightText: {
-        fontWeight: 'bold',
-        fontSize: '1.125rem'
-    },
-    answerCallPanelRightTextValue: {
-        padding: '10px'
-    },
-    actionButtonWrapper: {
-        width: '100%',
-        minWidth: '750px'
-    },
-    actionButton: {
-        margin: '5px',
-        padding: '3px 20px',
-        borderRadius: '60px',
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#0F58A7',
-        '&:hover': {
-            backgroundColor: '#0F58A7',
-            borderColor: '#0F58A7',
-        }
-    },
-    mutingButton: {
-        backgroundColor: '#FD0100',
-        '&:hover': {
-            backgroundColor: '#FD0100',
-            borderColor: '#FD0100',
-        }
-    },
-    blacklistButton: {
-        backgroundColor: '#4A4B4F',
-        '&:hover': {
-            backgroundColor: '#4A4B4F',
-            borderColor: '#4A4B4F',
-        }
-    },
-    cancelButton: {
-        backgroundColor: '#AAAAAA',
-        '&:hover': {
-            backgroundColor: '#AAAAAA',
-            borderColor: '#AAAAAA',
-        }
+        height: '100%'
     },
     separator: {
         padding: '30px',
@@ -128,42 +38,6 @@ const styles = theme => ({
         top: 0,
         width: '100%',
         height: '100%'
-    },
-    icon: {
-        marginRight: theme.spacing.unit,
-        fontSize: 32
-    },
-    dialogPaper: {
-        width: '100%'
-    },
-    dialogActionButton: {
-        fontSize: '1.125rem',
-    },
-    dialogTitle: {
-        color: '#7B7B7B',
-        fontSize: '1.25rem',
-        fontWeight: 'bold'
-    },
-    dialogActionsRoot: {
-        borderTop: '1px solid #C8C8C8',
-        paddingTop: '10px',
-        justifyContent: 'center'
-    },
-    dialogActionsRootNoBorder: {
-        paddingTop: '10px',
-        justifyContent: 'center'
-    },
-    dialogContent: {
-        fontWeight: 'bold',
-        fontSize: '1.125rem',
-        textAlign: 'center',
-        color: '#7E7E7E'
-    },
-    show: {
-        display: 'inline-flex'
-    },
-    hide: {
-        display: 'none'
     }
 });
 
@@ -227,7 +101,7 @@ class TelebetList extends React.Component {
         let panel;
         if (isAnswerCall) {
             panel = (
-                <AnswerCallPanel classes={classes} />
+                <AnswerCallPanel />
             );
         } else {
             panel = (

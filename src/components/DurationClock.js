@@ -8,23 +8,23 @@ import moment from 'moment';
  * @param {number} waitingStartTime in seconds
  */
 const DurationClock = ({ waitingStartTime }) => {
-  const [duration, setDuration] = useState(0);
+    const [duration, setDuration] = useState(0);
 
-  useEffect(() => {
-    let timer = setTimeout(() => {
-        setDuration(moment().diff(waitingStartTime * 1000));
-    }, 1000);
+    useEffect(() => {
+        let timer = setTimeout(() => {
+            setDuration(moment().diff(waitingStartTime * 1000));
+        }, 1000);
 
-    return () => {
-        clearTimeout(timer);
-    }
-  });
+        return () => {
+            clearTimeout(timer);
+        }
+    });
 
-  return(
-    <Moment format="HH:mm:ss">
-        {moment.utc(duration)}
-    </Moment>
-  );
+    return (
+        <Moment format="HH:mm:ss">
+            {moment.utc(duration)}
+        </Moment>
+    );
 }
 
 DurationClock.propTypes = {

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 
+import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -10,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import CallEndIcon from '@material-ui/icons/CallEnd';
+import { combineStyles, buttonStyles } from '../styles';
 
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import { getLangConfig } from '../helpers/appUtils';
@@ -19,6 +21,66 @@ import { setIsAnswerCall, setManagerAction } from '../actions/voice';
 import { setToastMessage, setToastVariant, toggleToast } from '../actions/app';
 import voiceAPI from '../services/Voice/voiceAPI';
 import dataAPI from '../services/Data/dataAPI';
+
+const styles = theme => ({
+    answerCallPanel: {
+        display: 'flex',
+        borderRadius: '10px',
+        width: '90%',
+        margin: '50px 0 35px 0'
+    },
+    answerCallPanelLeftRoot: {
+        width: '70%',
+        borderRadius: '10px 0px 0px 10px'
+    },
+    answerCallPanelLeft: {
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#FD0100',
+        color: '#FFFFFF',
+        padding: '30px 0'
+    },
+    answerCallPanelLeftAnchor: {
+        backgroundColor: '#1779E6'
+    },
+    answerCallPanelLeftText: {
+        fontWeight: 'bold',
+        fontSize: '2rem'
+    },
+    answerCallPanelRightRoot: {
+        width: '30%',
+        borderRadius: '0px 10px 10px 0px'
+    },
+    answerCallPanelRight: {
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        textAlign: 'left',
+        backgroundColor: '#D8D8D8',
+        color: '#797979',
+        padding: '35px 30px 0 30px'
+    },
+    answerCallPanelRightText: {
+        fontWeight: 'bold',
+        fontSize: '1.125rem'
+    },
+    answerCallPanelRightTextValue: {
+        padding: '10px'
+    },
+    show: {
+        display: 'inline-flex'
+    },
+    hide: {
+        display: 'none'
+    },
+    icon: {
+        marginRight: theme.spacing.unit,
+        fontSize: 32
+    }
+});
 
 class AnswerCallPanel extends React.Component {
     state = {
@@ -143,7 +205,7 @@ class AnswerCallPanel extends React.Component {
             answerCallPanelRightTextValue,
             actionButtonWrapper,
             actionButton,
-            blacklistButton,
+            blackButton,
             icon
         } = classes;
         const { MUTE } = MUTE_STATE;
@@ -185,11 +247,11 @@ class AnswerCallPanel extends React.Component {
         const answerCallPanelClass = classNames.bind(classes);
         const clientMuteButtonClass = answerCallPanelClass({
             actionButton: true,
-            mutingButton: clientMute === MUTE
+            redButton: clientMute === MUTE
         });
         const anchorMuteButtonClass = answerCallPanelClass({
             actionButton: true,
-            mutingButton: anchorMute === MUTE,
+            redButton: anchorMute === MUTE,
             show: isAnchorCall,
             hide: !isAnchorCall
         });
@@ -222,7 +284,7 @@ class AnswerCallPanel extends React.Component {
                     <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onLeaveChannelClicked}><CallEndIcon className={icon} />{langConfig.BUTTON_LABEL.LEAVE_CHANNEL}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={actionButton} disabled={vid !== ''} onClick={this.onOpenAssignTableDialogClicked}>{langConfig.BUTTON_LABEL.ASSIGN_TABLE}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onKickoutClientClicked}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
-                    <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blacklistButton)} onClick={this.onBlackListClicked}>{langConfig.BUTTON_LABEL.BLACKLIST_PLAYER}</Button>
+                    <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blackButton)} onClick={this.onBlackListClicked}>{langConfig.BUTTON_LABEL.BLACKLIST_PLAYER}</Button>
                 </div>
                 { /** Kickout Client Dialog*/}
                 <ConfirmationDialog
@@ -284,4 +346,6 @@ const mapDispatchToProps = dispatch => ({
     setManagerAction: action => dispatch(setManagerAction(action))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AnswerCallPanel);
+const combinedStyles = combineStyles(buttonStyles, styles);
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(combinedStyles)(AnswerCallPanel));

@@ -7,36 +7,36 @@ import Typography from '@material-ui/core/Typography';
 import CustomAvatar from './CustomAvatar';
 
 const styles = {
-  label: {
-    marginLeft: '10px',
-    fontSize: '1.125rem',
-    fontWeight: 'bold'
-  }
+    label: {
+        marginLeft: '10px',
+        fontSize: '1.125rem',
+        fontWeight: 'bold'
+    }
 };
 
 const UserTile = ({ classes, item }) => {
-  const { label } = classes;
-  const { loginname, nickname, url } = item;
-  // TODO: move to separate file
-  const defaultIconUrl = 'account-circle.svg';
-  const defaultTitle = loginname;
+    const { label } = classes;
+    const { loginname, nickname, url } = item;
+    // TODO: move to separate file
+    const defaultIconUrl = 'account-circle.svg';
+    const defaultTitle = loginname;
 
-  return (
-    <Fragment>
-      <CustomAvatar 
-        imgUrl={url || defaultIconUrl}
-        label={loginname}
-      />
-      <Tooltip title={nickname || defaultTitle}>
-        <Typography color="inherit" align="center" className={label} noWrap={true}>{nickname || defaultTitle}</Typography>
-      </Tooltip>
-    </Fragment>
-  );
+    return (
+        <Fragment>
+            <CustomAvatar
+                imgUrl={url || defaultIconUrl}
+                label={loginname}
+            />
+            <Tooltip title={nickname || defaultTitle}>
+                <Typography color="inherit" align="center" className={label} noWrap={true}>{nickname || defaultTitle}</Typography>
+            </Tooltip>
+        </Fragment>
+    );
 }
 
 UserTile.propTypes = {
-  classes: PropTypes.object.isRequired,
-  item: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
+    item: PropTypes.object.isRequired
 };
 
 export default withStyles(styles)(UserTile);

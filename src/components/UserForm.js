@@ -10,8 +10,9 @@ import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
-import DialogWrapper from './DialogWrapper';
+import ConfirmationDialog from './ConfirmationDialog';
 import { getLangConfig } from '../helpers/appUtils';
+import { combineStyles, buttonStyles } from '../styles';
 
 const styles = theme => ({
     managerActionDialog: {
@@ -51,27 +52,10 @@ const styles = theme => ({
     formControl: {
         margin: theme.spacing.unit,
     },
-    actionButton: {
-        margin: '10px 5px',
-        padding: '3px 40px',
-        borderRadius: '60px',
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#0F58A7',
-        '&:hover': {
-            backgroundColor: '#0F58A7',
-            borderColor: '#0F58A7',
-        }
-    },
-    dialogActionButton: {
+    actionButtonOverwrite: {
         fontSize: '1.125rem',
-    },
-    dialogCancelButton: {
-        backgroundColor: '#656565'
-    },
-    dialogDeleteButton: {
-        backgroundColor: '#FD0100'
+        margin: '10px 5px',
+        padding: '3px 40px'
     }
 });
 
@@ -271,7 +255,7 @@ class UserForm extends React.Component {
                 this.resetField(tel);
             }
 
-            if (tel.isValid) {                
+            if (tel.isValid) {
                 if (!validator.matches(tel.value, /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g)) {
                     isGood = this.setField(tel, false, langConfig.USER_FORM.PHONE_NUMERIC);
                 } else {
@@ -321,9 +305,29 @@ class UserForm extends React.Component {
         this.setState(...this.formDefaults);
     }
 
+    onDialogClose = () => {
+        this.props.toggleDialog(false);
+    }
+
+    onDialogConfirm = () => {
+        const { loginname, nickname, password, iconUrl, level, tel } = this.state;
+        const { deleteUser, setOpenAddDialog } = this.props;
+
+        this.setFormValues({
+            loginname: loginname.value,
+            nickname: nickname.value,
+            password: password.value,
+            iconUrl: iconUrl.value,
+            level: level.value,
+            tel: tel.value
+        });
+        deleteUser(loginname.value);
+        setOpenAddDialog(false);
+    }
+
     render() {
         const { loginname, nickname, password, passwordConfirm, iconUrl, level, tel } = this.state;
-        const { classes, setOpenAddDialog, isEdit, deleteUser, openDialog, toggleDialog, isManager, isDelegator, isAnchor } = this.props;        
+        const { classes, setOpenAddDialog, toggleDialog, isEdit, openDialog, isManager, isDelegator, isAnchor } = this.props;
         const {
             managerActionDialog,
             managerActionFormLabel,
@@ -334,9 +338,9 @@ class UserForm extends React.Component {
             managerActionDialogSectionLeft,
             managerActionDialogSectionRight,
             actionButton,
-            dialogActionButton,
-            dialogCancelButton,
-            dialogDeleteButton
+            actionButtonOverwrite,
+            darkGrayButton,
+            redButton
         } = classes;
         const langConfig = getLangConfig();
 
@@ -452,8 +456,8 @@ class UserForm extends React.Component {
                                         inputProps={{
                                             'aria-label': 'tel',
                                             'placeholder': '+99-99999999'
-                                        }}                                                                            
-                                        name="tel"                                        
+                                        }}
+                                        name="tel"
                                         value={tel.value}
                                         onChange={this.onChange}
                                     />
@@ -462,30 +466,17 @@ class UserForm extends React.Component {
                             )}
                         </div>
                         <div className={managerActionDialogSectionRight}>
-                            <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
-                            <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogCancelButton)} onClick={() => { setOpenAddDialog(false); }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
-                            <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton, dialogDeleteButton)} disabled={!isEdit} onClick={() => { toggleDialog(true); }}>{langConfig.BUTTON_LABEL.DELETE}</Button>
+                            <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(actionButton, actionButtonOverwrite)}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
+                            <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, actionButtonOverwrite, darkGrayButton)} onClick={() => { setOpenAddDialog(false); }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
+                            <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, actionButtonOverwrite, redButton)} disabled={!isEdit} onClick={() => { toggleDialog(true); }}>{langConfig.BUTTON_LABEL.DELETE}</Button>
                         </div>
                     </div>
                 </form>
-                <DialogWrapper
-                    isOpen={openDialog}
-                    onCloseHandler={() => {
-                        toggleDialog(false);
-                    }}
-                    actionHandler={() => {
-                        this.setFormValues({
-                            loginname: loginname.value,
-                            nickname: nickname.value,
-                            password: password.value,
-                            iconUrl: iconUrl.value,
-                            level: level.value,
-                            tel: tel.value
-                        });
-                        deleteUser(loginname.value);
-                        setOpenAddDialog(false);
-                    }}
-                    content={langConfig.DIALOG_LABEL.CONFIRM_DELETE}
+                <ConfirmationDialog
+                    open={openDialog}
+                    onClose={this.onDialogClose}
+                    onConfirm={this.onDialogConfirm}
+                    message={langConfig.DIALOG_LABEL.CONFIRM_DELETE}
                 />
             </div>
         );
@@ -504,4 +495,4 @@ UserForm.proptype = {
     isDelegator: PropTypes.bool.isRequired
 };
 
-export default withStyles(styles)(UserForm);
+export default withStyles(combineStyles(buttonStyles, styles))(UserForm);

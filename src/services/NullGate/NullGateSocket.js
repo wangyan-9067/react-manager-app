@@ -5,18 +5,18 @@ import GetBetRecordsResp from './responses/GetBetRecordsResp';
 import { CONFIG, ENV } from '../../config';
 
 export default class NullGateSocket extends Socket.WebSocketBase {
-	constructor() {
-		const config = {
-			tag: '[NullGateSocket]'
-		};
-		super(config);
-	}
+    constructor() {
+        const config = {
+            tag: '[NullGateSocket]'
+        };
+        super(config);
+    }
 
-	getUrlList() {
-		return [CONFIG.NULL_GATE_SERVER_URL[ENV]];
-	}
+    getUrlList() {
+        return [CONFIG.NULL_GATE_SERVER_URL[ENV]];
+    }
 
-	setupRespClazzMap() {
-		this.respClazzMap.set(GATE_FORWARD_MSG, GetBetRecordsResp);
-	}
+    setupRespClazzMap() {
+        this.respClazzMap.set(GATE_FORWARD_MSG, GetBetRecordsResp);
+    }
 }

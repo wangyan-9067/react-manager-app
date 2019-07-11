@@ -1,3 +1,8 @@
+/**
+ * Combine style objects to a single object. So that we can share some styles between components.
+ *
+ * @e.g. let styles = combineStyles(buttonStyles, cardStyles, pageStyles, componentStyles);
+ */
 function combineStyles(...styles) {
     return function CombineStyles(theme) {
         const outStyles = styles.map((arg) => {

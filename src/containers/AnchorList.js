@@ -18,6 +18,7 @@ import { setManagerAction, setFormValues } from '../actions/voice';
 import { getLangConfig } from '../helpers/appUtils';
 import { MANAGER_ACTION_TYPE } from '../constants';
 import voiceAPI from '../services/Voice/voiceAPI';
+import { combineStyles, dialogStyles, buttonStyles } from '../styles';
 
 const styles = () => ({
     root: {
@@ -38,33 +39,12 @@ const styles = () => ({
         fontWeight: 'bold',
         marginTop: '0.3rem'
     },
-    operationButton: {
-        width: '120px',
-        margin: '0 5px',
-        padding: '3px 20px',
-        fontSize: '1.125rem',
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-        backgroundColor: '#1F5FA6',
-        '&:hover': {
-            backgroundColor: '#1F5FA6',
-            borderColor: '#1F5FA6',
-        }
-    },
     emptyAnchorCardRoot: {
         width: '100%'
     },
     emptyText: {
         fontSize: '1.1rem',
         color: '#656565'
-    },
-    dialogPaper: {
-        width: '100%'
-    },
-    dialogTitle: {
-        color: '#656565',
-        fontSize: '1.25rem',
-        fontWeight: 'bold'
     }
 });
 
@@ -85,7 +65,7 @@ const AnchorList = ({
         root,
         grow,
         headerText,
-        operationButton,        
+        addUserButton,
         emptyAnchorCardRoot,
         emptyText,
         dialogPaper,
@@ -138,10 +118,10 @@ const AnchorList = ({
         <div className={root}>
             <Typography color="inherit" align="left" className={headerText}>{langConfig.ANCHOR_LIST_LABEL.SELECT_ANCHOR}</Typography>
             <div className={grow} />
-            <Button variant="contained" size="medium" color="inherit" className={operationButton} onClick={() => { 
+            <Button variant="contained" size="medium" color="inherit" className={addUserButton} onClick={() => {
                 setSelected();
                 setIsEdit(false);
-                setOpenAddAnchorDialog(true); 
+                setOpenAddAnchorDialog(true);
                 setManagerAction(ADD_ANCHOR);
             }}>{langConfig.BUTTON_LABEL.ADD_ANCHOR}</Button>
             {panel}
@@ -185,7 +165,7 @@ const AnchorList = ({
                 }}
                 onClickHandler={onClickHandler}
             />
-            
+
         </div>
     );
 }
@@ -200,7 +180,7 @@ AnchorList.proptype = {
     setFormValues: PropTypes.func
 };
 
-const StyledAnchorList = withStyles(styles)(AnchorList);
+const StyledAnchorList = withStyles(combineStyles(dialogStyles, buttonStyles, styles))(AnchorList);
 
 const mapStateToProps = state => {
     const { anchorList, anchorsOnDutyList } = state.voice;
