@@ -1,5 +1,5 @@
 {
-  "ENV": "QA",
+  "ENV": "UAT",
   "DATA_SERVER_URL": {
     "DEV": "wss://172.20.2.101:5224",
     "QA": "wss://172.20.2.204:5877",
@@ -25,6 +25,6 @@
     "QA": "https://re.010cdn.com/record/mp4:",
     "UAT": "https://re.010cdn.com/record/mp4:"
   },
-  "VERSION": "v0.0.6"
+  "VERSION": "v0.0.7"
 }
 
