@@ -51,7 +51,7 @@ class AssignTableDialog extends React.Component {
             <MuiThemeProvider theme={toggleButtonTheme}>
                 <Dialog
                     open={this.props.openAssignTableDialog}
-                    onClose={this.closeAssignTableDialog}
+                    onClose={this.props.closeAssignTableDialog}
                     aria-labelledby="responsive-dialog-title"
                     classes={{ paper: dialogPaper }}>
                     <DialogTitle id="responsive-dialog-title">
@@ -72,7 +72,7 @@ class AssignTableDialog extends React.Component {
                     </DialogContent>
                     <DialogActions classes={{ root: dialogActionsRoot }}>
                         <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={this.onAssignTableClicked}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
-                        <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={this.closeAssignTableDialog}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
+                        <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={this.props.closeAssignTableDialog}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
                     </DialogActions>
                 </Dialog>
             </MuiThemeProvider>
