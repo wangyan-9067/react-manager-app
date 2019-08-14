@@ -71,7 +71,7 @@ const styles = theme => ({
 
 const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTable, currentManagerName, player }) => {
     const { cardBase, cardContent, cardContentText, client, actionButton } = classes;
-    const { channelId, anchorState, managerName, clientBalance, clientName, anchorName, clientState, vid } = item;
+    const { channelId, anchorState, managerName, clientBalance, currency, clientName, anchorName, clientState, vid } = item;
     const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CONNECTED, CONNECTING } = USER_STATE;
     const langConfig = getLangConfig();
     const cardClass = isClientCalling(item) ? 'card' : isAnchorCalling(item) ? 'anchorCard' : 'playingCard';
@@ -141,7 +141,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
                 {[CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT].indexOf(anchorState) > -1 && anchorStateText ? (
                     <Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.REASON} {anchorStateText}</Typography>
                 ) : null}
-                <Typography color="inherit" className={cardContentText}>{latestClientBalance > 0 ? `$${formatAmount(latestClientBalance)}` : '-'}</Typography>
+                <Typography color="inherit" className={cardContentText}>{latestClientBalance > 0 ? `${formatAmount(latestClientBalance, currency)}` : '-'}</Typography>
             </CardContent>
             <CardActions>
                 <Button variant="contained" size="medium" color="inherit" className={actionButton} disabled={!!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchorCalling(item), setIsAnchorCall) }}>

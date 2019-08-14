@@ -5,7 +5,8 @@ export const VALUE_LENGTH = {
     NICK_NAME: 16,
     VID: 4,
     TEL: 20,
-    URL: 200
+    URL: 200,
+    CURRENCY: 6
 };
 
 export const RESPONSE_CODES = {

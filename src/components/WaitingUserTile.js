@@ -12,6 +12,7 @@ import { combineStyles, buttonStyles } from '../styles';
 
 import { getLangConfig } from '../helpers/appUtils';
 import DurationClock from '../components/DurationClock';
+import dataAPI from '../services/Data/dataAPI';
 
 const styles = theme => ({
     root: {
@@ -62,13 +63,13 @@ const styles = theme => ({
 const WaitingForToken = ({ classes, item, waitingStartTime, openAssignTableDialog, openKickLineupDialog }) => {
     const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButtonOverwrite, actionButton, cardActions } = classes;
     const langConfig = getLangConfig();
-    const { name, balance, limit: { min, max } } = item;
+    const { name, balance, limit: { min, max }, currency } = item;
 
     return (
         <Card className={card}>
             <CardContent className={cardContent} classes={{ root: cardContentRoot }}>
                 <Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} noWrap={true} align="center">{name}</Typography>
-                <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{balance}</Typography>
+                <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{balance} {dataAPI.getCurrencyName(currency)}</Typography>
                 <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{`${min} - ${max}`}</Typography>
                 <CardActions className={cardActions}>
                     <Button variant="contained" size="small" color="inherit" className={classNames(actionButton, actionButtonOverwrite)} onClick={() => { openAssignTableDialog(name); }}>{langConfig.BUTTON_LABEL.ASSIGN_TOKEN}</Button>

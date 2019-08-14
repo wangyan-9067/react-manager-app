@@ -13,6 +13,7 @@ export default class ChannelListResp extends Socket.ResponseBase {
                 clientName: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),
                 clientNickName: bytes.readUTFBytes(VALUE_LENGTH.NICK_NAME),
                 clientBalance: bytes.readDouble(),
+                currency: bytes.readUTFBytes(VALUE_LENGTH.CURRENCY),
                 clientMute: bytes.readByte(), // 0 - mute; 1 - unmute;
                 clientState: bytes.readUnsignedInt(), // 0 - idol; 1 - connecting; 2 - connected; 3 - waiting manager;
                 anchorName: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),

@@ -403,6 +403,10 @@ class DataAPI {
             voiceAPI.blacklistClient(currentChannelId);
         }
     }
+
+    getCurrencyName(currency) {
+        return langConfig.CURRENCY[currency] || currency;
+    }
 }
 
 const dataAPI = new DataAPI();

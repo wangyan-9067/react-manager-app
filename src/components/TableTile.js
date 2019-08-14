@@ -19,6 +19,7 @@ import TextList from './TextList';
 import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS, PLAYTYPE, SUPPORT_PLAYTYPE } from '../constants';
 import { isObject, isNonEmptyArray } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
+import dataAPI from '../services/Data/dataAPI';
 
 const styles = {
     root: {
@@ -221,7 +222,8 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
     const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
     const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum, startDatetime } = item;
     const currentChannel = channelList.find(channel => channel.vid === vid);
-    const currentAnchorName = isObject(currentChannel) && currentChannel.anchorState === 2 ? currentChannel.anchorName : '-';
+    const { anchorName = '-', currency = '' } = currentChannel || {};
+    const currencyName = dataAPI.getCurrencyName(currency);
     const tableLimitList = getTableLimitList(vid, tableLimit);
     const langConfig = getLangConfig();
 
@@ -264,7 +266,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
                 <Typography color="inherit"><span>{langConfig.SEAT_NUMBER}</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>
                 <Typography color="inherit"><span>{langConfig.GAME_CODE}</span><span className={tableValue}>{gameCode || '-'}</span></Typography>
                 <Typography color="inherit"><span>{langConfig.DEALER}</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
-                <Typography color="inherit"><span>{langConfig.ANCHOR}</span><span className={tableValue}>{/* getAnchorByVid(vid, anchorsOnDutyList) */}{currentAnchorName}</span></Typography>
+                <Typography color="inherit"><span>{langConfig.ANCHOR}</span><span className={tableValue}>{/* getAnchorByVid(vid, anchorsOnDutyList) */}{anchorName}</span></Typography>
                 {
                     tableLimitList.length > 0 ?
                         <Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
@@ -276,8 +278,8 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
                 <Typography color="inherit"><span>{langConfig.TABLE_OWNER}</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
                 <Typography color="inherit"><span>{langConfig.GAME_STATUS}</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
                 <Typography color="inherit"><span>{langConfig.GAME_TIME}</span><span className={tableValue}>{gameStatus === 1 ? <Stopwatch datetime={startDatetime} duration={1000} /> : '-'}</span></Typography>
-                <Typography color="inherit"><span>{langConfig.GAME_TOTAL_BET}</span><span className={tableValue}>{totalNotValidBet}</span></Typography>
-                <Typography color="inherit"><span>{langConfig.GAME_TOTAL_PAYOUT}</span><span className={classNames(tableValue, textColor)}>{totalPayoutText}</span></Typography>
+                <Typography color="inherit"><span>{langConfig.GAME_TOTAL_BET}</span><span className={tableValue}>{totalNotValidBet} {currencyName}</span></Typography>
+                <Typography color="inherit"><span>{langConfig.GAME_TOTAL_PAYOUT}</span><span className={classNames(tableValue, textColor)}>{totalPayoutText} {currencyName}</span></Typography>
             </CardContent>
             <CardActions>
                 <Button

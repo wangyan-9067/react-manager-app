@@ -12,6 +12,7 @@ export default class WaitingListResp extends Socket.ResponseBase {
                 name: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),
                 waitingStartTime: bytes.readUnsignedInt(),
                 balance: bytes.readDouble(),
+                currency: bytes.readUTFBytes(VALUE_LENGTH.CURRENCY),
                 limit: {
                     min: bytes.readUnsignedInt(),
                     max: bytes.readUnsignedInt()
