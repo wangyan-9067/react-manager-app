@@ -10,7 +10,7 @@
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "cube-egret-polyfill": "^1.0.2",
-    "cube-rtc": "^1.0.5",
+    "cube-rtc": "^1.0.8",
     "cube-socket": "^1.4.24",
     "cube-timer": "^1.1.2",
     "env-cmd": "^8.0.2",
