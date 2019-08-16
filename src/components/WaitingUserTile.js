@@ -44,7 +44,7 @@ const styles = theme => ({
     cardContentMainText: {
         color: '#1779E6',
         fontWeight: 'bold',
-        fontSize: '1.3rem'
+        fontSize: '1rem'
     },
     cardContentSubText: {
         color: '#139727',

@@ -405,7 +405,7 @@ class DataAPI {
     }
 
     getCurrencyName(currency) {
-        return langConfig.CURRENCY[currency] || currency;
+        return langConfig.CURRENCY[currency] || currency || '';
     }
 }
 

@@ -272,7 +272,7 @@ class AnswerCallPanel extends React.Component {
                     </Card>
                     <Card classes={{ root: answerCallPanelRightRoot }}>
                         <CardContent className={answerCallPanelRight}>
-                            <Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.PLAYER}</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography>
+                            {/* <Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.PLAYER}</span><span className={answerCallPanelRightTextValue}>{clientName}</span></Typography> */}
                             <Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.BALANCE}</span><span className={answerCallPanelRightTextValue}>{latestPlayerBalance > 0 ? `${formatAmount(latestPlayerBalance, currency)}` : '-'}</span></Typography>
                             <Typography color="inherit" className={answerCallPanelRightText}><span>{langConfig.TELEBET_LIST_LABEL.TABLE_VID}</span><span className={answerCallPanelRightTextValue}>{vid ? vid : '-'}</span></Typography>
                         </CardContent>

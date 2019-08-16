@@ -53,7 +53,10 @@ const styles = {
     },
     tableValue: {
         fontWeight: 'bold',
-        padding: '10px'
+        padding: '2px',
+        wordWrap: 'break-word',
+        maxWidth: '10rem',
+        display: 'inline-block'
     },
     fieldWrapper: {
         alignItems: 'center'

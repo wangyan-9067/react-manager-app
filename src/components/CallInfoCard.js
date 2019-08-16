@@ -52,10 +52,11 @@ const styles = theme => ({
         color: '#818181'
     },
     cardContentText: {
-        fontSize: '24px'
+        fontSize: '1rem'
     },
     client: {
         fontWeight: 'bold',
+        wordWrap: 'break-word'
     },
     player: {
         color: '#FD0100'
@@ -134,7 +135,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
                         {langConfig.TELEBET_TILE_LABEL.PLAYER}
                         <span className={client}>{clientName}</span>
                         {clientState === CONNECTING && langConfig.TELEBET_TILE_LABEL.CONNECTING}
-                        {clientState === CONNECTING && <DurationClock waitingStartTime={waitingStartTime}/>}
+                        {/* {clientState === CONNECTING && <DurationClock waitingStartTime={waitingStartTime}/>} */}
                         {clientState === CONNECTED && langConfig.TELEBET_TILE_LABEL.PLAYING}
                     </Typography>
                 }
