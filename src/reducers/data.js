@@ -149,7 +149,7 @@ export default function data(state = initialState, action) {
         case SET_ANCHOR_BET:
             let tempAnchorBets = state.anchorBets;
             tempAnchorBets[action.data.vid] = action.data;
-            return { ...state, anchorBets: tempAnchorBets };
+            return { ...state, anchorBets: { ...tempAnchorBets} };
         case SET_TABLE_JETTON:
             let tempJettons = state.jettons;
             tempJettons[action.data.vid] = action.data;

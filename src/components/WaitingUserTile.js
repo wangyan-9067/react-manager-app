@@ -44,7 +44,8 @@ const styles = theme => ({
     cardContentMainText: {
         color: '#1779E6',
         fontWeight: 'bold',
-        fontSize: '1rem'
+        fontSize: '1rem',
+        wordWrap: 'break-word'
     },
     cardContentSubText: {
         color: '#139727',
@@ -68,7 +69,7 @@ const WaitingForToken = ({ classes, item, waitingStartTime, openAssignTableDialo
     return (
         <Card className={card}>
             <CardContent className={cardContent} classes={{ root: cardContentRoot }}>
-                <Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} noWrap={true} align="center">{name}</Typography>
+                <Typography color="inherit" className={classNames(cardContentText, cardContentMainText)} align="center">{name}</Typography>
                 <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{balance} {dataAPI.getCurrencyName(currency)}</Typography>
                 <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{`${min} - ${max}`}</Typography>
                 <CardActions className={cardActions}>
