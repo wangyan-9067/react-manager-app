@@ -64,6 +64,7 @@ const TelebetTile = ({
                 currentTable={currentTable}
                 currentManagerName={currentManagerName}
                 player={player}
+                tableList={tableList}
             />
         );
     }

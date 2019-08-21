@@ -46,6 +46,7 @@ const initialState = {
 };
 
 export default function data(state = initialState, action) {
+    console.log(state, action)
     switch (action.type) {
         case SET_TABLE_LIST:
             const tableToUpdate = action.table;
@@ -137,7 +138,12 @@ export default function data(state = initialState, action) {
                 gmCode: action.fields.gmCode
             };
             return { ...state, betHistoryTableSearchFields };
-        case UPDATE_PLAYER_BALANCE:
+        case UPDATE_PLAYER_BALANCE:        
+            state.tableList.map(table => {
+                if(table.tableOwner === action.data.username) {
+                    table.account = action.data.balance;
+                }
+            })
             return {
                 ...state, player: {
                     username: action.data.username,

@@ -192,7 +192,7 @@ class AnswerCallPanel extends React.Component {
             setToastMessage,
             setToastVariant,
             toggleToast,
-            player
+            player, tableList
         } = this.props;
 
         const {
@@ -214,8 +214,8 @@ class AnswerCallPanel extends React.Component {
         let latestPlayerBalance = 0;
 
         if (currentChannel) {
-            latestPlayerBalance = currentChannel.clientBalance;
-            if (player.username !== '' && player.username === currentChannel.clientName) latestPlayerBalance = player.balance;
+            const table = tableList.find( table => table.vid === currentChannel.vid);
+            latestPlayerBalance = table ? table.account : currentChannel.clientBalance;        
         }
 
         // Error handling when currentChannel is not found in existing channel list
@@ -324,7 +324,7 @@ const mapStateToProps = state => {
     } = state.voice;
 
     const {
-        player
+        player, tableList
     } = state.data;
     const {
         managerCredential
@@ -334,7 +334,8 @@ const mapStateToProps = state => {
         currentChannelId,
         isAnchorCall,
         managerCredential,
-        player
+        player,
+        tableList
     });
 };
 
