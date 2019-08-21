@@ -37,10 +37,6 @@ const initialState = {
         loginname: '',
         gmCode: ''
     },
-    player: {
-        username: '',
-        balance: 0
-    },
     anchorBets: {},
     jettons: {}
 };
@@ -138,18 +134,15 @@ export default function data(state = initialState, action) {
                 gmCode: action.fields.gmCode
             };
             return { ...state, betHistoryTableSearchFields };
-        case UPDATE_PLAYER_BALANCE:        
-            state.tableList.map(table => {
-                if(table.tableOwner === action.data.username) {
-                    table.account = action.data.balance;
+        case UPDATE_PLAYER_BALANCE:
+            let tableList = state.tableList.map(table => {
+                if (table.tableOwner === action.data.username) {
+                    return { ...table, account: action.data.balance };
                 }
+
+                return table;
             })
-            return {
-                ...state, player: {
-                    username: action.data.username,
-                    balance: action.data.balance
-                }
-            };
+            return {...state, tableList };
         case RESET_ACTION:
             return initialState;
         case SET_ANCHOR_BET:

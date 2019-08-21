@@ -70,7 +70,7 @@ const styles = theme => ({
 });
 
 
-const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTable, currentManagerName, player, tableList }) => {
+const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTable, currentManagerName, tableList }) => {
     const { cardBase, cardContent, cardContentText, client, actionButton } = classes;
     const { channelId, anchorState, managerName, clientBalance, currency, clientName, anchorName, clientState, vid } = item;
     const { CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CONNECTED, CONNECTING } = USER_STATE;
@@ -84,7 +84,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
         }
     }, [clientState]);
 
-    let anchorStateText = '';    
+    let anchorStateText = '';
     const table = tableList.find( table => table.vid === vid);
     const latestClientBalance = table ? table.account : clientBalance;
 
