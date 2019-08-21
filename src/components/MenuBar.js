@@ -34,7 +34,7 @@ import CallNotification from './CallNotification';
 
 import { getLangConfig, reset } from '../helpers/appUtils';
 import { CONFIG } from '../config';
-import nullGateAPI from '../services/NullGate/nullGateAPI';
+import voiceAPI from '../services/Voice/voiceAPI';
 import { setBetHistorySearchFields } from '../actions/data';
 import { toggleLoading } from '../actions/app';
 
@@ -186,7 +186,7 @@ class MenuBar extends React.Component {
 
     onHistoryClicked = () => {
         this.props.toggleLoading(true);
-        nullGateAPI.getBetHistory();
+        voiceAPI.getBetHistory();
         this.handleOpen();
     }
 

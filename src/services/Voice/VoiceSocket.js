@@ -10,6 +10,7 @@ import AnchorAllQueryResp from './responses/AnchorAllQueryResp';
 import WaitingListResp from './responses/WaitingListResp';
 import CodeResp from './responses/CodeResp';
 import QueryAllDelegatorResp from './responses/QueryAllDelegatorResp';
+import GetBetRecordsResp from './responses/GetBetRecordsResp';
 import { CONFIG, ENV } from '../../config';
 
 import {
@@ -33,7 +34,8 @@ import {
     ADD_DELEGATOR_R,
     DELETE_DELEGATOR_R,
     QUERY_ALL_DELEGATOR_R,
-    ASSIGN_TABLE_TO_CHANNEL_R
+    ASSIGN_TABLE_TO_CHANNEL_R,
+    GET_BET_RECORDS_R
 } from '../../protocols';
 
 export default class VoiceSocket extends Socket.WebSocketBase {
@@ -72,5 +74,7 @@ export default class VoiceSocket extends Socket.WebSocketBase {
         this.respClazzMap.set(ADD_DELEGATOR_R, CodeResp);
         this.respClazzMap.set(DELETE_DELEGATOR_R, CodeResp);
         this.respClazzMap.set(QUERY_ALL_DELEGATOR_R, QueryAllDelegatorResp);
+        this.respClazzMap.set(GET_BET_RECORDS_R, GetBetRecordsResp);
+
     }
 }

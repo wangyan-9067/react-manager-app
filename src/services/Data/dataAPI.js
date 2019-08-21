@@ -17,7 +17,6 @@ import * as CONSTANTS from '../../constants';
 import langConfig from '../../languages/zh-cn.json';
 import { reset } from '../../helpers/appUtils';
 import voiceAPI from '../Voice/voiceAPI';
-import nullGateAPI from '../NullGate/nullGateAPI';
 
 class DataAPI {
     socket;
@@ -78,10 +77,6 @@ class DataAPI {
                 } else {
                     store.dispatch(toggleToast(false));
                     store.dispatch(setIsUserAuthenticated(true));
-
-                    if (!nullGateAPI.isOpen()) {
-                        nullGateAPI.connect();
-                    }
                 }
                 break;
 

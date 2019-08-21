@@ -11,7 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 
 import { getLangConfig } from '../helpers/appUtils';
-import nullGateAPI from '../services/NullGate/nullGateAPI';
+import voiceAPI from '../services/Voice/voiceAPI';
 
 const styles = theme => ({
     inputUnderline: {
@@ -134,7 +134,7 @@ class SearchForm extends React.Component {
                                                                 loginname: loginname.value,
                                                                 gmCode: gmCode.value
                                                             });
-                                                            nullGateAPI.getBetHistory(loginname.value, gmCode.value, 1);
+                                                            voiceAPI.getBetHistory(loginname.value, gmCode.value, 1);
                                                         }
                                                     }}
                                                 >
@@ -170,7 +170,7 @@ class SearchForm extends React.Component {
                                                                 loginname: loginname.value,
                                                                 gmCode: ''
                                                             });
-                                                            nullGateAPI.getBetHistory(loginname.value, '', 1);
+                                                            voiceAPI.getBetHistory(loginname.value, '', 1);
                                                         }
                                                     }}
                                                 >

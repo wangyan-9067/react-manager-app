@@ -24,7 +24,7 @@ import { setBetHistoryTablePageIndex } from '../actions/data';
 import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 import { PLAYTYPE } from '../constants';
-import nullGateAPI from '../services/NullGate/nullGateAPI';
+import voiceAPI from '../services/Voice/voiceAPI';
 import VideoDialog from '../components/VideoDialog';
 
 const actionsStyles = theme => ({
@@ -217,7 +217,7 @@ const BetHistory = ({
     const langConfig = getLangConfig();
     const handleChangePage = (event, page) => {
         const { loginname, gmCode } = betHistoryTableSearchFields;
-        nullGateAPI.getBetHistory(loginname, gmCode, page + 1);
+        voiceAPI.getBetHistory(loginname, gmCode, page + 1);
         setBetHistoryTablePageIndex(page);
     };
 

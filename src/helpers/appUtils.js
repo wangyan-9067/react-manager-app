@@ -1,7 +1,6 @@
 import langConfig from '../languages/zh-cn.json';
 import voiceAPI from '../services/Voice/voiceAPI';
 import dataAPI from '../services/Data/dataAPI';
-import nullGateAPI from '../services/NullGate/nullGateAPI';
 import { setManagerCredential, setIsUserAuthenticated, resetAction } from '../actions/app';
 import { store } from '../store';
 import { USER_STATE } from '../constants';
@@ -56,10 +55,6 @@ export function reset() {
     if (dataAPI.isOpen()) {
         dataAPI.logout();
         dataAPI.close();
-    }
-
-    if (nullGateAPI.isOpen()) {
-        nullGateAPI.close();
     }
 
     store.dispatch(setManagerCredential(null));

@@ -10,7 +10,8 @@ import {
     setToastMessage,
     setToastVariant,
     setToastDuration,
-    toggleDialog
+    toggleDialog,
+    toggleLoading
 } from '../../actions/app';
 import {
     setVoiceAppId,
@@ -27,12 +28,13 @@ import {
     setManagerList,
     setCurrentChannelId
 } from '../../actions/voice';
+import { setBetHistoryInfo, setBetHistory, setBetHistoryUserPid } from '../../actions/data';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
 import langConfig from '../../languages/zh-cn.json';
 import dataAPI from '../Data/dataAPI';
 import { isObject } from '../../helpers/utils';
-import { reset, isAnchorCalling, isClientCalling } from '../../helpers/appUtils';
+import { reset, isAnchorCalling, isClientCalling, mapBetHistoryResult } from '../../helpers/appUtils';
 
 class VoiceAPI {
     socket;
@@ -358,6 +360,20 @@ class VoiceAPI {
                 }
                 break;
 
+            case PROTOCOL.GET_BET_RECORDS_R:
+                const searchResult = evt.data.data.result;
+                const info = searchResult && searchResult.addition ? searchResult.addition[0] : {};
+                const rows = searchResult && searchResult.row ? searchResult.row : [];
+                const result = mapBetHistoryResult(evt.data.loginname, rows);
+
+                store.dispatch(setBetHistoryInfo({
+                    numPerPage: info['num_per_page'][0],
+                    total: info.total[0]
+                }));
+                store.dispatch(setBetHistory('billno', result));
+                store.dispatch(toggleLoading(false));
+                break;
+
             default:
                 break;
         }
@@ -490,6 +506,30 @@ class VoiceAPI {
     kickPlayer(playerName) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.KICK_LINEUP_PLAYER, bytes => {
             bytes.writeBytes(Socket.stringToBytes(playerName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+        }));
+    }
+
+    getBetHistory(fullLoginname = '', gmcode = '', pageIndex = 1, perNum = 20) {
+        const { PRODUCT_ID, LOGIN_NAME, BEGIN_TIME, END_TIME, GM_CODE, GM_TYPE, BILL_NO, PLATFORM, REQEXT } = CONSTANTS.QUERY_SERVER_VALUE_LENGTH;
+        const productId = fullLoginname.slice(0, 3);
+        const loginname = fullLoginname.slice(3);
+
+        store.dispatch(setBetHistoryUserPid(productId));
+
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.GET_BET_RECORDS, bytes => {
+            bytes.writeBytes(Socket.stringToBytes(productId, PRODUCT_ID));
+            bytes.writeBytes(Socket.stringToBytes(loginname, LOGIN_NAME));
+            bytes.writeBytes(Socket.stringToBytes('', BEGIN_TIME));
+            bytes.writeBytes(Socket.stringToBytes('', END_TIME));
+            bytes.writeBytes(Socket.stringToBytes(gmcode, GM_CODE));
+            bytes.writeBytes(Socket.stringToBytes('EBAC', GM_TYPE));
+            bytes.writeBytes(Socket.stringToBytes('', BILL_NO));
+            // TODO: set to EBAC
+            bytes.writeBytes(Socket.stringToBytes('', PLATFORM));
+            bytes.writeBytes(Socket.stringToBytes('', REQEXT));
+
+            bytes.writeShort(perNum);
+            bytes.writeShort(pageIndex);
         }));
     }
 }
