@@ -252,7 +252,7 @@ class DataAPI {
 
             case PROTOCOL.CDS_UPDATE_PLAYER_AMOUNT_R:
                 store.dispatch(setPlayerBalance({
-                    username: evt.data.username,
+                    loginName: evt.data.username,
                     balance: evt.data.account
                 }));
                 break;

@@ -28,7 +28,7 @@ import {
     setManagerList,
     setCurrentChannelId
 } from '../../actions/voice';
-import { setBetHistoryInfo, setBetHistory, setBetHistoryUserPid } from '../../actions/data';
+import { setBetHistoryInfo, setBetHistory, setBetHistoryUserPid, setPlayerBalance } from '../../actions/data';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
 import langConfig from '../../languages/zh-cn.json';
@@ -372,6 +372,13 @@ class VoiceAPI {
                 }));
                 store.dispatch(setBetHistory('billno', result));
                 store.dispatch(toggleLoading(false));
+                break;
+
+            case PROTOCOL.RESET_TEMP_PLAYER_BALANCE_R:
+                store.dispatch(setPlayerBalance({
+                    username: evt.data.username,
+                    balance: evt.data.balance
+                }));
                 break;
 
             default:

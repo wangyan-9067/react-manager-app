@@ -40,6 +40,7 @@ export const DELETE_DELEGATOR = 0x0bb21a;
 export const DELETE_DELEGATOR_R = 0x0bb21a;
 export const QUERY_ALL_DELEGATOR = 0x0bb21b;
 export const QUERY_ALL_DELEGATOR_R = 0x0bb21b;
+export const RESET_TEMP_PLAYER_BALANCE_R = 0x310013;
 
 //Data server
 export const CDS_UPDATE_PLAYER_AMOUNT_R = 0x090026;
@@ -70,8 +71,6 @@ export const CDS_ACTION_R = 0x090040;
 export const CDS_ANCHOR_BET_R = 0x09b003;
 export const CDS_JETTON_R = 0x080032;
 
-// Null Gate
-export const GATE_REQUEST_CACHE = 0x4054a;
-export const GATE_FORWARD_MSG = 0x4052f;
+// Query Protocols from voice proxy
 export const GET_BET_RECORDS = 0x40092;
 export const GET_BET_RECORDS_R = 0x40093;
