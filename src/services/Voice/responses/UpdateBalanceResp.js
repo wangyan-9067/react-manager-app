@@ -4,7 +4,6 @@ import { VALUE_LENGTH } from '../../../constants';
 
 export default class UpdateBalanceResp extends Socket.ResponseBase {
     parseResp(bytes) {
-        this.code = bytes.readUnsignedInt();
         this.username = bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME);
         this.balance = bytes.readDouble();
     }
