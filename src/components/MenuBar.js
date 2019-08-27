@@ -266,7 +266,6 @@ class MenuBar extends React.Component {
                             </ListItem>
                         </List>
                         <div className={grow} />
-                        <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.handleChange.bind(null, null, 4)}>{langConfig.MENU_BAR_LABEL.DELEGATOR_MANAGEMENT}</Button>
                         <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold, managerLevel === 1 ? show : hide)} onClick={this.handleChange.bind(null, null, 3)}>{langConfig.MENU_BAR_LABEL.MANAGER_MANAGEMENT}</Button>
                         <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.logout}>{langConfig.BUTTON_LABEL.LOGOUT}</Button>
                     </Toolbar>

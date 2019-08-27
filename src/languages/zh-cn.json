@@ -113,7 +113,7 @@
         "CONFIRM_KICKOUT_PLAYER": "要把{clientName}踢出桌台吗?",
         "CONFIRM_BACKLIST_PLAYER": "要把{clientName}列入黑名单吗?"
     },
-    "WAITING_DELEGATOR": "轮候中代理",
+    "WAITING_PLAYER": "轮候中玩家",
     "ANCHOR_LIST_LABEL": {
         "NO_RECORD": "没有主播记录!",
         "SELECT_ANCHOR": "请选取值班主播",

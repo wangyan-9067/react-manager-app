@@ -145,7 +145,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
                 <Typography color="inherit" className={cardContentText}>{latestClientBalance > 0 ? `${formatAmount(latestClientBalance, currency)}` : '-'}</Typography>
             </CardContent>
             <CardActions>
-                <Button variant="contained" size="medium" color="inherit" className={actionButton} disabled={!!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchorCalling(item), setIsAnchorCall) }}>
+                <Button variant="contained" color="inherit" className={actionButton} disabled={!!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchorCalling(item), setIsAnchorCall) }}>
                     {!managerName && langConfig.BUTTON_LABEL.JOIN_CHANNEL}
                     {(managerName && managerName === currentManagerName) && langConfig.BUTTON_LABEL.CONTINUE_CHANNEL}
                     {(managerName && managerName !== currentManagerName) && langConfig.BUTTON_LABEL.JOIN_CHANNEL_2.replace("{name}", managerName)}

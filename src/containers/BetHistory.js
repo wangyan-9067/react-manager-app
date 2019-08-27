@@ -267,7 +267,6 @@ const BetHistory = ({
                                 <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.TIME}</TableCell>
                                 <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.RESULT}</TableCell>
                                 <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.REPLAY}</TableCell>
-                                <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.PLAYER}</TableCell>
                                 <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.ANCHOR}</TableCell>
                                 <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.PLAY_TYPE}</TableCell>
                                 <TableCell classes={{ root: cellRoot }} component="th" scope="row" align="center">{langConfig.BET_HISTORY_LABEL.TOTAL_BET}</TableCell>
@@ -296,7 +295,6 @@ const BetHistory = ({
                                         <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.betTime}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{langConfig.BANKER} {row.bankerVal} {langConfig.PLAYER} {row.playerVal}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center"><IconButton classes={{ root: playerIcon }} onClick={() => openVideoDialog(row)}><PlayCircleFilledIcon /></IconButton></TableCell>
-                                        <TableCell classes={{ root: cellRoot }} align="center">{betHistoryUserPid + row.name}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{remark.length > 1 ? remark[1] : '-'}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{getPlayType(row.playtype)}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{formatAmount(row.amount)}</TableCell>

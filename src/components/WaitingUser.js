@@ -43,7 +43,7 @@ const WaitingUser = ({ classes, waitingList, openAssignTableDialog, openKickLine
     return (
         <div className={root}>
             <Typography color="inherit" align="left" className={title} gutterBottom>
-                {langConfig.WAITING_DELEGATOR}
+                {langConfig.WAITING_PLAYER}
             </Typography>
             <div className={listRoot}>
                 <GridListBase list={waitingList} customCols={4} gridListRootClass={gridListRoot}>
