@@ -35,7 +35,7 @@ export const USER_STATE = {
     IDOL: 0,
     CONNECTING: 1,
     CONNECTED: 2,
-    WAITING_MANAGER: 3,
+    OTHERS: 3,
     CHANGE_ANCHOR: 4,
     CHANGE_DEALER: 5,
     CHANGE_TABLE: 6,

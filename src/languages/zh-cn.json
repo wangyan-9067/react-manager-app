@@ -217,6 +217,7 @@
         "CONNECTED": "接入中",
         "PLAYING": "游戏中",
         "ANCHOR_STATE_ACTIONS": {
+            "OTHERS": "白撞/其他",
             "CHANGE_ANCHOR": "更换主播",
             "CHANGE_DEALER": "更换荷官",
             "CHANGE_TABLE": "更换桌台",
