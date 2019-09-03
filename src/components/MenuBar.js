@@ -234,9 +234,9 @@ class MenuBar extends React.Component {
                         <DateTimeBadge />
                         <div className={grow} />
                         <Tabs value={value} onChange={this.handleChange} classes={{ root: tabsRoot, indicator: tabsIndicator }}>
-                            <Tab label={langConfig.MENU_BAR_LABEL.ANCHOR_MANAGEMENT} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
-                            <Tab label={<CallNotification count={incomingCallCount} label={langConfig.MENU_BAR_LABEL.MANAGER_OPERATION} />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
-                            <Tab label={langConfig.MENU_BAR_LABEL.TABLE_MANAGEMENT} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+                            <Tab label={langConfig.MENU_BAR_LABEL.ANCHOR_MANAGEMENT} value={0} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+                            <Tab label={<CallNotification count={incomingCallCount} value={1} label={langConfig.MENU_BAR_LABEL.MANAGER_OPERATION} />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+                            <Tab label={langConfig.MENU_BAR_LABEL.TABLE_MANAGEMENT} value={2} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
                         </Tabs>
                         <div className={grow1} />
                         <Button

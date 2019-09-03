@@ -49,7 +49,7 @@ export default function voice(state = initialState, action) {
             return { ...state, voiceAppId };
 
         case SET_CHANNEL_LIST:
-            const channelList = action.list;
+            const channelList = sortChannelList(action.list);
             return { ...state, channelList };
 
         case SET_CURRENT_CHANNEL_ID:
@@ -119,3 +119,17 @@ export default function voice(state = initialState, action) {
             return state;
     }
 };
+
+function sortChannelList(channelList) {
+    channelList.sort(function(a, b) {
+        if (a.vid && b.vid) {
+            return a.vid > b.vid ? 1 : -1;
+        } else if (a.vid || b.vid) {
+            return a.vid ? -1 : 1;
+        } else {
+            return 0;
+        }
+    });
+
+    return channelList;
+}

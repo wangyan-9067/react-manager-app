@@ -22,7 +22,7 @@ const styles = theme => ({
         border: '1px solid #F1F1F1',
         float: 'left',
         borderRadius: '8px',
-        textTransform: 'capitalize',
+        textTransform: 'none',
         '&:first-child': {
             borderRadius: '8px'
         },

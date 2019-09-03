@@ -10,7 +10,7 @@ import {
     setToastVariant,
     setToastDuration
 } from '../../actions/app';
-import { setTableList, setTableLimit, setPlayerBalance, setAnchorBet, setTableJetton } from '../../actions/data';
+import { setTableList, setTableLimit, setPlayerBalance, setAnchorBet, setTableJetton, resetJettonAndBets } from '../../actions/data';
 import { setFormValues } from '../../actions/voice';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
@@ -164,9 +164,10 @@ class DataAPI {
                 break;
 
             case PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT_R:
-                const { reason: kickoutReason } = evt.data;
+                const { reason: kickoutReason, vid } = evt.data;
 
                 if (kickoutReason === SUCCESS || kickoutReason === ERR_NO_LOGIN) {
+                    store.dispatch(resetJettonAndBets(vid));
                     this.voiceKicioutClient();
                 } else {
                     store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason)));

@@ -10,7 +10,8 @@ import {
     SET_BET_HISTORY_SEARCH_FIELDS,
     UPDATE_PLAYER_BALANCE,
     SET_ANCHOR_BET,
-    SET_TABLE_JETTON
+    SET_TABLE_JETTON,
+    RESET_JETTON_BETS
 } from '../types';
 
 const initialState = {
@@ -155,6 +156,10 @@ export default function data(state = initialState, action) {
             let tempJettons = state.jettons;
             tempJettons[action.data.vid] = action.data;
             return { ...state, jettons: tempJettons };
+
+        case RESET_JETTON_BETS:
+            return { ...state, jettions: { ...state.jettons, [action.vid]: null }, anchorBets: { ...state.anchorBets, [action.vid]: null }};
+
         default:
             return state;
     }
