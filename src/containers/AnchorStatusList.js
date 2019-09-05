@@ -61,11 +61,11 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
                     // eslint-disable-next-line
                     anchorsOnDutyList && anchorsOnDutyList.map((anchor, index) => {
                         if (anchor) {
-                            const { anchorName, nickname, url, vid } = anchor;
+                            const { anchorName, nickname, url, vid, isBusy } = anchor;
 
                             return (
                                 <ListItem key={index}>
-                                    <AnchorStatus isBusy={vid ? true : false} />
+                                    <AnchorStatus isBusy={isBusy === 1} />
                                     <ListItemAvatar>
                                         <CustomAvatar
                                             imgUrl={url}
@@ -74,10 +74,10 @@ const AnchorStatusList = ({ classes, anchorList, anchorsOnDutyList }) => {
                                     </ListItemAvatar>
                                     <ListItemText
                                         primary={`${anchorName}(${nickname})`}
-                                        secondary={vid ? vid : langConfig.ANCHOR_LIST_LABEL.FREE}
+                                        secondary={vid}
                                         classes={{
                                             primary: primary,
-                                            secondary: vid ? classes.secondary : classes.secondaryOn
+                                            secondary: classes.secondary
                                         }}
                                     />
                                 </ListItem>

@@ -168,7 +168,7 @@ class DataAPI {
 
                 if (kickoutReason === SUCCESS || kickoutReason === ERR_NO_LOGIN) {
                     store.dispatch(resetJettonAndBets(vid));
-                    this.voiceKicioutClient();
+                    this.voiceKicioutClient(vid);
                 } else {
                     store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason)));
                     store.dispatch(setToastVariant('error'));
@@ -386,17 +386,18 @@ class DataAPI {
                 bytes.writeByte(0);
             }));
         } else {
-            this.voiceKicioutClient();
+            this.voiceKicioutClient(vid);
         }
     }
 
-    voiceKicioutClient() {
-        let { managerAction, currentChannelId } = store.getState().voice;
+    voiceKicioutClient(vid) {
+        let { channelList, managerAction } = store.getState().voice;
+        let channel = channelList.filter(channel => channel.vid === vid)[0];
 
         if (managerAction === CONSTANTS.MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
-            voiceAPI.kickoutClient(currentChannelId);
+            voiceAPI.kickoutClient(channel.channelId);
         } else {
-            voiceAPI.blacklistClient(currentChannelId);
+            voiceAPI.blacklistClient(channel.channelId);
         }
     }
 

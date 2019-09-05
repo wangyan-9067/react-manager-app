@@ -12,6 +12,7 @@ export default class AnchorsOnDutyResp extends Socket.ResponseBase {
                 anchorName: bytes.readUTFBytes(VALUE_LENGTH.LOGIN_NAME),
                 nickname: bytes.readUTFBytes(VALUE_LENGTH.NICK_NAME),
                 vid: bytes.readUTFBytes(VALUE_LENGTH.VID),
+                isBusy: bytes.readByte(),
                 url: bytes.readUTFBytes(VALUE_LENGTH.URL),
             });
         }
