@@ -158,7 +158,7 @@ export default function data(state = initialState, action) {
             return { ...state, jettons: tempJettons };
 
         case RESET_JETTON_BETS:
-            return { ...state, jettions: { ...state.jettons, [action.vid]: null }, anchorBets: { ...state.anchorBets, [action.vid]: null }};
+            return { ...state, jettons: { ...state.jettons, [action.vid]: null }, anchorBets: { ...state.anchorBets, [action.vid]: null }};
 
         default:
             return state;
