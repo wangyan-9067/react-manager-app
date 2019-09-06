@@ -288,7 +288,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
                 <Button
                     variant="contained"
                     size="medium"
-                    color={tableOwner ? 'primary' : 'inherit'}
+                    color={status !== DATA_SERVER_VIDEO_STATUS.FREE ? 'primary' : 'inherit'}
                     className={cardActionButton}
                     onClick={() => {
                         setKickoutClient({
@@ -297,7 +297,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
                         });
                         toggleDialog(true);
                     }}
-                    disabled={!tableOwner}
+                    disabled={status === DATA_SERVER_VIDEO_STATUS.FREE}
                 >
                     {langConfig.KICKOUT_CLIENT}
                 </Button>

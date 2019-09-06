@@ -375,29 +375,32 @@ class DataAPI {
 
     kickoutClientFromDataServer(vid, clientName) {
         let { tableList } = store.getState().data;
+        let { channelList } = store.getState().voice;
         let table = tableList.filter(table => table.vid === vid)[0];
+        let channel = channelList.filter(channel => channel.vid === vid)[0];
 
-        if (table && table.tableOwner === clientName) {
-            this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
-                bytes.writeUnsignedShort();
-                bytes.writeUnsignedShort();
-                bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-                bytes.writeBytes(Socket.stringToBytes(clientName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-                bytes.writeByte(0);
-            }));
-        } else {
-            this.voiceKicioutClient(vid);
-        }
+        clientName = table && table.tableOwner ? table.tableOwner : channel && channel.clientName ? channel.clientName : '';
+
+        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
+            bytes.writeUnsignedShort();
+            bytes.writeUnsignedShort();
+            bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+            bytes.writeBytes(Socket.stringToBytes(clientName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+            bytes.writeByte(0);
+        }));
+
     }
 
     voiceKicioutClient(vid) {
         let { channelList, managerAction } = store.getState().voice;
         let channel = channelList.filter(channel => channel.vid === vid)[0];
 
-        if (managerAction === CONSTANTS.MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
-            voiceAPI.kickoutClient(channel.channelId);
-        } else {
-            voiceAPI.blacklistClient(channel.channelId);
+        if (channel) {
+            if (managerAction === CONSTANTS.MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
+                voiceAPI.kickoutClient(channel.channelId);
+            } else {
+                voiceAPI.blacklistClient(channel.channelId);
+            }
         }
     }
 

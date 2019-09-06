@@ -86,7 +86,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
 
     let anchorStateText = '';
     const table = tableList.find( table => table.vid === vid);
-    const latestClientBalance = table ? table.account : clientBalance;
+    const latestClientBalance = table && table.account ? table.account : clientBalance;
 
     switch (anchorState) {
         case OTHERS:

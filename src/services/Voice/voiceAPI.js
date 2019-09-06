@@ -361,6 +361,7 @@ class VoiceAPI {
                 break;
 
             case PROTOCOL.GET_BET_RECORDS_R:
+                console.warn(evt.data.data.result);
                 const searchResult = evt.data.data.result;
                 const info = searchResult && searchResult.addition ? searchResult.addition[0] : {};
                 const rows = searchResult && searchResult.row ? searchResult.row : [];

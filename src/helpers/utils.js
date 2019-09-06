@@ -1,23 +1,23 @@
 import dataAPI from '../services/Data/dataAPI';
 
-export const formatAmount = (amount, currency, decimalCount = 2, decimal = ".", thousands = ",") => {
-    try {
-        decimalCount = Math.abs(decimalCount);
-        decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
-
-        const negativeSign = amount < 0 ? "-" : "";
-
-        let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
-        let j = (i.length > 3) ? i.length % 3 : 0;
-
-        return negativeSign + (j ? i.substr(0, j) + thousands : '')
-            + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands)
-            + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "")
-            + ` ${dataAPI.getCurrencyName(currency)}`;
-    } catch (e) {
-        console.log(e)
-    }
+export const formatAmount = (amount, currency = '') => {
+    return getStringFixed2WithComma(amount) + ` ${currency}`;
 };
+
+export function getStringFixed2(num) {
+    var floorNum = Math.floor(Math.round(num *1000) / 10) / 100;
+    if (/\d+\.\d{2,}/.test('' + floorNum)) {
+        return floorNum.toFixed(2);
+    } else {
+        return '' + floorNum;
+    }
+}
+
+export function getStringFixed2WithComma(num) {
+    var parts = getStringFixed2(num).split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}
 
 export const compareArray = (array1, array2) => {
     if (!array1 || !array2) {
