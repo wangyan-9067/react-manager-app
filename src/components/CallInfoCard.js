@@ -15,11 +15,6 @@ import { getLangConfig, isAnchorCalling, isClientCalling } from '../helpers/appU
 import { formatAmount } from '../helpers/utils';
 import {combineStyles, buttonStyles } from '../styles';
 
-const joinRoom = (channelId, joinChannel, isAnchorCall, setIsAnchorCall) => {
-    setIsAnchorCall(isAnchorCall);
-    joinChannel(channelId);
-};
-
 const styles = theme => ({
     cardBase: {
         minHeight: '200px'
@@ -77,6 +72,10 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
     const langConfig = getLangConfig();
     const cardClass = isClientCalling(item) ? 'card' : isAnchorCalling(item) ? 'anchorCard' : 'playingCard';
     const [waitingStartTime, setWaitingStartTime] = useState(0);
+    const joinRoom = (channelId, joinChannel, isAnchorCall, setIsAnchorCall) => {
+        setIsAnchorCall(isAnchorCall);
+        joinChannel(channelId);
+    };
 
     useEffect(() => {
         if (clientState === CONNECTING) {
