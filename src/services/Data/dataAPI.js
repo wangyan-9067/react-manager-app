@@ -120,28 +120,15 @@ class DataAPI {
                 break;
 
             case PROTOCOL.CDS_CLIENT_ENTER_TABLE_NOTIFY:
-                const currentTable = tableList.find(table => table.vid === evt.data.vid);
                 store.dispatch(setTableList({
                     vid: evt.data.vid,
                     username: evt.data.username,
                     account: evt.data.currentAmount,
-                    seatedPlayerNum: currentTable.seatedPlayerNum + 1
+                    seatedPlayerNum: 1
                 }));
                 break;
 
             case PROTOCOL.CDS_CLIENT_LEAVE_TABLE_NOTIFY:
-                store.dispatch(setTableList({
-                    vid: evt.data.vid,
-                    dealerName: '',
-                    gameCode: '',
-                    gmType: '',
-                    gameStatus: 0,
-                    seatedPlayerNum: 0,
-                    account: 0,
-                    tableOwner: '',
-                    status: 0
-                }));
-                store.dispatch(setTableLimit(evt.data.vid, []));
                 break;
 
             case PROTOCOL.CDS_OPERATOR_CONTROL_CONTRACT_TABLE_R:
@@ -168,6 +155,19 @@ class DataAPI {
 
                 if (kickoutReason === SUCCESS || kickoutReason === ERR_NO_LOGIN) {
                     store.dispatch(resetJettonAndBets(vid));
+                    store.dispatch(setTableList({
+                        vid: vid,
+                        dealerName: '',
+                        gameCode: '',
+                        gmType: '',
+                        gameStatus: 0,
+                        seatedPlayerNum: 0,
+                        account: 0,
+                        tableOwner: '',
+                        status: 0,
+                        username: ''
+                    }));
+                    store.dispatch(setTableLimit(vid, []));
                     this.voiceKicioutClient(vid);
                 } else {
                     store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason)));

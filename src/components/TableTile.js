@@ -17,7 +17,7 @@ import Moment from 'react-moment';
 import PopoverList from './PopoverList';
 import TextList from './TextList';
 import { DATA_SERVER_VIDEO_STATUS, DATA_SERVER_GAME_STATUS, PLAYTYPE, SUPPORT_PLAYTYPE } from '../constants';
-import { isObject, isNonEmptyArray } from '../helpers/utils';
+import { isObject, isNonEmptyArray, formatAmount } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 import dataAPI from '../services/Data/dataAPI';
 
@@ -91,15 +91,14 @@ const Stopwatch = ({ datetime, duration }) => {
     );
 }
 
-const getTableStatus = status => {
-    const { FREE, CONTRACTED } = DATA_SERVER_VIDEO_STATUS;
+const getTableStatus = channelVid => {
     const langConfig = getLangConfig();
 
-    switch (status) {
-        case FREE:
+    switch (channelVid === '') {
+        case true:
             return langConfig.TABLE_STATUS_LABEL.FREE;
 
-        case CONTRACTED:
+        case false:
             return langConfig.TABLE_STATUS_LABEL.CONTRACTED;
 
         default:
@@ -225,24 +224,19 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
     const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
     const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum, startDatetime } = item;
     const currentChannel = channelList.find(channel => channel.vid === vid);
-    const { anchorName = '-', currency = '' } = currentChannel || {};
+    const { anchorName = '-', currency = '', vid: channelVid = '' } = currentChannel || {};
     const currencyName = dataAPI.getCurrencyName(currency);
     const tableLimitList = getTableLimitList(vid, tableLimit);
     const langConfig = getLangConfig();
 
-    const totalNotValidBet = tableOwner && (anchorBets && anchorBets[vid]) ? anchorBets[vid].totalNotValidBet : '-'
-    const totalPayout = tableOwner && (jettons && jettons[vid]) ? jettons[vid].totalPayout : '-';
+    const totalNotValidBet = tableOwner && (anchorBets && anchorBets[vid]) ? anchorBets[vid].totalNotValidBet : 0;
+    const totalPayout = tableOwner && (jettons && jettons[vid]) ? jettons[vid].totalPayout : 0;
 
     let textColor = '';
-    let totalPayoutText = '-';
     if (totalPayout > 0) {
         textColor = classes.greenColor;
-        totalPayoutText = "+" + totalPayout;
     } else if (totalPayout < 0) {
         textColor = classes.redColor;
-        totalPayoutText = totalPayout;
-    } else {
-        totalPayoutText = '-';
     }
 
     const tableLimitDisplay = tableLimitList.length > 0 ? (
@@ -256,14 +250,14 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
     const tableTileClasses = classNames.bind(classes);
     const tileHeaderClass = tableTileClasses({
         cardHeader: true,
-        redCardHeader: status !== DATA_SERVER_VIDEO_STATUS.FREE
+        redCardHeader: channelVid !== ''
     });
 
     return (
         <Card className={classes.root}>
             <div className={tileHeaderClass}>
                 <div className={tableNo}>{vid}</div>
-                <div className={tableStatus}>{getTableStatus(status)}</div>
+                <div className={tableStatus}>{getTableStatus(channelVid)}</div>
             </div>
             <CardContent className={cardContent}>
                 <Typography color="inherit"><span>{langConfig.SEAT_NUMBER}</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>
@@ -275,14 +269,14 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
                         <Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
                             <Grid item><Typography color="inherit">{langConfig.TABLE_LIMIT}</Typography></Grid>
                             <Grid item>{tableLimitDisplay}</Grid>
-                        </Grid> : <Typography color="inherit"><span>{langConfig.DEALER}</span><span className={tableValue}>-</span></Typography>
+                        </Grid> : <Typography color="inherit"><span>{langConfig.TABLE_LIMIT}</span><span className={tableValue}>-</span></Typography>
 
                 }
                 <Typography color="inherit"><span>{langConfig.TABLE_OWNER}</span><span className={tableValue}>{tableOwner || '-'}</span></Typography>
                 <Typography color="inherit"><span>{langConfig.GAME_STATUS}</span><span className={tableValue}>{getGameStatus(gameStatus)}</span></Typography>
                 <Typography color="inherit"><span>{langConfig.GAME_TIME}</span><span className={tableValue}>{gameStatus === 1 ? <Stopwatch datetime={startDatetime} duration={1000} /> : '-'}</span></Typography>
-                <Typography color="inherit"><span>{langConfig.GAME_TOTAL_BET}</span><span className={tableValue}>{totalNotValidBet} {currencyName}</span></Typography>
-                <Typography color="inherit"><span>{langConfig.GAME_TOTAL_PAYOUT}</span><span className={classNames(tableValue, textColor)}>{totalPayoutText} {currencyName}</span></Typography>
+                <Typography color="inherit"><span>{langConfig.GAME_TOTAL_BET}</span><span className={tableValue}>{formatAmount(totalNotValidBet, currencyName)}</span></Typography>
+                <Typography color="inherit"><span>{langConfig.GAME_TOTAL_PAYOUT}</span><span className={classNames(tableValue, textColor)}>{(totalPayout > 0 ? '+' : '') + formatAmount(totalPayout, currencyName)}</span></Typography>
             </CardContent>
             <CardActions>
                 <Button

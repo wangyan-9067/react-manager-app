@@ -85,7 +85,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
 
     let anchorStateText = '';
     const table = tableList.find( table => table.vid === vid);
-    const latestClientBalance = table && table.account ? table.account : clientBalance;
+    const latestClientBalance = table && table.account ? table.account : null;
 
     switch (anchorState) {
         case OTHERS:
@@ -146,7 +146,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
                 {anchorStateText && (
                     <Typography color="inherit" className={cardContentText}>{langConfig.TELEBET_TILE_LABEL.REASON} {anchorStateText}</Typography>
                 )}
-                <Typography color="inherit" className={cardContentText}>{latestClientBalance > 0 ? `${formatAmount(latestClientBalance, currency)}` : '-'}</Typography>
+                <Typography color="inherit" className={cardContentText}>{latestClientBalance !== null ? `${formatAmount(latestClientBalance, currency)}` : '-'}</Typography>
             </CardContent>
             <CardActions>
                 <Button variant="contained" color="inherit" className={actionButton} disabled={!!(managerName && managerName !== currentManagerName)} onClick={() => { joinRoom(channelId, joinChannel, isAnchorCalling(item), setIsAnchorCall) }}>

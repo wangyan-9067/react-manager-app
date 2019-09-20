@@ -19,7 +19,6 @@ import {
     setChannelList,
     setIsAnchorCall,
     setIncomingCallCount,
-    setChannelJoinStatus,
     setIsAnswerCall,
     setWaitingList,
     setAnchorList,
@@ -178,26 +177,33 @@ class VoiceAPI {
             case PROTOCOL.CHANNEL_JOIN_R:
                 const { code: joinStatus } = evt.data;
 
-                store.dispatch(setChannelJoinStatus(joinStatus));
-                store.dispatch(setIsAnswerCall(joinStatus === 0 ? true : false));
-
                 if (joinStatus === SUCCESS) {
                     await RTC.joinRoom(currentChannelId.toString(), store.getState().voice.voiceAppId);
                     this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
+                } else {
+                    store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_MANAGER_ACTION.replace("{actionStatus}", '0xbb205')));
+                    store.dispatch(setToastVariant('error'));
+                    store.dispatch(toggleToast(true));
                 }
                 break;
 
             case PROTOCOL.MANAGER_ACTION_R:
                 const { code: actionStatus } = evt.data;
-                const { LEAVE_CHANNEL, KICKOUT_CLIENT, BLACKLIST_CLIENT } = CONSTANTS.MANAGER_ACTIONS;
+                const { LEAVE_CHANNEL, KICKOUT_CLIENT, BLACKLIST_CLIENT, JOIN_CHANNEL } = CONSTANTS.MANAGER_ACTIONS;
 
                 if (actionStatus === SUCCESS) {
                     switch (evt.data.action) {
-                        case LEAVE_CHANNEL:
                         case KICKOUT_CLIENT:
                         case BLACKLIST_CLIENT:
-                            RTC.leaveRoom();
+                        case LEAVE_CHANNEL:
+                            await RTC.leaveRoom();
                             store.dispatch(setIsAnswerCall(false));
+                            store.dispatch(setCurrentChannelId(null));
+                            break;
+
+                        case JOIN_CHANNEL:
+                            store.dispatch(toggleToast(false));
+                            store.dispatch(setIsAnswerCall(true));
                             break;
 
                         default:
@@ -433,6 +439,9 @@ class VoiceAPI {
 
     joinChannel(channelId) {
         store.dispatch(setCurrentChannelId(channelId));
+        store.dispatch(setToastMessage(langConfig.SYSTEM_MESSAGES.CONNECTING));
+        store.dispatch(setToastVariant('info'));
+        store.dispatch(toggleToast(true));
 
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.CHANNEL_JOIN, bytes => {
             bytes.writeUnsignedInt(channelId);

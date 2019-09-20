@@ -33,9 +33,12 @@ class AssignTableDialog extends React.Component {
     onAssignTableClicked = () => {
         if (this.state.tableAssigned) {
             dataAPI.assignTable(this.state.tableAssigned, this.props.name);
+            this.setState({
+                tableAssigned: ''
+            }, () => {
+                this.props.closeAssignTableDialog();
+            });
         }
-
-        this.props.closeAssignTableDialog();
     };
 
     render() {
