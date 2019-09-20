@@ -47,8 +47,8 @@ export default function voice(state = initialState, action) {
             return { ...state, voiceAppId };
 
         case SET_CHANNEL_LIST:
-            const channelList = sortChannelList(action.list);
-            return { ...state, channelList };
+            // const channelList = sortChannelList(action.list);
+            return { ...state, channelList: action.list };
 
         case SET_CURRENT_CHANNEL_ID:
             const currentChannelId = action.id;
