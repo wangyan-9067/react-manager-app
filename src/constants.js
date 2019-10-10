@@ -1,4 +1,4 @@
-export const VERSION = '1.0.6';
+export const VERSION = 'v1.0.6';
 
 export const VALUE_LENGTH = {
     LOGIN_NAME: 30,
