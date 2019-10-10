@@ -49,7 +49,7 @@ export default class DataSocket extends Socket.WebSocketBase {
     }
 
     getUrlList() {
-        return [CONFIG.DATA_SERVER_URL[ENV]];
+        return CONFIG.DATA_SERVER_URL[ENV];
     }
 
     setupRespClazzMap() {

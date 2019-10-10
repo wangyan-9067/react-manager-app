@@ -50,7 +50,7 @@ export default class VoiceSocket extends Socket.WebSocketBase {
     }
 
     getUrlList() {
-        return [CONFIG.VOICE_SERVER_URL[ENV]];
+        return CONFIG.VOICE_SERVER_URL[ENV];
     }
 
     setupRespClazzMap() {

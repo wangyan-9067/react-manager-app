@@ -33,10 +33,10 @@ import SearchForm from './SearchForm';
 import CallNotification from './CallNotification';
 
 import { getLangConfig, reset } from '../helpers/appUtils';
-import { CONFIG } from '../config';
 import voiceAPI from '../services/Voice/voiceAPI';
 import { setBetHistorySearchFields } from '../actions/data';
 import { toggleLoading } from '../actions/app';
+import { VERSION } from '../constants';
 
 const styles = theme => ({
     version: {
@@ -229,7 +229,7 @@ class MenuBar extends React.Component {
         return (
             <div className={root}>
                 <AppBar position="static" color="inherit" className={appBar}>
-                    <Typography variant='body2' className={version}>{CONFIG.VERSION}</Typography>
+                    <Typography variant='body2' className={version}>{VERSION}</Typography>
                     <Toolbar classes={{ gutters }}>
                         <DateTimeBadge />
                         <div className={grow} />
