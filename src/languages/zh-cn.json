@@ -190,7 +190,8 @@
         "VOICE_SERVER_FAIL_ANCHOR_OPERATION": "[VoiceServer] 无法{managerAction}主播! (code: {anchorAddStatus})",
         "FAIL_MANAGER_ACTION": "经理操作不能执行! (code: {actionStatus})",
         "ASSIGN_TABLE_ERROR_307": "无法派筹，没有空余桌台。",
-        "ASSIGN_TABLE_ERROR_310": "无法派筹，玩家已经包了另一张桌台。"
+        "ASSIGN_TABLE_ERROR_310": "无法派筹，玩家已经包了另一张桌台。",
+        "RTC_FAIL": "语音失败。"
     },
     "MANAGER_LIST_LABEL": {
         "NO_RECORD": "没有经理记录!",

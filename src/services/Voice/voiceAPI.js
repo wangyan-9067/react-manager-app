@@ -178,8 +178,14 @@ class VoiceAPI {
                 const { code: joinStatus } = evt.data;
 
                 if (joinStatus === SUCCESS) {
-                    await RTC.joinRoom(currentChannelId.toString(), store.getState().voice.voiceAppId);
-                    this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
+                    try {
+                        await RTC.joinRoom(currentChannelId.toString(), store.getState().voice.voiceAppId);
+                        this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
+                    } catch(e) {
+                        store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.RTC_FAIL));
+                        store.dispatch(setToastVariant('error'));
+                        store.dispatch(toggleToast(true));
+                    }
                 } else {
                     store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_MANAGER_ACTION.replace("{actionStatus}", '0xbb205')));
                     store.dispatch(setToastVariant('error'));
