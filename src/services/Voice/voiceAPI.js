@@ -69,7 +69,7 @@ class VoiceAPI {
     }
 
     onVoiceSocketDie() {
-        RTC.leaveRoom();
+        // RTC.leaveRoom();
         reset();
     }
 
@@ -179,7 +179,7 @@ class VoiceAPI {
 
                 if (joinStatus === SUCCESS) {
                     try {
-                        await RTC.joinRoom(currentChannelId.toString(), store.getState().voice.voiceAppId);
+                        // await RTC.joinRoom(currentChannelId.toString(), store.getState().voice.voiceAppId);
                         this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.JOIN_CHANNEL, currentChannelId);
                     } catch(e) {
                         store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.RTC_FAIL));
@@ -202,7 +202,7 @@ class VoiceAPI {
                         case KICKOUT_CLIENT:
                         case BLACKLIST_CLIENT:
                         case LEAVE_CHANNEL:
-                            await RTC.leaveRoom();
+                            // await RTC.leaveRoom();
                             store.dispatch(setIsAnswerCall(false));
                             store.dispatch(setCurrentChannelId(null));
                             break;
