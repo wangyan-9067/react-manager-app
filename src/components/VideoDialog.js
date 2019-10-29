@@ -26,21 +26,9 @@ class VideoDialog extends React.Component {
                 <DialogTitle>gmcode: {row.gmcode}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={8}>
-                        <Grid item xs={6}>
+                        <Grid item xs={12}>
                             <MediaElement
-                                width="100%"
-                                height="240"
-                                sources={[
-                                    {
-                                        src: `${CONFIG.VIDEO_URL[ENV]}${row.gmcode}.flv`,
-                                        type: 'video/flv'
-                                    }
-                                ]}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <MediaElement
-                                width="100%"
+                                width="600"
                                 height="240"
                                 sources={[
                                     {
