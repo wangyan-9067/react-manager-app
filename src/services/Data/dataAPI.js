@@ -168,7 +168,7 @@ class DataAPI {
                         username: ''
                     }));
                     store.dispatch(setTableLimit(vid, []));
-                    this.voiceKicioutClient(vid);
+                    this.voiceKickoutClient(vid);
                 } else {
                     store.dispatch(setToastMessage(langConfig.ERROR_MESSAGES.FAIL_KICKOUT_PLAYER.replace("{kickoutReason}", kickoutReason)));
                     store.dispatch(setToastVariant('error'));
@@ -374,31 +374,37 @@ class DataAPI {
     }
 
     kickoutClientFromDataServer(vid, clientName) {
-        let { tableList } = store.getState().data;
-        let { channelList } = store.getState().voice;
-        let table = tableList.filter(table => table.vid === vid)[0];
-        let channel = channelList.filter(channel => channel.vid === vid)[0];
+        let { managerAction } = store.getState().voice;
+        let { KICKOUT_CLIENT, BLACKLIST_CLIENT } = CONSTANTS.MANAGER_ACTION_TYPE;
 
-        clientName = table && table.tableOwner ? table.tableOwner : channel && channel.clientName ? channel.clientName : '';
+        if (managerAction === KICKOUT_CLIENT || managerAction === BLACKLIST_CLIENT) {
+            let { tableList } = store.getState().data;
+            let { channelList } = store.getState().voice;
+            let table = tableList.filter(table => table.vid === vid)[0];
+            let channel = channelList.filter(channel => channel.vid === vid)[0];
 
-        this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
-            bytes.writeUnsignedShort();
-            bytes.writeUnsignedShort();
-            bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
-            bytes.writeBytes(Socket.stringToBytes(clientName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
-            bytes.writeByte(0);
-        }));
+            clientName = table && table.tableOwner ? table.tableOwner : channel && channel.clientName ? channel.clientName : '';
+
+            this.socket.writeBytes(Socket.createCMD(PROTOCOL.CDS_OPERATOR_CONTROL_KICKOUT_CLIENT, bytes => {
+                bytes.writeUnsignedShort();
+                bytes.writeUnsignedShort();
+                bytes.writeBytes(Socket.stringToBytes(vid, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_VIDEO_ID));
+                bytes.writeBytes(Socket.stringToBytes(clientName, CONSTANTS.DATA_SERVER_VALUE_LENGTH.VL_USER_NAME));
+                bytes.writeByte(0);
+            }));
+        }
 
     }
 
-    voiceKicioutClient(vid) {
+    voiceKickoutClient(vid) {
         let { channelList, managerAction } = store.getState().voice;
+        let { KICKOUT_CLIENT, BLACKLIST_CLIENT } = CONSTANTS.MANAGER_ACTION_TYPE;
         let channel = channelList.filter(channel => channel.vid === vid)[0];
 
         if (channel) {
-            if (managerAction === CONSTANTS.MANAGER_ACTION_TYPE.KICKOUT_CLIENT) {
+            if (managerAction === KICKOUT_CLIENT) {
                 voiceAPI.kickoutClient(channel.channelId);
-            } else {
+            } else if (managerAction === BLACKLIST_CLIENT) {
                 voiceAPI.blacklistClient(channel.channelId);
             }
         }

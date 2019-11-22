@@ -1,6 +1,6 @@
 import dataAPI from '../services/Data/dataAPI';
 
-export const formatAmount = (amount, currency = '') => {
+export function formatAmount(amount, currency = '') {
     return getStringFixed2WithComma(amount) + ` ${currency}`;
 };
 
@@ -19,7 +19,7 @@ export function getStringFixed2WithComma(num) {
     return parts.join(".");
 }
 
-export const compareArray = (array1, array2) => {
+export function compareArray(array1, array2) {
     if (!array1 || !array2) {
         return;
     }
@@ -27,20 +27,20 @@ export const compareArray = (array1, array2) => {
     return array1.length === array2.length && array1.sort().every((value, index) => value === array2.sort()[index]);
 };
 
-export const isObject = obj => {
+export function isObject(obj) {
     const type = typeof obj;
     return (type === 'function' || type === 'object') && !!obj;
 };
 
-export const isNonEmptyArray = value => {
+export function isNonEmptyArray(value) {
     return Array.isArray(value) && value.length > 0;
 };
 
-export const convertObjectListToArrayList = data => {
+export function convertObjectListToArrayList(data) {
     return Object.keys(data).map(key => data[key]);
 };
 
-export const getAnonymousName = (loginname, nick, showFirstChar, showNickNameFirstChar) => {
+export function getAnonymousName(loginname, nick, showFirstChar, showNickNameFirstChar) {
     if (nick && nick !== loginname.substring(3) && nick.slice(0, 16) !== loginname.substring(3).slice(0, 16)) {
         return nick;
     } else {
@@ -55,3 +55,29 @@ export const getAnonymousName = (loginname, nick, showFirstChar, showNickNameFir
         }
     }
 };
+
+/**
+ *
+ * @param {string} timeStr - 2019-11-22 03:24:45 (est time)
+ * @returns string - local time string 2019-11-22 13:24:45
+ */
+export function estTimeToLocal(timeStr) {
+    let date = new Date(timeStr + '-04:00');
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1, 2)}-${pad(date.getDate(), 2)} ` +
+        `${pad(date.getHours(), 2)}:${pad(date.getMinutes(), 2)}:${pad(date.getSeconds(), 2)}`;
+}
+
+/**
+ *
+ * @param {string} n number
+ * @param {number} width total length
+ * @param {string} [z] pad stuff
+ *
+ * @example pad(10, 4);      // 0010
+ * @example pad(10, 4, '-'); // --10
+ */
+export function pad(n, width, z = '0') {
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}

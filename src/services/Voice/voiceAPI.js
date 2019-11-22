@@ -25,7 +25,8 @@ import {
     setDelegatorList,
     setAnchorsOnDutyList,
     setManagerList,
-    setCurrentChannelId
+    setCurrentChannelId,
+    setManagerAction
 } from '../../actions/voice';
 import { setBetHistoryInfo, setBetHistory, setBetHistoryUserPid, setPlayerBalance } from '../../actions/data';
 import * as PROTOCOL from '../../protocols';
@@ -220,6 +221,8 @@ class VoiceAPI {
                     store.dispatch(setToastVariant('error'));
                     store.dispatch(toggleToast(true));
                 }
+
+                store.dispatch(setManagerAction(''));
                 break;
 
             case PROTOCOL.WAITING_LIST_R:

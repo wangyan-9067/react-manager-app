@@ -21,7 +21,7 @@ import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 
 import { toggleToast, setToastMessage, setToastVariant } from '../actions/app';
 import { setBetHistoryTablePageIndex } from '../actions/data';
-import { compareArray, convertObjectListToArrayList, formatAmount } from '../helpers/utils';
+import { compareArray, convertObjectListToArrayList, formatAmount, estTimeToLocal } from '../helpers/utils';
 import { getLangConfig } from '../helpers/appUtils';
 import { PLAYTYPE } from '../constants';
 import voiceAPI from '../services/Voice/voiceAPI';
@@ -292,7 +292,7 @@ const BetHistory = ({
                                     <TableRow key={row.billno}>
                                         <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.billno}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.gmcode}</TableCell>
-                                        <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{row.betTime}</TableCell>
+                                        <TableCell classes={{ root: cellRoot }} className={cellWidth} align="center">{estTimeToLocal(row.betTime)}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{langConfig.BANKER} {row.bankerVal} {langConfig.PLAYER} {row.playerVal}</TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center"><IconButton classes={{ root: playerIcon }} onClick={() => openVideoDialog(row)}><PlayCircleFilledIcon /></IconButton></TableCell>
                                         <TableCell classes={{ root: cellRoot }} align="center">{remark.length > 1 && remark[1] ? remark[1] : '-'}</TableCell>
