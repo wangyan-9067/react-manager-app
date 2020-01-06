@@ -12,7 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import { USER_STATE } from '../constants';
 import { getLangConfig, isAnchorCalling, isClientCalling } from '../helpers/appUtils';
 import { formatAmount } from '../helpers/utils';
-import {combineStyles, buttonStyles } from '../styles';
+
+import buttonStyles from '../css/button.module.scss';
 
 const styles = theme => ({
     cardBase: {
@@ -65,7 +66,8 @@ const styles = theme => ({
 
 
 const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTable, currentManagerName, tableList, anchorsOnDutyList }) => {
-    const { cardBase, cardContent, cardContentText, client, actionButton } = classes;
+    const { cardBase, cardContent, cardContentText, client } = classes;
+    const { actionButton } = buttonStyles;
     const { channelId, anchorState, managerName, currency, clientName, anchorName, clientState, vid } = item;
     const { OTHERS, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CHANGE_SHOE, NO_BET, CONNECTED, CONNECTING } = USER_STATE;
     const langConfig = getLangConfig();
@@ -154,4 +156,4 @@ CallInfoCard.propTypes = {
 };
 
 
-export default withStyles(combineStyles(buttonStyles, styles))(CallInfoCard);
+export default withStyles(styles)(CallInfoCard);

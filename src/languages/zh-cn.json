@@ -42,7 +42,7 @@
         "GM_CODE_VALIDATE": "搜寻局号也必须输入玩家名"
     },
     "TABLE_STATUS_LABEL": {
-        "FREE": "可进桌 / 可包桌",
+        "FREE": "可包桌",
         "CONTRACTED": "包桌中"
     },
     "GAME_STATUS_LABEL": {

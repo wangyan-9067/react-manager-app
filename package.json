@@ -17,6 +17,7 @@
     "jss": "^10.0.3",
     "mediaelement": "^4.2.10",
     "moment": "^2.24.0",
+    "node-sass": "^4.13.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-jss": "^8.6.1",

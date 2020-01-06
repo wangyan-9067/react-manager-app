@@ -1,0 +1,102 @@
+.button {
+    color: #FFFFFF;
+    font-weight: bold;
+    background-color: #0F58A7;
+    &:hover {
+        background-color: #0F58A7;
+        border-color: #0F58A7;
+    }
+}
+
+.actionButtonWrapper {
+    width: 100%;
+    min-width: 750px
+}
+
+.actionButton {
+    @extend .button;
+    margin: 5px auto;
+    padding: 3px 20px;
+    border-radius: 60px;
+    font-size: 1.5rem;
+}
+
+.actionButtonS {
+    @extend .button;
+    font-size: 1.25rem;
+    border-radius: 18px;
+    padding: 2px 0;
+    margin: 16px auto;
+    width: 80%;
+}
+
+.userFormButton {
+    @extend .button;
+    font-size: 1.125rem;
+    margin: 10px 5px;
+    padding: 3px 40px;
+    border-radius: 60px;
+}
+
+.addUserButton {
+    @extend .button;
+    width: 120px;
+    margin: 0 5px;
+    padding: 3px 20px;
+    font-size: 1.125rem;
+}
+
+.redButton {
+    color: #FFFFFF;
+    background-color: #FD0100;
+    &:hover {
+        background-color: #FD0100;
+        border-color: #FD0100;
+    }
+}
+
+.blackButton {
+    color: #FFFFFF;
+    background-color: #4A4B4F;
+    &:hover {
+        background-color: #4A4B4F;
+        border-color: #4A4B4F;
+    }
+}
+
+.darkGrayButton {
+    color: #FFFFFF;
+    background-color: #656565;
+    &:hover {
+        background-color: #656565;
+        border-color: #656565;
+    }
+}
+
+.greenButton {
+    color: #FFFFFF;
+    background-color: #4FA329;
+    &:hover {
+        background-color: #4FA329;
+        border-color: #4FA329;
+    }
+}
+
+.toggleButtonRoot {
+    height: 50px;
+    margin: 5px;
+    color: #FFFFFF;
+    background-color: #3970B0;
+    border: 3px solid #3970B0;
+}
+
+.toggleButtonDisabled {
+    background-color: #F4F4F4;
+    color: #D5D5D5;
+    border: 3px solid #F4F4F4;
+}
+
+.toggleButtonLabel {
+    font-size: 1rem;
+    font-weight: bold;
+}

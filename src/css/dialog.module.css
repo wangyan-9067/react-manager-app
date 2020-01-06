@@ -1,0 +1,31 @@
+.dialogPaper {
+  width: 100%;
+}
+
+.dialogTitle {
+  color: #7B7B7B;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.dialogActionButton {
+  font-size: 1.125rem;
+}
+
+.dialogActionsRoot {
+  border-top: 1px solid #C8C8C8;
+  padding-top: 10px;
+  justify-content: center;
+}
+
+.dialogActionsRootNoBorder {
+  padding-top: 10px;
+  justify-content: center;
+}
+
+.dialogContent {
+  font-weight: bold;
+  font-size: 1.125rem;
+  text-align: center;
+  color: #7E7E7E;
+}

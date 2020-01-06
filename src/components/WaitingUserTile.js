@@ -8,11 +8,12 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
-import { combineStyles, buttonStyles } from '../styles';
 
 import { getLangConfig } from '../helpers/appUtils';
 import DurationClock from '../components/DurationClock';
 import dataAPI from '../services/Data/dataAPI';
+
+import buttonStyles from '../css/button.module.scss';
 
 const styles = theme => ({
     root: {
@@ -51,18 +52,12 @@ const styles = theme => ({
         color: '#139727',
         fontWeight: 'bold',
         margin: '5px 0'
-    },
-    actionButtonOverwrite: {
-        fontSize: '1.25rem',
-        borderRadius: '18px',
-        padding: '2px 0',
-        margin: '16px auto',
-        width: '80%'
     }
 });
 
 const WaitingForToken = ({ classes, item, waitingStartTime, openAssignTableDialog, openKickLineupDialog }) => {
-    const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, actionButtonOverwrite, actionButton, cardActions } = classes;
+    const { card, cardContentRoot, cardContent, cardContentText, cardContentMainText, cardActions } = classes;
+    const { actionButtonS } = buttonStyles;
     const langConfig = getLangConfig();
     const { name, balance, limit: { min, max }, currency } = item;
 
@@ -73,8 +68,8 @@ const WaitingForToken = ({ classes, item, waitingStartTime, openAssignTableDialo
                 <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{balance} {dataAPI.getCurrencyName(currency)}</Typography>
                 <Typography color="inherit" className={classNames(cardContentText)} noWrap={true} align="center">{`${min} - ${max}`}</Typography>
                 <CardActions className={cardActions}>
-                    <Button variant="contained" size="small" color="inherit" className={classNames(actionButton, actionButtonOverwrite)} onClick={() => { openAssignTableDialog(name); }}>{langConfig.BUTTON_LABEL.ASSIGN_TOKEN}</Button>
-                    <Button variant="contained" size="small" color="inherit" className={classNames(actionButton, actionButtonOverwrite)} onClick={() => { openKickLineupDialog(name); }}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
+                    <Button variant="contained" size="small" color="inherit" className={actionButtonS} onClick={() => { openAssignTableDialog(name); }}>{langConfig.BUTTON_LABEL.ASSIGN_TOKEN}</Button>
+                    <Button variant="contained" size="small" color="inherit" className={actionButtonS} onClick={() => { openKickLineupDialog(name); }}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
                 </CardActions>
                 <Typography color="inherit" className={cardContentText} noWrap={true} align="center">
                     <DurationClock waitingStartTime={waitingStartTime} />
@@ -113,4 +108,4 @@ WaitingUserTile.propTypes = {
     openKickLineupDialog: PropTypes.func.isRequired
 };
 
-export default withStyles(combineStyles(buttonStyles, styles))(WaitingUserTile);
+export default withStyles(styles)(WaitingUserTile);

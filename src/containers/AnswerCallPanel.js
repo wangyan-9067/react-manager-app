@@ -11,7 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import CallEndIcon from '@material-ui/icons/CallEnd';
-import { combineStyles, buttonStyles } from '../styles';
 
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import { getLangConfig } from '../helpers/appUtils';
@@ -21,6 +20,8 @@ import { setIsAnswerCall, setManagerAction } from '../actions/voice';
 import { setToastMessage, setToastVariant, toggleToast } from '../actions/app';
 import voiceAPI from '../services/Voice/voiceAPI';
 import dataAPI from '../services/Data/dataAPI';
+
+import buttonStyles from '../css/button.module.scss';
 
 const styles = theme => ({
     answerCallPanel: {
@@ -198,16 +199,18 @@ class AnswerCallPanel extends React.Component {
         const {
             answerCallPanel,
             answerCallPanelLeftRoot,
+            answerCallPanelLeft,
+            answerCallPanelLeftAnchor,
             answerCallPanelLeftText,
             answerCallPanelRightRoot,
             answerCallPanelRight,
             answerCallPanelRightText,
             answerCallPanelRightTextValue,
-            actionButtonWrapper,
-            actionButton,
-            blackButton,
-            icon
+            icon,
+            show,
+            hide
         } = classes;
+        const { actionButtonWrapper, actionButton, blackButton, redButton } = buttonStyles;
         const { MUTE } = MUTE_STATE;
         const currentChannel = this.getCurrentChannelInfo();
         const langConfig = getLangConfig();
@@ -244,30 +247,14 @@ class AnswerCallPanel extends React.Component {
         clientMuteStatusTextDisplay = clientMute === MUTE ? langConfig.TELEBET_LIST_LABEL.PLAYER_MUTE_ON_GOINGING : '';
         anchorMuteStatusTextDisplay = anchorMute === MUTE ? langConfig.TELEBET_LIST_LABEL.ANCHOR_MUTE_ON_GOINGING : '';
 
-        const answerCallPanelClass = classNames.bind(classes);
-        const clientMuteButtonClass = answerCallPanelClass({
-            actionButton: true,
-            redButton: clientMute === MUTE
-        });
-        const anchorMuteButtonClass = answerCallPanelClass({
-            actionButton: true,
-            redButton: anchorMute === MUTE,
-            show: isAnchorCall,
-            hide: !isAnchorCall
-        });
-        const answerCallPanelLeftClass = answerCallPanelClass({
-            answerCallPanelLeft: true,
-            answerCallPanelLeftAnchor: isAnchorCall
-        });
-
         return (
             <Fragment>
                 <div className={answerCallPanel}>
                     <Card classes={{ root: answerCallPanelLeftRoot }}>
-                        <CardContent className={answerCallPanelLeftClass}>
+                        <CardContent className={classNames(answerCallPanelLeft, isAnchorCall ? answerCallPanelLeftAnchor : null)}>
                             <Typography color="inherit" className={answerCallPanelLeftText}>{line1Text}</Typography>
                             <Typography color="inherit" className={answerCallPanelLeftText}>{line2Text}</Typography>
-                            <Typography color="inherit" className={answerCallPanelLeftText}>{langConfig.TELEBET_LIST_LABEL.CONNECTED}  {clientMuteStatusTextDisplay}{anchorMuteStatusTextDisplay}</Typography>
+                            <Typography color="inherit" className={answerCallPanelLeftText}>{langConfig.TELEBET_LIST_LABEL.CONNECTED} {clientMuteStatusTextDisplay}{anchorMuteStatusTextDisplay}</Typography>
                         </CardContent>
                     </Card>
                     <Card classes={{ root: answerCallPanelRightRoot }}>
@@ -279,8 +266,8 @@ class AnswerCallPanel extends React.Component {
                     </Card>
                 </div>
                 <div className={actionButtonWrapper}>
-                    <Button variant="contained" size="medium" color="inherit" className={clientMuteButtonClass} onClick={this.onClientMuteButtonClicked}>{clientMute === MUTE ? <VolumeOffIcon className={icon} /> : <VolumeUpIcon className={icon} />}{langConfig.BUTTON_LABEL.PLAYER_MUTE}</Button>
-                    <Button variant="contained" size="medium" color="inherit" className={anchorMuteButtonClass} onClick={this.onAnchorMuteButtonClicked}>{anchorMute === MUTE ? <VolumeOffIcon className={icon} /> : <VolumeUpIcon className={icon} />}{langConfig.BUTTON_LABEL.ANCHOR_MUTE}</Button>
+                    <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, clientMute === MUTE ? redButton : null )} onClick={this.onClientMuteButtonClicked}>{clientMute === MUTE ? <VolumeOffIcon className={icon} /> : <VolumeUpIcon className={icon} />}{langConfig.BUTTON_LABEL.PLAYER_MUTE}</Button>
+                    <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, anchorMute === MUTE ? redButton : null, isAnchorCall ? show : hide)} onClick={this.onAnchorMuteButtonClicked}>{anchorMute === MUTE ? <VolumeOffIcon className={icon} /> : <VolumeUpIcon className={icon} />}{langConfig.BUTTON_LABEL.ANCHOR_MUTE}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onLeaveChannelClicked}><CallEndIcon className={icon} />{langConfig.BUTTON_LABEL.LEAVE_CHANNEL}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={actionButton} disabled={vid !== ''} onClick={this.onOpenAssignTableDialogClicked}>{langConfig.BUTTON_LABEL.ASSIGN_TABLE}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onKickoutClientClicked}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
@@ -345,6 +332,4 @@ const mapDispatchToProps = dispatch => ({
     setManagerAction: action => dispatch(setManagerAction(action))
 });
 
-const combinedStyles = combineStyles(buttonStyles, styles);
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(combinedStyles)(AnswerCallPanel));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(AnswerCallPanel));

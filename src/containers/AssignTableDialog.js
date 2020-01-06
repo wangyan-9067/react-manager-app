@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 
-import { MuiThemeProvider } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -13,11 +11,13 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { combineStyles, dialogStyles, toggoleButtons, toggleButtonTheme, buttonStyles } from '../styles';
 
 import dataAPI from '../services/Data/dataAPI';
 import { getLangConfig } from '../helpers/appUtils';
 import { DATA_SERVER_VIDEO_STATUS } from '../constants';
+
+import dialogStyles from '../css/dialog.module.css';
+import buttonStyles from '../css/button.module.scss';
 
 class AssignTableDialog extends React.Component {
     state = {
@@ -41,44 +41,56 @@ class AssignTableDialog extends React.Component {
         }
     };
 
+    isTableFree(table) {
+        console.log(table);
+        if (table.status !== DATA_SERVER_VIDEO_STATUS.FREE) {
+            return false;
+        }
+
+        const { channelList } = this.props;
+
+        for (let i = 0; i < channelList.length; i++) {
+            if (channelList[i].vid === table.vid) {
+                return !channelList[i].clientName;
+            }
+        }
+
+        return false;
+    }
+
     render() {
         const langConfig = getLangConfig();
-        const {
-            dialogPaper, dialogTitle, dialogActionsRoot, dialogActionButton, actionButton,
-            toggleButtonRoot, toggleButtonDisabled, toggleButtonLabel
-        } = this.props.classes;
-        const { tableList, channelList } = this.props;
-        const occupiedChannels = channelList.map(channel => channel.clientName !== '');
+        const { dialogPaper, dialogTitle, dialogActionsRoot, dialogActionButton } = dialogStyles;
+        const { actionButton, toggleButtonRoot, toggleButtonDisabled, toggleButtonLabel } = buttonStyles;
+        const { tableList } = this.props;
 
         return (
-            <MuiThemeProvider theme={toggleButtonTheme}>
-                <Dialog
-                    open={this.props.openAssignTableDialog}
-                    onClose={this.props.closeAssignTableDialog}
-                    aria-labelledby="responsive-dialog-title"
-                    classes={{ paper: dialogPaper }}>
-                    <DialogTitle id="responsive-dialog-title">
-                        <Typography color="inherit" className={dialogTitle}>{langConfig.TELEBET_LIST_LABEL.CHOOSE_TABLE}</Typography>
-                    </DialogTitle>
-                    <DialogContent>
-                        <ToggleButtonGroup
-                            value={this.state.tableAssigned}
-                            exclusive
-                            onChange={this.onTableSelectChanged}
-                        >
-                            {tableList.map((table, index) =>
-                                <ToggleButton key={index} value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE || occupiedChannels.indexOf(table.vid) > -1} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
-                                    <Typography color="inherit" className={toggleButtonLabel}>{table.vid}</Typography>
-                                </ToggleButton>
-                            )}
-                        </ToggleButtonGroup>
-                    </DialogContent>
-                    <DialogActions classes={{ root: dialogActionsRoot }}>
-                        <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={this.onAssignTableClicked}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
-                        <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={this.props.closeAssignTableDialog}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
-                    </DialogActions>
-                </Dialog>
-            </MuiThemeProvider>
+            <Dialog
+                open={this.props.openAssignTableDialog}
+                onClose={this.props.closeAssignTableDialog}
+                aria-labelledby="responsive-dialog-title"
+                classes={{ paper: dialogPaper }}>
+                <DialogTitle id="responsive-dialog-title">
+                    <Typography color="inherit" className={dialogTitle}>{langConfig.TELEBET_LIST_LABEL.CHOOSE_TABLE}</Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <ToggleButtonGroup
+                        value={this.state.tableAssigned}
+                        exclusive
+                        onChange={this.onTableSelectChanged}
+                    >
+                        {tableList.map((table, index) =>
+                            <ToggleButton key={index} value={table.vid} disabled={!this.isTableFree(table)} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
+                                <Typography color="inherit" className={toggleButtonLabel}>{table.vid}</Typography>
+                            </ToggleButton>
+                        )}
+                    </ToggleButtonGroup>
+                </DialogContent>
+                <DialogActions classes={{ root: dialogActionsRoot }}>
+                    <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={this.onAssignTableClicked}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
+                    <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, dialogActionButton)} onClick={this.props.closeAssignTableDialog}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
+                </DialogActions>
+            </Dialog>
         );
     }
 }
@@ -106,6 +118,4 @@ const mapStateToProps = state => {
     });
 };
 
-const combinedStyles = combineStyles(dialogStyles, toggoleButtons, buttonStyles);
-
-export default connect(mapStateToProps, null)(withStyles(combinedStyles)(AssignTableDialog));
+export default connect(mapStateToProps, null)(AssignTableDialog);

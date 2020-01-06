@@ -12,7 +12,8 @@ import Select from '@material-ui/core/Select';
 
 import ConfirmationDialog from './ConfirmationDialog';
 import { getLangConfig } from '../helpers/appUtils';
-import { combineStyles, buttonStyles } from '../styles';
+
+import buttonStyles from '../css/button.module.scss';
 
 const styles = theme => ({
     managerActionDialog: {
@@ -51,11 +52,6 @@ const styles = theme => ({
     },
     formControl: {
         margin: theme.spacing.unit,
-    },
-    actionButtonOverwrite: {
-        fontSize: '1.125rem',
-        margin: '10px 5px',
-        padding: '3px 40px'
     }
 });
 
@@ -336,12 +332,9 @@ class UserForm extends React.Component {
             formControlRoot,
             formControl,
             managerActionDialogSectionLeft,
-            managerActionDialogSectionRight,
-            actionButton,
-            actionButtonOverwrite,
-            darkGrayButton,
-            redButton
+            managerActionDialogSectionRight
         } = classes;
+        const { userFormButton, darkGrayButton, redButton } = buttonStyles;
         const langConfig = getLangConfig();
 
         return (
@@ -466,9 +459,9 @@ class UserForm extends React.Component {
                             )}
                         </div>
                         <div className={managerActionDialogSectionRight}>
-                            <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(actionButton, actionButtonOverwrite)}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
-                            <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, actionButtonOverwrite, darkGrayButton)} onClick={() => { setOpenAddDialog(false); }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
-                            <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, actionButtonOverwrite, redButton)} disabled={!isEdit} onClick={() => { toggleDialog(true); }}>{langConfig.BUTTON_LABEL.DELETE}</Button>
+                            <Button type="submit" variant="contained" size="medium" color="inherit" className={classNames(userFormButton)}>{langConfig.BUTTON_LABEL.CONFIRM}</Button>
+                            <Button variant="contained" size="medium" color="inherit" className={classNames(userFormButton, darkGrayButton)} onClick={() => { setOpenAddDialog(false); }}>{langConfig.BUTTON_LABEL.CANCEL}</Button>
+                            <Button variant="contained" size="medium" color="inherit" className={classNames(userFormButton, redButton)} disabled={!isEdit} onClick={() => { toggleDialog(true); }}>{langConfig.BUTTON_LABEL.DELETE}</Button>
                         </div>
                     </div>
                 </form>
@@ -495,4 +488,4 @@ UserForm.proptype = {
     isDelegator: PropTypes.bool.isRequired
 };
 
-export default withStyles(combineStyles(buttonStyles, styles))(UserForm);
+export default withStyles(styles)(UserForm);

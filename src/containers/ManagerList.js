@@ -17,7 +17,9 @@ import { setManagerAction, setFormValues } from '../actions/voice';
 import { MANAGER_ACTION_TYPE } from '../constants';
 import { getLangConfig } from '../helpers/appUtils';
 import voiceAPI from '../services/Voice/voiceAPI';
-import { combineStyles, dialogStyles, buttonStyles } from '../styles';
+
+import dialogStyles from '../css/dialog.module.css';
+import buttonStyles from '../css/button.module.scss';
 
 const styles = () => ({
     root: {
@@ -63,12 +65,11 @@ const ManagerList = ({
         root,
         grow,
         headerText,
-        addUserButton,
         emptyAnchorCardRoot,
-        emptyText,
-        dialogPaper,
-        dialogTitle
+        emptyText
     } = classes;
+    const { dialogPaper, dialogTitle } = dialogStyles;
+    const { addUserButton } = buttonStyles;
     const { ADD_MANAGER, EDIT_MANAGER } = MANAGER_ACTION_TYPE;
     const langConfig = getLangConfig();
 
@@ -187,7 +188,7 @@ ManagerList.proptype = {
     setFormValues: PropTypes.func
 };
 
-const StyledManagerList = withStyles(combineStyles(dialogStyles, buttonStyles, styles))(ManagerList);
+const StyledManagerList = withStyles(styles)(ManagerList);
 
 const mapStateToProps = state => {
     const { managerList } = state.voice;

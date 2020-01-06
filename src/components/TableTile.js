@@ -91,14 +91,14 @@ const Stopwatch = ({ datetime, duration }) => {
     );
 }
 
-const getTableStatus = channelVid => {
+const getTableStatus = tableReserved => {
     const langConfig = getLangConfig();
 
-    switch (channelVid === '') {
-        case true:
+    switch (tableReserved) {
+        case false:
             return langConfig.TABLE_STATUS_LABEL.FREE;
 
-        case false:
+        case true:
             return langConfig.TABLE_STATUS_LABEL.CONTRACTED;
 
         default:
@@ -224,7 +224,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
     const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
     const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum, startDatetime } = item;
     const currentChannel = channelList.find(channel => channel.vid === vid);
-    const { anchorName = '-', currency = '', vid: channelVid = '' } = currentChannel || {};
+    const { anchorName = '-', currency = '', vid: channelVid = '', clientName } = currentChannel || {};
     const currencyName = dataAPI.getCurrencyName(currency);
     const tableLimitList = getTableLimitList(vid, tableLimit);
     const langConfig = getLangConfig();
@@ -247,17 +247,18 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 
     // TODO: 顯示牌靴
 
+    const tableReserved = !!tableOwner || !!clientName;
     const tableTileClasses = classNames.bind(classes);
     const tileHeaderClass = tableTileClasses({
         cardHeader: true,
-        redCardHeader: channelVid !== ''
+        redCardHeader: tableReserved
     });
 
     return (
         <Card className={classes.root}>
             <div className={tileHeaderClass}>
                 <div className={tableNo}>{vid}</div>
-                <div className={tableStatus}>{getTableStatus(channelVid)}</div>
+                <div className={tableStatus}>{getTableStatus(tableReserved)}</div>
             </div>
             <CardContent className={cardContent}>
                 <Typography color="inherit"><span>{langConfig.SEAT_NUMBER}</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>

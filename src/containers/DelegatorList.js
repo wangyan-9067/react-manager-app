@@ -16,7 +16,9 @@ import ToggleButtonGridList from '../components/ToggleButtonGridList';
 import { toggleDialog } from '../actions/app';
 import { getLangConfig } from '../helpers/appUtils';
 import voiceAPI from '../services/Voice/voiceAPI';
-import { combineStyles, dialogStyles, buttonStyles } from '../styles';
+
+import dialogStyles from '../css/dialog.module.css';
+import buttonStyles from '../css/button.module.scss';
 
 const styles = () => ({
     root: {
@@ -59,12 +61,11 @@ const DelegatorList = ({
         root,
         grow,
         headerText,
-        addUserButton,
         emptyAnchorCardRoot,
-        emptyText,
-        dialogPaper,
-        dialogTitle
+        emptyText
     } = classes;
+    const { dialogPaper, dialogTitle } = dialogStyles;
+    const { addUserButton } = buttonStyles;
     const langConfig = getLangConfig();
 
     const onClickHandler = () => {
@@ -166,7 +167,7 @@ DelegatorList.proptype = {
     toggleDialog: PropTypes.func
 };
 
-const StyledDelegatorList = withStyles(combineStyles(dialogStyles, buttonStyles, styles))(DelegatorList);
+const StyledDelegatorList = withStyles(styles)(DelegatorList);
 
 const mapStateToProps = state => {
     const { delegatorList } = state.voice;

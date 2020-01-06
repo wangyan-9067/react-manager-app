@@ -24,7 +24,8 @@ import {
     toggleToast
 } from '../actions/app';
 import { getLangConfig } from '../helpers/appUtils';
-import { combineStyles, buttonStyles } from '../styles';
+
+import buttonStyles from '../css/button.module.scss';
 
 const styles = theme => ({
     root: {
@@ -203,9 +204,9 @@ class Login extends React.Component {
             fieldBackground,
             loginButtonWrapper,
             loginButton,
-            greenButton,
             formErrorText
         } = classes;
+        const { greenButton } = buttonStyles;
         const langConfig = getLangConfig();
 
         return (
@@ -307,4 +308,4 @@ const mapDispatchToProps = dispatch => ({
     toggleToast: toggle => dispatch(toggleToast(toggle))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(combineStyles(buttonStyles, styles))(Login));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Login));

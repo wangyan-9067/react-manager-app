@@ -18,7 +18,9 @@ import { setManagerAction, setFormValues } from '../actions/voice';
 import { getLangConfig } from '../helpers/appUtils';
 import { MANAGER_ACTION_TYPE } from '../constants';
 import voiceAPI from '../services/Voice/voiceAPI';
-import { combineStyles, dialogStyles, buttonStyles } from '../styles';
+
+import dialogStyles from '../css/dialog.module.css';
+import buttonStyles from '../css/button.module.scss';
 
 const styles = () => ({
     root: {
@@ -65,12 +67,11 @@ const AnchorList = ({
         root,
         grow,
         headerText,
-        addUserButton,
         emptyAnchorCardRoot,
-        emptyText,
-        dialogPaper,
-        dialogTitle
+        emptyText
     } = classes;
+    const { dialogPaper, dialogTitle } = dialogStyles;
+    const { addUserButton } = buttonStyles;
     const { ADD_ANCHOR, EDIT_ANCHOR } = MANAGER_ACTION_TYPE;
     const langConfig = getLangConfig();
 
@@ -180,7 +181,7 @@ AnchorList.proptype = {
     setFormValues: PropTypes.func
 };
 
-const StyledAnchorList = withStyles(combineStyles(dialogStyles, buttonStyles, styles))(AnchorList);
+const StyledAnchorList = withStyles(styles)(AnchorList);
 
 const mapStateToProps = state => {
     const { anchorList, anchorsOnDutyList } = state.voice;
