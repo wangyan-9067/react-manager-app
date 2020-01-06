@@ -30,6 +30,7 @@ export const ANCHOR_ALL_QUERY_REQ = 0x0bb214;
 export const ANCHOR_ALL_QUERY_R = 0x0bb214;
 export const MANAGER_KICKOUT_R = 0x0bb215;
 export const WAITING_LIST_R = 0x0bb216;
+export const VIP_WAITING_LIST_R = 0x0bb21c;
 export const ASSIGN_TOKEN_TO_DELEGATOR = 0x0bb217;
 export const ASSIGN_TOKEN_TO_DELEGATOR_R = 0x0bb217;
 export const KICK_LINEUP_PLAYER = 0x0bb218;

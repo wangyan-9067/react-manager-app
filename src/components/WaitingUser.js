@@ -7,48 +7,35 @@ import GridListBase from './GridListBase';
 import WaitingUserTile from './WaitingUserTile';
 import { getLangConfig } from '../helpers/appUtils';
 
+import commonStyles from '../css/common.module.css';
+
 const styles = theme => ({
     root: {
-        width: '100%'
-    },
-    title: {
-        color: '#666666',
-        fontSize: '1.125rem',
-        fontWeight: 'bold',
-        marginLeft: '10px'
+        width: '100%',
+        height: '100%'
     },
     listRoot: {
         width: '100%',
-        backgroundColor: '#F5F5F5',
         top: '0',
         left: '0',
-        height: '100%',
-        minHeight: '140px'
-    },
-    gridListRoot: {
-        flexWrap: 'nowrap',
-        transform: 'translateZ(0)',
-        display: 'flex',
-        padding: 0,
-        overflowY: 'auto',
-        listStyle: 'none',
-        width: '100%'
+        height: '650px',
+        overflowY: 'auto'
     }
 });
 
-const WaitingUser = ({ classes, waitingList, openAssignTableDialog, openKickLineupDialog }) => {
-    const { root, title, listRoot, gridListRoot } = classes;
+const WaitingUser = ({ classes, waitingList, openAssignTableDialog, openKickLineupDialog, isVip }) => {
+    const { root, title, listRoot } = classes;
     const langConfig = getLangConfig();
 
     return (
         <div className={root}>
-            <Typography color="inherit" align="left" className={title} gutterBottom>
-                {langConfig.WAITING_PLAYER}
+            <Typography color="inherit" align="left" className={commonStyles.sectionTitle} gutterBottom>
+                {isVip ? langConfig.VIP_WAITING_PLAYER : langConfig.WAITING_PLAYER}
             </Typography>
             <div className={listRoot}>
-                <GridListBase list={waitingList} customCols={4} gridListRootClass={gridListRoot}>
-                    <WaitingUserTile openAssignTableDialog={openAssignTableDialog} openKickLineupDialog={openKickLineupDialog} />
-                </GridListBase>
+                {waitingList.map((item, index) => (
+                    <WaitingUserTile key={index} item={item} openAssignTableDialog={openAssignTableDialog} openKickLineupDialog={openKickLineupDialog} />
+                ))}
             </div>
         </div>
     );
@@ -58,7 +45,8 @@ WaitingUser.propTypes = {
     classes: PropTypes.object.isRequired,
     waitingList: PropTypes.array,
     openAssignTableDialog: PropTypes.func.isRequired,
-    openKickLineupDialog: PropTypes.func.isRequired
+    openKickLineupDialog: PropTypes.func.isRequired,
+    isVip: PropTypes.bool
 };
 
 export default withStyles(styles)(WaitingUser);

@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { create } from 'jss';
+import JssProvider from 'react-jss/lib/JssProvider';
+import { MuiThemeProvider, createMuiTheme, createGenerateClassName, jssPreset } from '@material-ui/core/styles';
 import 'typeface-roboto';
 
 import App from './App';
@@ -10,6 +12,13 @@ import * as serviceWorker from './serviceWorker';
 import './index.css';
 import { getConfig } from './config';
 import { store } from './store';
+
+const jss = create({
+    ...jssPreset(),
+    // Define a custom insertion point that JSS will look for when injecting the styles into the DOM.
+    insertionPoint: document.getElementById('jss-insertion-point'),
+});
+jss.options.createGenerateClassName = createGenerateClassName;
 
 const theme = createMuiTheme({
     shadows: new Array(25),
@@ -35,11 +44,13 @@ const theme = createMuiTheme({
 
 const Application = () => {
     return (
-        <Provider store={store}>
-            <MuiThemeProvider theme={theme}>
-                <Main component={App} />
-            </MuiThemeProvider>
-        </Provider>
+        <JssProvider jss={jss}>
+            <Provider store={store}>
+                <MuiThemeProvider theme={theme}>
+                    <Main component={App} />
+                </MuiThemeProvider>
+            </Provider>
+        </JssProvider>
     );
 };
 

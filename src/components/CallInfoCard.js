@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -9,7 +9,6 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import DurationClock from './DurationClock';
 import { USER_STATE } from '../constants';
 import { getLangConfig, isAnchorCalling, isClientCalling } from '../helpers/appUtils';
 import { formatAmount } from '../helpers/utils';
@@ -65,52 +64,34 @@ const styles = theme => ({
 });
 
 
-const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTable, currentManagerName, tableList }) => {
+const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTable, currentManagerName, tableList, anchorsOnDutyList }) => {
     const { cardBase, cardContent, cardContentText, client, actionButton } = classes;
-    const { channelId, anchorState, managerName, clientBalance, currency, clientName, anchorName, clientState, vid } = item;
-    const { OTHERS, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CONNECTED, CONNECTING } = USER_STATE;
+    const { channelId, anchorState, managerName, currency, clientName, anchorName, clientState, vid } = item;
+    const { OTHERS, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CHANGE_SHOE, NO_BET, CONNECTED, CONNECTING } = USER_STATE;
     const langConfig = getLangConfig();
     const cardClass = isClientCalling(item) ? 'card' : isAnchorCalling(item) ? 'anchorCard' : 'playingCard';
-    const [waitingStartTime, setWaitingStartTime] = useState(0);
     const joinRoom = (channelId, joinChannel, isAnchorCall, setIsAnchorCall) => {
         setIsAnchorCall(isAnchorCall);
         joinChannel(channelId);
     };
 
-    useEffect(() => {
-        if (clientState === CONNECTING) {
-            setWaitingStartTime((new Date()).getTime() / 1000);
-        }
-    }, [clientState]);
-
     let anchorStateText = '';
     const table = tableList.find( table => table.vid === vid);
     const latestClientBalance = table && table.account ? table.account : null;
+    const isAnchorOnline = !!anchorsOnDutyList.find( anchor => anchor.anchorName === anchorName);
 
     switch (anchorState) {
         case OTHERS:
-            anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.OTHERS;
-            break;
-
         case CHANGE_ANCHOR:
-            anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.CHANGE_ANCHOR;
-            break;
-
         case CHANGE_DEALER:
-            anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.CHANGE_DEALER;
-            break;
-
         case CHANGE_TABLE:
-            anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.CHANGE_TABLE;
-            break;
-
         case ANNOYING:
-            anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.ANNOYING;
+        case ADVERTISEMENT:
+        case CHANGE_SHOE:
+        case NO_BET:
+            anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS['REASON_' + anchorState];
             break;
 
-        case ADVERTISEMENT:
-            anchorStateText = langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS.ADVERTISEMENT;
-            break;
         default:
             break;
     }
@@ -133,7 +114,13 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
         <Card className={classNames(cardBase, classes[cardClass])}>
             <CardContent className={cardContent}>
                 {vid && <Typography color="inherit" className={cardContentText}>{vid}</Typography>}
-                {anchorName && <Typography className={classNames(cardContentText, anchorTextColorClass)}>{langConfig.TELEBET_TILE_LABEL.ANCHOR} <span className={client}>{anchorName}</span> {anchorState === 1 ? langConfig.TELEBET_TILE_LABEL.CONNECTING : langConfig.TELEBET_TILE_LABEL.PLAYING}</Typography>}
+                {anchorName &&
+                    <Typography className={classNames(cardContentText, anchorTextColorClass)}>
+                        {langConfig.TELEBET_TILE_LABEL.ANCHOR} <span className={client}>{anchorName}</span> {
+                            anchorState === CONNECTED ? langConfig.TELEBET_TILE_LABEL.PLAYING : isAnchorOnline ? langConfig.TELEBET_TILE_LABEL.ONLINE : langConfig.TELEBET_TILE_LABEL.CONNECTING
+                        }
+                    </Typography>
+                }
                 {
                     clientName && <Typography color="inherit" className={classNames(cardContentText, clientTextColorClass)}>
                         {langConfig.TELEBET_TILE_LABEL.PLAYER}

@@ -5,6 +5,7 @@ import {
 	SET_IS_ANSWER_CALL,
 	SET_IS_ANCHOR_CALL,
 	SET_WAITING_LIST,
+	SET_VIP_WAITING_LIST,
 	SET_ANCHOR_LIST,
 	SET_MANAGER_ACTION,
 	SET_ANCHORS_ON_DUTY_LIST,
@@ -21,6 +22,7 @@ export const setCurrentChannelId = id => ({ type: SET_CURRENT_CHANNEL_ID, id });
 export const setIsAnswerCall = answer => ({ type: SET_IS_ANSWER_CALL, answer });
 export const setIsAnchorCall = isAnchor => ({ type: SET_IS_ANCHOR_CALL, isAnchor });
 export const setWaitingList = list => ({ type: SET_WAITING_LIST, list });
+export const setVipWaitingList = list => ({ type: SET_VIP_WAITING_LIST, list });
 export const setAnchorList = list => ({ type: SET_ANCHOR_LIST, list });
 export const setManagerAction = action => ({ type: SET_MANAGER_ACTION, action });
 export const setAnchorsOnDutyList = list => ({ type: SET_ANCHORS_ON_DUTY_LIST, list });

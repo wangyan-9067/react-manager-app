@@ -113,14 +113,18 @@
         "CONFIRM_KICKOUT_PLAYER": "要把{clientName}踢出桌台吗?",
         "CONFIRM_BACKLIST_PLAYER": "要把{clientName}列入黑名单吗?"
     },
-    "WAITING_PLAYER": "轮候中玩家",
+    "WAITING_PLAYER": "排队玩家",
+    "VIP_WAITING_PLAYER": "排队VIP玩家",
     "ANCHOR_LIST_LABEL": {
         "NO_RECORD": "没有主播记录!",
         "SELECT_ANCHOR": "请选取值班主播",
         "ANCHOR_INFO": "主播资料",
-        "ANCHOR_LIST": "主播列表",
+        "ANCHOR_LOG": "主播操作记录",
         "NO_ON_DUTY_ANCHOR": "没有值班主播",
-        "FREE": "待机中"
+        "FREE": "待机中",
+        "ANCHOR_LOGIN": "主播 {0} 登录 {1}",
+        "ANCHOR_LOGOUT": "主播 {0} 登出 {1}",
+        "ANCHOR_CALLING_MANAGER": "主播 {0} 呼叫经理，理由:{1}"
     },
     "BET_HISTORY_LABEL": {
         "BILL_NO": "订单号",
@@ -217,13 +221,16 @@
         "CONNECTING": "连接中",
         "CONNECTED": "接入中",
         "PLAYING": "游戏中",
+        "ONLINE": "在线",
         "ANCHOR_STATE_ACTIONS": {
-            "OTHERS": "白撞/其他",
-            "CHANGE_ANCHOR": "更换主播",
-            "CHANGE_DEALER": "更换荷官",
-            "CHANGE_TABLE": "更换桌台",
-            "ANNOYING": "骚扰",
-            "ADVERTISEMENT": "卖广告"
+            "REASON_3": "白撞/其他",
+            "REASON_4": "更换主播",
+            "REASON_5": "更换荷官",
+            "REASON_6": "更换桌台",
+            "REASON_7": "骚扰",
+            "REASON_8": "卖广告",
+            "REASON_9": "换靴",
+            "REASON_10": "长时间不下注"
         },
         "REASON": "理由:",
         "ANCHOR": "主播",

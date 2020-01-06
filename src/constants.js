@@ -42,7 +42,9 @@ export const USER_STATE = {
     CHANGE_DEALER: 5,
     CHANGE_TABLE: 6,
     ANNOYING: 7,
-    ADVERTISEMENT: 8
+    ADVERTISEMENT: 8,
+    CHANGE_SHOE: 9,
+    NO_BET: 10
 };
 
 export const CALLING_MANAGER_STATES = [
@@ -62,7 +64,8 @@ export const MANAGER_ACTIONS = {
     MUTE_ANCHOR: 4,
     UNMUTE_ANCHOR: 5,
     KICKOUT_CLIENT: 6,
-    BLACKLIST_CLIENT: 7
+    BLACKLIST_CLIENT: 7,
+    DELAY_KICKOUT_CLIENT: 8
 };
 
 export const MUTE_STATE = {

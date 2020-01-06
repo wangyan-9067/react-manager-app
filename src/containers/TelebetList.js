@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames/bind';
 
+import { Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
+import AnchorStatusList from '../containers/AnchorStatusList';
 import AnswerCallPanel from '../containers/AnswerCallPanel';
 import GridListBase from '../components/GridListBase';
 import WaitingUser from '../components/WaitingUser';
@@ -87,6 +89,7 @@ class TelebetList extends React.Component {
             joinChannel,
             isAnswerCall,
             waitingList,
+            vipWaitingList,
             tableList
         } = this.props;
         const { separator, tile } = classes;
@@ -113,19 +116,30 @@ class TelebetList extends React.Component {
 
         return (
             <Fragment>
-            <div className={classList}>
-                {panel}
-                <div className={separator} />
-                {!isAnswerCall &&
-                    <WaitingUser waitingList={waitingList} openAssignTableDialog={this.openAssignTableDialog} openKickLineupDialog={this.openKickLineupDialog} />
-                }
-            </div>
-            <AssignTableDialog openAssignTableDialog={this.state.openAssignTableDialog} closeAssignTableDialog={this.closeAssignTableDialog} name={this.state.assignName}/>
-            <ConfirmationDialog
-                open={this.state.openKickLineupDialog}
-                onClose={this.closeKickLineupDialog}
-                message={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", this.state.assignName)}
-                onConfirm={this.kickLineupPlayer} />
+                <Grid container>
+                    <Grid item xs={isAnswerCall ? 12 : 8}>
+                        <div className={classList}>
+                            {panel}
+                        </div>
+                        {!isAnswerCall && <AnchorStatusList />}
+                    </Grid>
+                    {!isAnswerCall &&
+                        <Grid item xs={2}>
+                            <WaitingUser isVip={true} waitingList={vipWaitingList} openAssignTableDialog={this.openAssignTableDialog} openKickLineupDialog={this.openKickLineupDialog} />
+                        </Grid>
+                    }
+                    {!isAnswerCall &&
+                        <Grid item xs={2}>
+                            <WaitingUser waitingList={waitingList} openAssignTableDialog={this.openAssignTableDialog} openKickLineupDialog={this.openKickLineupDialog} />
+                        </Grid>
+                    }
+                </Grid>
+                <AssignTableDialog openAssignTableDialog={this.state.openAssignTableDialog} closeAssignTableDialog={this.closeAssignTableDialog} name={this.state.assignName}/>
+                <ConfirmationDialog
+                    open={this.state.openKickLineupDialog}
+                    onClose={this.closeKickLineupDialog}
+                    message={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", this.state.assignName)}
+                    onConfirm={this.kickLineupPlayer} />
             </Fragment>
         );
     }
@@ -136,6 +150,7 @@ TelebetList.propTypes = {
     channelList: PropTypes.array,
     isAnswerCall: PropTypes.bool,
     waitingList: PropTypes.array,
+    vipWaitingList: PropTypes.array,
     tableList: PropTypes.array
 }
 
@@ -145,7 +160,8 @@ const mapStateToProps = state => {
     const {
         channelList,
         isAnswerCall,
-        waitingList
+        waitingList,
+        vipWaitingList,
     } = state.voice;
 
     const {
@@ -158,6 +174,7 @@ const mapStateToProps = state => {
         channelList,
         isAnswerCall,
         waitingList,
+        vipWaitingList,
         tableList,
         managerCredential
     });

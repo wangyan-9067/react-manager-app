@@ -1,6 +1,6 @@
 import 'cube-egret-polyfill';
 import * as Socket from 'cube-socket/live';
-import * as RTC from 'cube-rtc';
+// import * as RTC from 'cube-rtc';
 
 import VoiceSocket from './VoiceSocket';
 import { store } from '../../store';
@@ -21,6 +21,7 @@ import {
     setIncomingCallCount,
     setIsAnswerCall,
     setWaitingList,
+    setVipWaitingList,
     setAnchorList,
     setDelegatorList,
     setAnchorsOnDutyList,
@@ -93,7 +94,7 @@ class VoiceAPI {
                 if (loginStatus === SUCCESS) {
                     store.dispatch(setVoiceAppId(evt.data.voiceAppId));
                     store.dispatch(setUserLevel(evt.data.level));
-                    RTC.init(evt.data.voiceAppId);
+                    // RTC.init(evt.data.voiceAppId);
 
                     this.getAnchorList();
                     this.getManagerList();
@@ -227,6 +228,10 @@ class VoiceAPI {
 
             case PROTOCOL.WAITING_LIST_R:
                 store.dispatch(setWaitingList(evt.data.delegatorList));
+                break;
+
+            case PROTOCOL.VIP_WAITING_LIST_R:
+                store.dispatch(setVipWaitingList(evt.data.delegatorList));
                 break;
 
             case PROTOCOL.ANCHOR_ALL_QUERY_R:
@@ -424,10 +429,11 @@ class VoiceAPI {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.QUERY_ALL_DELEGATOR));
     }
 
-    sendManagerAction(action, channelId) {
+    sendManagerAction(action, channelId, reason = 0) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.MANAGER_ACTION, bytes => {
             bytes.writeUnsignedInt(action);
             bytes.writeUnsignedInt(channelId);
+            bytes.writeUnsignedInt(reason);
         }));
     }
 
@@ -438,8 +444,12 @@ class VoiceAPI {
         }));
     }
 
-    kickoutClient(channelId) {
-        this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.KICKOUT_CLIENT, channelId);
+    kickoutClient(channelId, reason) {
+        this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.KICKOUT_CLIENT, channelId, reason);
+    }
+
+    deplayKickoutClient(channelId) {
+        this.sendManagerAction(CONSTANTS.MANAGER_ACTIONS.DELAY_KICKOUT_CLIENT, channelId);
     }
 
     blacklistClient(channelId) {
@@ -528,9 +538,10 @@ class VoiceAPI {
         }));
     }
 
-    kickPlayer(playerName) {
+    kickPlayer(playerName, reason = 0) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.KICK_LINEUP_PLAYER, bytes => {
             bytes.writeBytes(Socket.stringToBytes(playerName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
+            bytes.writeUnsignedInt(reason);
         }));
     }
 

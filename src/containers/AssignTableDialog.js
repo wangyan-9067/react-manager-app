@@ -48,7 +48,7 @@ class AssignTableDialog extends React.Component {
             toggleButtonRoot, toggleButtonDisabled, toggleButtonLabel
         } = this.props.classes;
         const { tableList, channelList } = this.props;
-        const vidsInChannel = channelList.map(channel => channel.vid);
+        const occupiedChannels = channelList.map(channel => channel.clientName !== '');
 
         return (
             <MuiThemeProvider theme={toggleButtonTheme}>
@@ -67,7 +67,7 @@ class AssignTableDialog extends React.Component {
                             onChange={this.onTableSelectChanged}
                         >
                             {tableList.map((table, index) =>
-                                <ToggleButton key={index} value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE || vidsInChannel.indexOf(table.vid) > -1} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
+                                <ToggleButton key={index} value={table.vid} disabled={table.status !== DATA_SERVER_VIDEO_STATUS.FREE || occupiedChannels.indexOf(table.vid) > -1} classes={{ root: toggleButtonRoot, disabled: toggleButtonDisabled }}>
                                     <Typography color="inherit" className={toggleButtonLabel}>{table.vid}</Typography>
                                 </ToggleButton>
                             )}

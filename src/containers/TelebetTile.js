@@ -41,7 +41,8 @@ const TelebetTile = ({
     item,
     managerCredential,
     tableList,
-    player
+    player,
+    anchorsOnDutyList
 }) => {
     const { anchorName, clientName, managerName, vid } = item;
     const currentManagerName = isObject(managerCredential) ? managerCredential.managerLoginname : '';
@@ -65,6 +66,7 @@ const TelebetTile = ({
                 currentManagerName={currentManagerName}
                 player={player}
                 tableList={tableList}
+                anchorsOnDutyList={anchorsOnDutyList}
             />
         );
     }
@@ -81,13 +83,14 @@ TelebetTile.propTypes = {
     managerCredential: PropTypes.object,
     tableList: PropTypes.array,
     setIncomingCallCount: PropTypes.func,
-    incomingCallCount: PropTypes.number
+    incomingCallCount: PropTypes.number,
+    anchorsOnDutyList: PropTypes.array
 };
 
 const StyledTelebetTile = withStyles(styles)(TelebetTile);
 
 const mapStateToProps = state => {
-    const { incomingCallCount } = state.voice;
+    const { incomingCallCount, anchorsOnDutyList } = state.voice;
     const { managerCredential } = state.app;
     const { player, anchorBets } = state.data;
 
@@ -95,7 +98,8 @@ const mapStateToProps = state => {
         managerCredential,
         incomingCallCount,
         player,
-        anchorBets
+        anchorBets,
+        anchorsOnDutyList
     });
 };
 

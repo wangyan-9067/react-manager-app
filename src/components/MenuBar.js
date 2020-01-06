@@ -23,7 +23,6 @@ import { withStyles } from '@material-ui/core/styles';
 import AnchorList from '../containers/AnchorList';
 import TelebetList from '../containers/TelebetList';
 import TableList from '../containers/TableList';
-import AnchorStatusList from '../containers/AnchorStatusList';
 import ManagerList from '../containers/ManagerList';
 import BetHistory from '../containers/BetHistory';
 import DelegatorList from '../containers/DelegatorList';
@@ -234,9 +233,9 @@ class MenuBar extends React.Component {
                         <DateTimeBadge />
                         <div className={grow} />
                         <Tabs value={value} onChange={this.handleChange} classes={{ root: tabsRoot, indicator: tabsIndicator }}>
-                            <Tab label={langConfig.MENU_BAR_LABEL.ANCHOR_MANAGEMENT} value={0} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
-                            <Tab label={<CallNotification count={incomingCallCount} value={1} label={langConfig.MENU_BAR_LABEL.MANAGER_OPERATION} />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
-                            <Tab label={langConfig.MENU_BAR_LABEL.TABLE_MANAGEMENT} value={2} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+                            <Tab label={<CallNotification count={incomingCallCount} value={0} label={langConfig.MENU_BAR_LABEL.MANAGER_OPERATION} />} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+                            <Tab label={langConfig.MENU_BAR_LABEL.TABLE_MANAGEMENT} value={1} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
+                            <Tab label={langConfig.MENU_BAR_LABEL.ANCHOR_MANAGEMENT} value={2} classes={{ root: tabRoot, selected: tabSelected, labelContainer }} />
                         </Tabs>
                         <div className={grow1} />
                         <Button
@@ -270,32 +269,24 @@ class MenuBar extends React.Component {
                         <Button variant="contained" size="medium" color="inherit" className={classNames(menuButton, bold)} onClick={this.logout}>{langConfig.BUTTON_LABEL.LOGOUT}</Button>
                     </Toolbar>
                 </AppBar>
-                <Grid container>
-                    <Grid item xs={9}>
-                        <TabContainer classes={classes}>
-                            {value === 0 && (
-                                <AnchorList />
-                            )}
-                            {value === 1 && (
-                                <TelebetList />
-                            )}
-                            {value === 2 && (
-                                <TableList />
-                            )}
-                            {value === 3 && (
-                                <ManagerList />
-                            )}
-                            {value === 4 && (
-                                <DelegatorList />
-                            )}
-                        </TabContainer>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <TabContainer classes={classes}>
-                            <AnchorStatusList />
-                        </TabContainer>
-                    </Grid>
-                </Grid>
+
+                <TabContainer classes={classes}>
+                    {value === 0 && (
+                        <TelebetList />
+                    )}
+                    {value === 1 && (
+                        <TableList />
+                    )}
+                    {value === 2 && (
+                        <AnchorList />
+                    )}
+                    {value === 3 && (
+                        <ManagerList />
+                    )}
+                    {value === 4 && (
+                        <DelegatorList />
+                    )}
+                </TabContainer>
                 <Dialog
                     onClose={this.handleClose}
                     aria-labelledby="customized-dialog-title"

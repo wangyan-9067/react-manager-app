@@ -1,3 +1,6 @@
+import moment from 'moment';
+
+import { getLangConfig } from '../helpers/appUtils';
 import {
     SET_VOICE_APP_ID,
     SET_CHANNEL_LIST,
@@ -5,6 +8,7 @@ import {
     SET_IS_ANSWER_CALL,
     SET_IS_ANCHOR_CALL,
     SET_WAITING_LIST,
+    SET_VIP_WAITING_LIST,
     SET_ANCHOR_LIST,
     SET_MANAGER_ACTION,
     SET_ANCHORS_ON_DUTY_LIST,
@@ -23,6 +27,7 @@ const initialState = {
     isAnswerCall: false,
     isAnchorCall: null,
     waitingList: [],
+    vipWaitingList: [],
     anchorList: [],
     managerAction: '',
     anchorsOnDutyList: [],
@@ -37,7 +42,8 @@ const initialState = {
         level: '',
         tel: ''
     },
-    incomingCallCount: 0
+    incomingCallCount: 0,
+    channelLogs: null
 };
 
 export default function voice(state = initialState, action) {
@@ -46,9 +52,10 @@ export default function voice(state = initialState, action) {
             const voiceAppId = action.id;
             return { ...state, voiceAppId };
 
-        case SET_CHANNEL_LIST:
-            // const channelList = sortChannelList(action.list);
-            return { ...state, channelList: action.list };
+        case SET_CHANNEL_LIST: {
+            const channelLogs = updateAnchorActionState(state.channelLogs, action.list);
+            return { ...state, channelLogs: channelLogs, channelList: action.list };
+        }
 
         case SET_CURRENT_CHANNEL_ID:
             const currentChannelId = action.id;
@@ -66,6 +73,10 @@ export default function voice(state = initialState, action) {
             const waitingList = action.list;
             return { ...state, waitingList };
 
+        case SET_VIP_WAITING_LIST:
+            const vipWaitingList = action.list;
+            return { ...state, vipWaitingList };
+
         case SET_ANCHOR_LIST:
             const anchorList = action.list;
             return { ...state, anchorList };
@@ -74,9 +85,11 @@ export default function voice(state = initialState, action) {
             const managerAction = action.action;
             return { ...state, managerAction };
 
-        case SET_ANCHORS_ON_DUTY_LIST:
+        case SET_ANCHORS_ON_DUTY_LIST: {
             const anchorsOnDutyList = action.list;
-            return { ...state, anchorsOnDutyList };
+            const channelLogs = updateAnchorOnlineState(state.channelLogs, anchorsOnDutyList);
+            return { ...state, channelLogs: channelLogs, anchorsOnDutyList };
+        }
 
         case SET_MANAGER_LIST:
             const managerList = action.list;
@@ -114,16 +127,70 @@ export default function voice(state = initialState, action) {
     }
 };
 
-function sortChannelList(channelList) {
-    channelList.sort(function(a, b) {
-        if (a.vid && b.vid) {
-            return a.vid > b.vid ? 1 : -1;
-        } else if (a.vid || b.vid) {
-            return a.vid ? -1 : 1;
-        } else {
-            return 0;
-        }
-    });
+function updateAnchorActionState(channelLogs, channelList) {
+    const langConfig = getLangConfig();
+    const time = moment().format('LTS');
 
-    return channelList;
+    if (!channelLogs) {
+        channelLogs = {};
+
+        for (let i = 0; i < channelList.length; i++) {
+            let channel = channelList[i];
+
+            channelLogs[channel.vid] = {
+                vid: channel.vid,
+                anchorName: channel.anchorName,
+                anchorState: channel.anchorState,
+                isAnchorOnline: null,
+                messages: []
+            };
+        }
+    } else {
+        for (let i = 0; i < channelList.length; i++) {
+            let channel = channelList[i];
+            let vid = channel.vid;
+
+            if (channelLogs[vid].anchorState !== channel.anchorState && (channel.anchorState > 2 || channelLogs[vid].anchorState > 2)) {
+                channelLogs[vid] = {
+                    ...channelLogs[vid],
+                    anchorState: channel.anchorState,
+                    messages: channel.anchorState > 2 ? channelLogs[vid].messages.concat([
+                        langConfig.ANCHOR_LIST_LABEL.ANCHOR_CALLING_MANAGER.replace('{0}', channel.anchorName).replace('{1}', langConfig.TELEBET_TILE_LABEL.ANCHOR_STATE_ACTIONS[`REASON_${channel.anchorState}`]) + ' ' + time
+                    ]) : channelLogs[vid].messages // if calling manager, add a log message; if reset state, no need to add message
+                };
+            }
+        }
+    }
+
+    return channelLogs;
+}
+
+function updateAnchorOnlineState(channelLogs, anchorsOnDutyList) {
+    const langConfig = getLangConfig();
+    const time = moment().format('LTS');
+
+    if (channelLogs) {
+        for(let vid in channelLogs) {
+            let anchor = anchorsOnDutyList.find(anchor => anchor.vid === vid);
+            let channelLog = channelLogs[vid];
+
+            if (channelLog.isAnchorOnline === null) {
+                channelLogs[vid] = {
+                    ...channelLog,
+                    isAnchorOnline: !!anchor
+                };
+            } else if (channelLog.isAnchorOnline !== !!anchor) {
+                channelLogs[vid] = {
+                    ...channelLog,
+                    anchorName: anchor ? anchor.anchorName : '',
+                    isAnchorOnline: !!anchor,
+                    messages: channelLog.isAnchorOnline === null ? channelLog.messages : channelLog.messages.concat([
+                        langConfig.ANCHOR_LIST_LABEL[!!anchor ? "ANCHOR_LOGIN" : "ANCHOR_LOGOUT"].replace('{0}', channelLog.anchorName || anchor.anchorName).replace('{1}', vid) + ' ' + time
+                    ]) // if new login, add a log message; if already login, no need to add message
+                };
+            }
+        }
+    }
+
+    return channelLogs;
 }
