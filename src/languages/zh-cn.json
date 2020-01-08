@@ -23,7 +23,15 @@
         "BLACKLIST_PLAYER": "列入黑名单",
         "JOIN_CHANNEL": "接听",
         "JOIN_CHANNEL_2": "{name}接听中",
-        "CONTINUE_CHANNEL": "继续接听"
+        "CONTINUE_CHANNEL": "继续接听",
+        "IN_VALID_ACCOUNT": "账号异常",
+        "GAME_CLOSING": "即将收工",
+        "GAME_OVER": "游戏结束",
+        "ILLEGAL_WORDS": "恶意言论",
+        "TOO_MANY_ADS": "滥发广告",
+        "NO_BETS": "长时间不下注",
+        "WAIT_N_KICKOUT": "延时踢出",
+        "WAIT_N_KICKOUT_INFO": "玩家长时间不在线，会先发送一个提示给玩家，3分钟以内未回到游戏则踢出玩家"
     },
     "NO_TABLE_INFO": "没有桌台资讯",
     "MENU_BAR_LABEL": {
@@ -110,7 +118,8 @@
     "DIALOG_LABEL": {
         "CONFIRM_DELETE": "确定要删除吗?",
         "CONFIRM_KICKOUT_TABLE_OWNER": "确定要踢走桌主吗?",
-        "CONFIRM_KICKOUT_PLAYER": "要把{clientName}踢出桌台吗?",
+        "CONFIRM_KICKOUT_IN_TABLE_PLAYER": "请为踢出玩家{clientName}选择理由：",
+        "CONFIRM_KICKOUT_LINEUP_PLAYER": "请为踢出排队玩家{clientName}选择理由：",
         "CONFIRM_BACKLIST_PLAYER": "要把{clientName}列入黑名单吗?"
     },
     "WAITING_PLAYER": "排队玩家",

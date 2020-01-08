@@ -13,11 +13,11 @@ import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 
 import ConfirmationDialog from '../components/ConfirmationDialog';
+import KickoutDialog from '../components/KickoutDialog';
 import { getLangConfig } from '../helpers/appUtils';
 import { MUTE_STATE, MANAGER_ACTION_TYPE } from '../constants';
 import { formatAmount } from '../helpers/utils';
-import { setIsAnswerCall, setManagerAction } from '../actions/voice';
-import { setToastMessage, setToastVariant, toggleToast } from '../actions/app';
+import { setManagerAction } from '../actions/voice';
 import voiceAPI from '../services/Voice/voiceAPI';
 import dataAPI from '../services/Data/dataAPI';
 
@@ -91,10 +91,10 @@ class AnswerCallPanel extends React.Component {
     };
 
     componentDidMount() {
-        let { vid } = this.getCurrentChannelInfo();
+        let channel = this.getCurrentChannelInfo();
 
         this.setState({
-            tableAssigned: vid
+            tableAssigned: channel.vid
         });
     }
 
@@ -113,15 +113,13 @@ class AnswerCallPanel extends React.Component {
     }
 
     onLeaveChannelClicked = () => {
-        const { currentChannelId } = this.props;
+        const { channelId } = this.props.channel;
 
-        voiceAPI.leaveChannel(currentChannelId);
+        voiceAPI.leaveChannel(channelId);
     }
 
     getCurrentChannelInfo() {
-        const { currentChannelId, channelList } = this.props;
-
-        return channelList.find(channel => channel.channelId === currentChannelId);
+        return this.props.channel;
     }
 
     onKickoutClientClicked = () => {
@@ -145,13 +143,13 @@ class AnswerCallPanel extends React.Component {
     kickoutClient = () => {
         const { KICKOUT_CLIENT } = MANAGER_ACTION_TYPE;
         const { clientName } = this.getCurrentChannelInfo();
-        const { currentChannelId } = this.props;
+        const { channelId } = this.props.channel;
         const { tableAssigned } = this.state;
 
         this.props.setManagerAction(KICKOUT_CLIENT);
 
         if (!tableAssigned) {
-            voiceAPI.kickoutClient(currentChannelId);
+            voiceAPI.kickoutClient(channelId);
         } else {
             dataAPI.kickoutClientFromDataServer(tableAssigned, clientName);
         }
@@ -189,11 +187,8 @@ class AnswerCallPanel extends React.Component {
         const {
             classes,
             isAnchorCall,
-            setIsAnswerCall,
-            setToastMessage,
-            setToastVariant,
-            toggleToast,
-            tableList
+            table,
+            channel
         } = this.props;
 
         const {
@@ -212,29 +207,16 @@ class AnswerCallPanel extends React.Component {
         } = classes;
         const { actionButtonWrapper, actionButton, blackButton, redButton } = buttonStyles;
         const { MUTE } = MUTE_STATE;
-        const currentChannel = this.getCurrentChannelInfo();
         const langConfig = getLangConfig();
+        const { vid, clientName, anchorName, clientMute, anchorMute, currency, channelId } = channel;
         let latestPlayerBalance = 0;
-
-        if (currentChannel) {
-            const table = tableList.find( table => table.vid === currentChannel.vid);
-            latestPlayerBalance = table ? table.account : currentChannel.clientBalance;
-        }
-
-        // Error handling when currentChannel is not found in existing channel list
-        if (!currentChannel) {
-            setIsAnswerCall(false);
-            setToastMessage(langConfig.ERROR_MESSAGES.NO_CURRENT_CHANNEL);
-            setToastVariant('error');
-            toggleToast(true);
-        }
-
-        const { vid, clientName, anchorName, clientMute, anchorMute, currency } = currentChannel;
 
         let line1Text;
         let line2Text;
         let clientMuteStatusTextDisplay;
         let anchorMuteStatusTextDisplay;
+
+        latestPlayerBalance = table ? table.account : channel.clientBalance;
 
         if (isAnchorCall) {
             line1Text = langConfig.TELEBET_LIST_LABEL.WITH_TABLE.replace("{vid}", vid);
@@ -269,16 +251,17 @@ class AnswerCallPanel extends React.Component {
                     <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, clientMute === MUTE ? redButton : null )} onClick={this.onClientMuteButtonClicked}>{clientMute === MUTE ? <VolumeOffIcon className={icon} /> : <VolumeUpIcon className={icon} />}{langConfig.BUTTON_LABEL.PLAYER_MUTE}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, anchorMute === MUTE ? redButton : null, isAnchorCall ? show : hide)} onClick={this.onAnchorMuteButtonClicked}>{anchorMute === MUTE ? <VolumeOffIcon className={icon} /> : <VolumeUpIcon className={icon} />}{langConfig.BUTTON_LABEL.ANCHOR_MUTE}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onLeaveChannelClicked}><CallEndIcon className={icon} />{langConfig.BUTTON_LABEL.LEAVE_CHANNEL}</Button>
-                    <Button variant="contained" size="medium" color="inherit" className={actionButton} disabled={vid !== ''} onClick={this.onOpenAssignTableDialogClicked}>{langConfig.BUTTON_LABEL.ASSIGN_TABLE}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={actionButton} onClick={this.onKickoutClientClicked}>{langConfig.BUTTON_LABEL.KICKOUT_PLAYER}</Button>
                     <Button variant="contained" size="medium" color="inherit" className={classNames(actionButton, blackButton)} onClick={this.onBlackListClicked}>{langConfig.BUTTON_LABEL.BLACKLIST_PLAYER}</Button>
                 </div>
                 { /** Kickout Client Dialog*/}
-                <ConfirmationDialog
+                <KickoutDialog
                     open={this.state.openKickoutClientDialog}
                     onClose={this.closeKickoutDialog}
-                    onConfirm={this.kickoutClient}
-                    message={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", clientName)} />
+                    type={KickoutDialog.TYPE.KICKOUT_IN_TABLE_PLAYERS}
+                    clientName={clientName}
+                    vid={vid}
+                    channelId={channelId} />
                 { /** Blacklist Dialog*/}
                 <ConfirmationDialog
                     open={this.state.openBlacklistDialog}
@@ -292,13 +275,9 @@ class AnswerCallPanel extends React.Component {
 
 AnswerCallPanel.propTypes = {
     classes: PropTypes.object.isRequired,
-    currentChannelId: PropTypes.number.isRequired,
-    channelList: PropTypes.array.isRequired,
+    channel: PropTypes.object.isRequired,
+    table: PropTypes.object.isRequired,
     isAnchorCall: PropTypes.bool.isRequired,
-    setIsAnswerCall: PropTypes.func.isRequired,
-    setToastMessage: PropTypes.func.isRequired,
-    setToastVariant: PropTypes.func.isRequired,
-    toggleToast: PropTypes.func.isRequired,
     setManagerAction: PropTypes.func.isRequired
 };
 
@@ -308,27 +287,24 @@ const mapStateToProps = state => {
         currentChannelId,
         isAnchorCall,
     } = state.voice;
-
     const {
         tableList
     } = state.data;
     const {
         managerCredential
-    } = state.app
+    } = state.app;
+    const channel = channelList.find(channel => channel.channelId === currentChannelId);
+    const table = tableList.find(table => table.vid === channel.vid);
+
     return ({
-        channelList,
-        currentChannelId,
+        channel,
         isAnchorCall,
         managerCredential,
-        tableList
+        table
     });
 };
 
 const mapDispatchToProps = dispatch => ({
-    setIsAnswerCall: value => dispatch(setIsAnswerCall(value)),
-    setToastMessage: message => dispatch(setToastMessage(message)),
-    setToastVariant: value => dispatch(setToastVariant(value)),
-    toggleToast: value => dispatch(toggleToast(value)),
     setManagerAction: action => dispatch(setManagerAction(action))
 });
 

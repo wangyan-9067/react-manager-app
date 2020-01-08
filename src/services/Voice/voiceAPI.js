@@ -538,7 +538,7 @@ class VoiceAPI {
         }));
     }
 
-    kickPlayer(playerName, reason = 0) {
+    kickLineupPlayer(playerName, reason = 0) {
         this.socket.writeBytes(Socket.createCMD(PROTOCOL.KICK_LINEUP_PLAYER, bytes => {
             bytes.writeBytes(Socket.stringToBytes(playerName, CONSTANTS.VALUE_LENGTH.LOGIN_NAME));
             bytes.writeUnsignedInt(reason);

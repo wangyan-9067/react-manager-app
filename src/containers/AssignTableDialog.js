@@ -42,7 +42,6 @@ class AssignTableDialog extends React.Component {
     };
 
     isTableFree(table) {
-        console.log(table);
         if (table.status !== DATA_SERVER_VIDEO_STATUS.FREE) {
             return false;
         }
@@ -96,7 +95,6 @@ class AssignTableDialog extends React.Component {
 }
 
 AssignTableDialog.propTypes = {
-    classes: PropTypes.object.isRequired,
     tableList: PropTypes.array.isRequired,
     channelList: PropTypes.array.isRequired,
     openAssignTableDialog: PropTypes.bool.isRequired,

@@ -30,6 +30,11 @@
     width: 80%;
 }
 
+.actionButtonXS {
+    @extend .actionButton;
+    font-size: 0.8rem;
+}
+
 .userFormButton {
     @extend .button;
     font-size: 1.125rem;
@@ -99,4 +104,19 @@
 .toggleButtonLabel {
     font-size: 1rem;
     font-weight: bold;
+}
+
+.toolTip {
+    .toolTipText {
+        visibility: hidden;
+        position: absolute;
+        color: black;
+        font-size: 0.5rem;
+        bottom: 30px;
+        width: 150px;
+    }
+
+    &:hover .toolTipText {
+        visibility: visible;
+    }
 }

@@ -11,7 +11,7 @@ import {
     setToastDuration
 } from '../../actions/app';
 import { setTableList, setTableLimit, setPlayerBalance, setAnchorBet, setTableJetton, resetJettonAndBets } from '../../actions/data';
-import { setFormValues } from '../../actions/voice';
+import { setFormValues, setManagerAction } from '../../actions/voice';
 import * as PROTOCOL from '../../protocols';
 import * as CONSTANTS from '../../constants';
 import langConfig from '../../languages/zh-cn.json';
@@ -373,8 +373,8 @@ class DataAPI {
         }));
     }
 
-    kickoutClientFromDataServer(vid, clientName) {
-        let { managerAction } = store.getState().voice;
+    kickoutClientFromDataServer(vid, clientName, managerAction) {
+        store.dispatch(setManagerAction(managerAction));
         let { KICKOUT_CLIENT, BLACKLIST_CLIENT } = CONSTANTS.MANAGER_ACTION_TYPE;
 
         if (managerAction === KICKOUT_CLIENT || managerAction === BLACKLIST_CLIENT) {
@@ -399,7 +399,7 @@ class DataAPI {
     voiceKickoutClient(vid) {
         let { channelList, managerAction } = store.getState().voice;
         let { KICKOUT_CLIENT, BLACKLIST_CLIENT } = CONSTANTS.MANAGER_ACTION_TYPE;
-        let channel = channelList.filter(channel => channel.vid === vid)[0];
+        let channel = channelList.find(channel => channel.vid === vid);
 
         if (channel) {
             if (managerAction === KICKOUT_CLIENT) {

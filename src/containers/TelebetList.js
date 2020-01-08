@@ -12,7 +12,7 @@ import GridListBase from '../components/GridListBase';
 import WaitingUser from '../components/WaitingUser';
 import TelebetTile from './TelebetTile';
 import AssignTableDialog from './AssignTableDialog';
-import ConfirmationDialog from '../components/ConfirmationDialog';
+import KickoutDialog from '../components/KickoutDialog';
 import { getLangConfig } from '../helpers/appUtils';
 import voiceAPI from '../services/Voice/voiceAPI';
 
@@ -79,7 +79,7 @@ class TelebetList extends React.Component {
     }
 
     kickLineupPlayer = () => {
-        voiceAPI.kickPlayer(this.state.assignName);
+        voiceAPI.kickLineupPlayer(this.state.assignName);
     }
 
     render() {
@@ -135,10 +135,11 @@ class TelebetList extends React.Component {
                     }
                 </Grid>
                 <AssignTableDialog openAssignTableDialog={this.state.openAssignTableDialog} closeAssignTableDialog={this.closeAssignTableDialog} name={this.state.assignName}/>
-                <ConfirmationDialog
+                <KickoutDialog
                     open={this.state.openKickLineupDialog}
                     onClose={this.closeKickLineupDialog}
-                    message={langConfig.DIALOG_LABEL.CONFIRM_KICKOUT_PLAYER.replace("{clientName}", this.state.assignName)}
+                    clientName={this.state.assignName}
+                    type={KickoutDialog.TYPE.KICKOUT_LINEUP_PLAYERS}
                     onConfirm={this.kickLineupPlayer} />
             </Fragment>
         );

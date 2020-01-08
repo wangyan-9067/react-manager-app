@@ -184,11 +184,6 @@ const getPlayTypeText = playtype => {
     }
 }
 
-// const getAnchorByVid = (vid, anchorsOnDutyList) => {
-// 	const targetAnchor = anchorsOnDutyList.find(anchor => anchor.vid === vid);
-// 	return targetAnchor ? targetAnchor.anchorName : '-';
-// };
-
 const getTableLimitList = (vid, tableLimit) => {
     // const playtypeList = Object.values(PLAYTYPE);
     const hashTableList = tableLimit.byHash[vid];
@@ -220,11 +215,11 @@ DataItem.proptype = {
     item: PropTypes.object.isRequired
 };
 
-const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutClient, channelList, tableLimit, anchorBets, jettons }) => {
+const TableTile = ({ classes, item, openKickoutDialog, channelList, tableLimit, anchorBets, jettons }) => {
     const { cardContent, tableNo, tableStatus, tableValue, cardActionButton, fieldWrapper } = classes;
     const { vid, dealerName, gameCode, status, tableOwner, gameStatus, seatedPlayerNum, startDatetime } = item;
     const currentChannel = channelList.find(channel => channel.vid === vid);
-    const { anchorName = '-', currency = '', vid: channelVid = '', clientName } = currentChannel || {};
+    const { anchorName = '-', currency = '', channelId, clientName } = currentChannel || {};
     const currencyName = dataAPI.getCurrencyName(currency);
     const tableLimitList = getTableLimitList(vid, tableLimit);
     const langConfig = getLangConfig();
@@ -253,6 +248,9 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
         cardHeader: true,
         redCardHeader: tableReserved
     });
+    const kickout = function() {
+        openKickoutDialog(tableOwner, vid, channelId);
+    }
 
     return (
         <Card className={classes.root}>
@@ -264,7 +262,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
                 <Typography color="inherit"><span>{langConfig.SEAT_NUMBER}</span><span className={tableValue}>{seatedPlayerNum}/7</span></Typography>
                 <Typography color="inherit"><span>{langConfig.GAME_CODE}</span><span className={tableValue}>{gameCode || '-'}</span></Typography>
                 <Typography color="inherit"><span>{langConfig.DEALER}</span><span className={tableValue}>{dealerName || '-'}</span></Typography>
-                <Typography color="inherit"><span>{langConfig.ANCHOR}</span><span className={tableValue}>{/* getAnchorByVid(vid, anchorsOnDutyList) */}{anchorName}</span></Typography>
+                <Typography color="inherit"><span>{langConfig.ANCHOR}</span><span className={tableValue}>{anchorName}</span></Typography>
                 {
                     tableLimitList.length > 0 ?
                         <Grid container spacing={8} alignItems="flex-end" className={fieldWrapper}>
@@ -285,13 +283,7 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
                     size="medium"
                     color={status !== DATA_SERVER_VIDEO_STATUS.FREE ? 'primary' : 'inherit'}
                     className={cardActionButton}
-                    onClick={() => {
-                        setKickoutClient({
-                            vid,
-                            clientName: tableOwner
-                        });
-                        toggleDialog(true);
-                    }}
+                    onClick={kickout}
                     disabled={status === DATA_SERVER_VIDEO_STATUS.FREE}
                 >
                     {langConfig.KICKOUT_CLIENT}
@@ -304,13 +296,11 @@ const TableTile = ({ classes, item, anchorsOnDutyList, toggleDialog, setKickoutC
 TableTile.propTypes = {
     classes: PropTypes.object.isRequired,
     item: PropTypes.object.isRequired,
-    anchorsOnDutyList: PropTypes.array,
-    toggleDialog: PropTypes.func,
-    setKickoutClient: PropTypes.func,
     channelList: PropTypes.array,
     tableLimit: PropTypes.object,
     anchorBets: PropTypes.object,
     jettons: PropTypes.object,
+    openKickoutDialog: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(TableTile);
