@@ -231,6 +231,7 @@
         "CONNECTED": "接入中",
         "PLAYING": "游戏中",
         "ONLINE": "在线",
+        "RTC_TESTING": "试麦中",
         "ANCHOR_STATE_ACTIONS": {
             "REASON_3": "白撞/其他",
             "REASON_4": "更换主播",

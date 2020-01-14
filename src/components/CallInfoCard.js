@@ -69,7 +69,7 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
     const { cardBase, cardContent, cardContentText, client } = classes;
     const { actionButton } = buttonStyles;
     const { channelId, anchorState, managerName, currency, clientName, anchorName, clientState, vid } = item;
-    const { OTHERS, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CHANGE_SHOE, NO_BET, CONNECTED, CONNECTING } = USER_STATE;
+    const { OTHERS, CHANGE_ANCHOR, CHANGE_DEALER, CHANGE_TABLE, ANNOYING, ADVERTISEMENT, CHANGE_SHOE, NO_BET, CONNECTED, CONNECTING, RTC_TESTING } = USER_STATE;
     const langConfig = getLangConfig();
     const cardClass = isClientCalling(item) ? 'card' : isAnchorCalling(item) ? 'anchorCard' : 'playingCard';
     const joinRoom = (channelId, joinChannel, isAnchorCall, setIsAnchorCall) => {
@@ -128,8 +128,8 @@ const CallInfoCard = ({ classes, item, setIsAnchorCall, joinChannel, currentTabl
                         {langConfig.TELEBET_TILE_LABEL.PLAYER}
                         <span className={client}>{clientName}</span>
                         {clientState === CONNECTING && langConfig.TELEBET_TILE_LABEL.CONNECTING}
-                        {/* {clientState === CONNECTING && <DurationClock waitingStartTime={waitingStartTime}/>} */}
                         {clientState === CONNECTED && langConfig.TELEBET_TILE_LABEL.PLAYING}
+                        {clientState === RTC_TESTING && langConfig.TELEBET_TILE_LABEL.RTC_TESTING}
                     </Typography>
                 }
                 {anchorStateText && (
@@ -152,7 +152,8 @@ CallInfoCard.propTypes = {
     classes: PropTypes.object.isRequired,
     item: PropTypes.object,
     joinChannel: PropTypes.func,
-    currentTable: PropTypes.object
+    currentTable: PropTypes.object,
+    anchorsOnDutyList: PropTypes.array.isRequired
 };
 
 

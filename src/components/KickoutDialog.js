@@ -23,7 +23,7 @@ export default class KickoutDialog extends React.Component {
         if (type === KickoutDialog.TYPE.KICKOUT_LINEUP_PLAYERS) {
             voiceAPI.kickLineupPlayer(clientName, reason);
         } else {
-            dataAPI.kickoutClientFromDataServer(vid, clientName, MANAGER_ACTION_TYPE.KICKOUT_CLIENT);
+            dataAPI.kickoutClientFromDataServer(vid, clientName, MANAGER_ACTION_TYPE.KICKOUT_CLIENT, reason);
         }
 
         onClose();
@@ -78,7 +78,7 @@ export default class KickoutDialog extends React.Component {
                                 size="medium"
                                 color="primary"
                                 className={buttonStyles.actionButtonXS}
-                                onClick={this.onClick.bind(this, 1)} >
+                                onClick={this.onClick.bind(this, 3)} >
                                 {langConfig.BUTTON_LABEL.GAME_OVER}
                             </Button>
                             <Button
@@ -86,7 +86,7 @@ export default class KickoutDialog extends React.Component {
                                 size="medium"
                                 color="primary"
                                 className={buttonStyles.actionButtonXS}
-                                onClick={this.onClick.bind(this, 2)} >
+                                onClick={this.onClick.bind(this, 4)} >
                                 {langConfig.BUTTON_LABEL.ILLEGAL_WORDS}
                             </Button>
                             <Button
@@ -94,7 +94,7 @@ export default class KickoutDialog extends React.Component {
                                 size="medium"
                                 color="primary"
                                 className={buttonStyles.actionButtonXS}
-                                onClick={this.onClick.bind(this, 3)} >
+                                onClick={this.onClick.bind(this, 5)} >
                                 {langConfig.BUTTON_LABEL.TOO_MANY_ADS}
                             </Button>
                             <Button
@@ -102,7 +102,7 @@ export default class KickoutDialog extends React.Component {
                                 size="medium"
                                 color="primary"
                                 className={buttonStyles.actionButtonXS}
-                                onClick={this.onClick.bind(this, 4)} >
+                                onClick={this.onClick.bind(this, 6)} >
                                 {langConfig.BUTTON_LABEL.NO_BETS}
                             </Button>
                             <Button

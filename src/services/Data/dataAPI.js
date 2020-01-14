@@ -373,7 +373,8 @@ class DataAPI {
         }));
     }
 
-    kickoutClientFromDataServer(vid, clientName, managerAction) {
+    kickoutClientFromDataServer(vid, clientName, managerAction, reason) {
+        this.kickoutReason = reason;
         store.dispatch(setManagerAction(managerAction));
         let { KICKOUT_CLIENT, BLACKLIST_CLIENT } = CONSTANTS.MANAGER_ACTION_TYPE;
 
@@ -403,7 +404,7 @@ class DataAPI {
 
         if (channel) {
             if (managerAction === KICKOUT_CLIENT) {
-                voiceAPI.kickoutClient(channel.channelId);
+                voiceAPI.kickoutClient(channel.channelId, this.kickoutReason);
             } else if (managerAction === BLACKLIST_CLIENT) {
                 voiceAPI.blacklistClient(channel.channelId);
             }

@@ -44,7 +44,8 @@ export const USER_STATE = {
     ANNOYING: 7,
     ADVERTISEMENT: 8,
     CHANGE_SHOE: 9,
-    NO_BET: 10
+    NO_BET: 10,
+    RTC_TESTING: 11
 };
 
 export const CALLING_MANAGER_STATES = [
